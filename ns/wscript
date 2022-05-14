@@ -1042,6 +1042,34 @@ def add_examples_programs(bld):
         except OSError:
             return
 
+def add_cebinae_programs(bld):
+    all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_ENABLED_MODULES'] + bld.env['NS3_ENABLED_CONTRIBUTED_MODULES']]
+    try:
+        for filename in os.listdir("cebinae"):
+            if filename.startswith('.') or filename == 'CVS':
+                continue
+            if os.path.isdir(os.path.join("cebinae", filename)):
+                # Dive into 2nd level of the dir; previously only progs under root dir of cebinae will be compiled
+                for filename_local in os.listdir("cebinae/"+filename):
+                    if filename_local.endswith(".cc"):
+                        name = filename_local[:-len(".cc")]
+                        obj = bld.create_ns3_program(name, all_modules)
+                        obj.path = obj.path.find_dir('cebinae/'+filename)
+                        obj.source = filename_local
+                        obj.target = name
+                        obj.name = obj.target
+                        obj.install_path = None                    
+            elif filename.endswith(".cc"):
+                name = filename[:-len(".cc")]
+                obj = bld.create_ns3_program(name, all_modules)
+                obj.path = obj.path.find_dir('cebinae')
+                obj.source = filename
+                obj.target = name
+                obj.name = obj.target
+                obj.install_path = None
+    except OSError:
+        return
+
 def add_scratch_programs(bld):
     all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_ENABLED_MODULES'] + bld.env['NS3_ENABLED_CONTRIBUTED_MODULES']]
 
@@ -1213,6 +1241,7 @@ def build(bld):
 
     add_examples_programs(bld)
     add_scratch_programs(bld)
+    add_cebinae_programs(bld)
 
     if env['NS3_ENABLED_MODULES'] or env['NS3_ENABLED_CONTRIBUTED_MODULES']:
         modules = env['NS3_ENABLED_MODULES']
