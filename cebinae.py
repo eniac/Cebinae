@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -65,6 +66,34 @@ def ns_configure(profile):
     print(cmd)
     subprocess.call(cmd.split())
 
+@timeit
+def ns_run_instance(config_path, enb_gdb):
+  cwd = os.getcwd()
+  if not os.path.isabs(config_path):
+    print("ERR: {} not absolute path", config_path)
+  else:
+    config_path = (cwd + "/ns/cebinae/configs/" + config_path)
+
+  with open(config_path, 'r') as f:
+    config=json.loads(f.read())
+
+  # --cwd changes the working directory (for output files etc) with default being the top of the ns-3 tree
+  cmd = "./waf --cwd=\""+cwd+"/ns/cebinae/"+config["instance_type"]+"\" --run \""+config["instance_type"]+" " 
+
+  params = ""
+  for param in config.keys():
+    if param != "instance_type":
+      params += ("--"+param+"="+str(config[param])+" ")
+  params = params[0:-1]
+
+  cmd += (params+"\"")
+  if enb_gdb:
+    cmd += " --gdb"
+
+  os.chdir(cwd+"/ns")
+  print(cmd)
+  os.system(cmd)
+
 
 if __name__ == '__main__':
 
@@ -80,8 +109,14 @@ if __name__ == '__main__':
   ns_validate_prsr = ns_subsubprsr.add_parser("validate")
   ns_validate_prsr.add_argument("-p", "--profile", type=str, required=False, default="default", choices=["default", "debug", "optimized"], help="Build profile")
 
-  tofino_subprsr = subprsr.add_parser("tofino")
+  ns_run_instance_prsr = ns_subsubprsr.add_parser("run_instance")
+  ns_run_instance_prsr.add_argument("-c", "--config", type=str, required=True, help="Abs path of Json config file")
+  ns_run_instance_prsr.add_argument("--gdb", action="store_true", help="Whether to enable gdb")
 
+  ns_run_batch_prsr = ns_subsubprsr.add_parser("run_batch")
+  ns_run_batch_prsr.add_argument("-c", "--config", type=str, required=True, help="Abs path of Json config file")
+
+  tofino_subprsr = subprsr.add_parser("tofino")
 
   args = parser.parse_args()
   if args.cmd == "ns":
@@ -89,9 +124,7 @@ if __name__ == '__main__':
       ns_validate(args.profile)
     if args.ns_cmd == "configure":
       ns_configure(args.profile)
-    elif args.ns_cmd == "run":
-      pass
+    elif args.ns_cmd == "run_instance":
+      ns_run_instance(args.config, args.gdb)
   elif args.cmd == "tofino":
     pass
-
-
