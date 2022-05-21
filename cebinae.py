@@ -70,9 +70,8 @@ def ns_configure(profile):
 def ns_run_instance(config_path, enb_gdb):
   cwd = os.getcwd()
   if not os.path.isabs(config_path):
-    print("ERR: {} not absolute path", config_path)
-  else:
     config_path = (cwd + "/ns/cebinae/configs/" + config_path)
+  print("config_path: {}", config_path)
 
   with open(config_path, 'r') as f:
     config=json.loads(f.read())
@@ -80,9 +79,13 @@ def ns_run_instance(config_path, enb_gdb):
   # --cwd changes the working directory (for output files etc) with default being the top of the ns-3 tree
   cmd = "./waf --cwd=\""+cwd+"/ns/cebinae/"+config["instance_type"]+"\" --run \""+config["instance_type"]+" " 
 
+  if len(config["batch_params"]) != 0 or config["batch_size"] > 1:
+    print("ERR: batch_params: {0}, batch_size: {1}".format(config["batch_params"], config["batch_size"]))
+    exit()
+
   params = ""
   for param in config.keys():
-    if param != "instance_type":
+    if param != "instance_type" and param != "batch_size" and param != "batch_params":
       params += ("--"+param+"="+str(config[param])+" ")
   params = params[0:-1]
 
@@ -93,6 +96,44 @@ def ns_run_instance(config_path, enb_gdb):
   os.chdir(cwd+"/ns")
   print(cmd)
   os.system(cmd)
+
+@timeit
+def ns_run_batch(config_path):
+  cwd = os.getcwd()
+  if not os.path.isabs(config_path):
+    config_path = (cwd + "/ns/cebinae/configs/" + config_path)
+  print("config_path: {}", config_path)
+
+  with open(config_path, 'r') as f:
+    config=json.loads(f.read())
+
+  cmds = []
+  cmd_base = "./waf --cwd=\""+cwd+"/ns/cebinae/"+config["instance_type"]+"\" --run \""+config["instance_type"]+" " 
+
+  if len(config["batch_params"]) == 0 or config["batch_size"] == 1:
+    print("ERR: batch_params: {0}, batch_size: {1}".format(config["batch_params"], config["batch_size"]))
+    exit()
+  for param in config["batch_params"]:
+    if len(config[param]) != config["batch_size"]:
+      print("ERR: {0} != {1}")
+      exit()
+
+  for instance_id in range(config["batch_size"]):
+    params = ""
+    for param in config.keys():
+      if param != "instance_type" and param != "batch_params" and param != "batch_size":
+        if param in config["batch_params"]:
+          params += ("--"+param+"="+str(config[param][instance_id])+" ")
+        else:
+          params += ("--"+param+"="+str(config[param])+" ")
+    params = params[0:-1]
+    cmd = (cmd_base+params+"\"")
+    cmds.append(cmd)
+
+  os.chdir(cwd+"/ns")
+  for cmd in cmds:
+    print("======{}======".format(cmd))
+    os.system(cmd)
 
 
 if __name__ == '__main__':
@@ -126,5 +167,7 @@ if __name__ == '__main__':
       ns_configure(args.profile)
     elif args.ns_cmd == "run_instance":
       ns_run_instance(args.config, args.gdb)
+    elif args.ns_cmd == "run_batch":
+      ns_run_batch(args.config)
   elif args.cmd == "tofino":
     pass
