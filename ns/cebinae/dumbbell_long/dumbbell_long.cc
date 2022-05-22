@@ -49,12 +49,14 @@ NS_LOG_COMPONENT_DEFINE ("DumbbellLong");
 
 std::vector<double> avg_tpt_bottleneck;  // Avg over whole sim period
 std::vector<double> avg_tpt_app;  // This is actually goodput
-double avg_jfi_bottleneck = 0.0;
-double avg_jfi_app = 0.0;
+// double avg_jfi_bottleneck = 0.0;
+// double avg_jfi_app = 0.0;
 std::vector<std::vector<int64_t>> source2rtttrace;
 
 int num_tracing_periods = 0;
-uint32_t sim_seconds = 1;
+double sim_seconds = 1;
+double app_seconds_start = 0.1;
+double app_seconds_end = 10;
 
 // Triggered when a packet has been completely transmitted over the channel
 std::unordered_map<std::uint32_t, std::uint64_t> mysourceidtag2pktcount;
@@ -155,8 +157,11 @@ TraceThroughputJFI(std::string bottleneck_fn, std::string app_fn, std::string jf
   double jfi_bottleneck = static_cast<double> (sum_bottleneck * sum_bottleneck) / sum_squares_bottleneck / mysourceidtag2bytecount.size();
   double jfi_app = static_cast<double> (sum_app * sum_app) / sum_squares_app / mysink_mysourceidtag2bytecount.size();
 
-  avg_jfi_bottleneck += (jfi_bottleneck/num_tracing_periods);
-  avg_jfi_app += (jfi_app/num_tracing_periods);
+  // // Avoid NaN during first period (no traffic)
+  // if (sum_squares_app != 0) {
+  //   avg_jfi_bottleneck += (jfi_bottleneck/num_tracing_periods);
+  //   avg_jfi_app += (jfi_app/num_tracing_periods);
+  // }
 
   jfi_ofs << std::fixed << std::setprecision (3) << jfi_bottleneck << " "
           << std::fixed << std::setprecision (3) << jfi_app 
@@ -193,11 +198,12 @@ main (int argc, char *argv[])
   // https://zetcode.com/articles/cdatetime/
   strftime (buffer, sizeof (buffer), "%Y-%m-%d-%H-%M-%S-%Z", timeinfo);
   std::string current_time (buffer);
-  result_dir = "tmp_digests/" + current_time + "/";
+  result_dir = "tmp_index/" + current_time + "/";
   std::string create_dir_cmd = "mkdir -p " + result_dir;
   if (system (create_dir_cmd.c_str ()) == -1) exit (1);
 
   // CMD configurable params
+  std::string config_path = "";  
   tracing_period_us = 1000000;
   uint32_t progress_interval_ms = 1000;
   bool enable_debug = 0;  
@@ -205,8 +211,6 @@ main (int argc, char *argv[])
   uint32_t seed = 1;  // Fixed
   uint32_t run = 1;  // Varry across replications
   sim_seconds = 10;
-  double app_seconds_start = 0.1;
-  uint32_t app_seconds_end = 10;
   // Configure 0 will give 1000
   int switch_total_bufsize_pkts = 100;
   std::string queuedisc_type = "FifoQueueDisc";
@@ -250,6 +254,7 @@ main (int argc, char *argv[])
   double delta_port {0.05};
   double delta_flow {0.05};
 
+  cmd.AddValue("config_path", "Path to the json configuration file", config_path);
   cmd.AddValue("seed", "Seed", seed);
   cmd.AddValue("run", "Run", run);
   cmd.AddValue ("enable_debug", "Enable logging", enable_debug);
@@ -311,6 +316,18 @@ main (int argc, char *argv[])
     LogComponentEnable ("DumbbellLong", LOG_LEVEL_DEBUG);
   }
 
+  std::ifstream in_file {config_path};
+  std::ofstream out_file {result_dir+"/config.json"};
+  std::string line;
+  if(in_file && out_file){
+    while(getline(in_file, line)) { out_file << line << "\n"; }
+  } else {
+    printf("ERR mirroring config file");
+    return 1;
+  }
+  in_file.close();
+  out_file.close();
+
   transport_prot0 = std::string("ns3::") + transport_prot0;
   transport_prot1 = std::string("ns3::") + transport_prot1;
   transport_prot2 = std::string("ns3::") + transport_prot2;
@@ -359,6 +376,7 @@ main (int argc, char *argv[])
 
   std::ostringstream oss;
   oss       << "=== Non-CMD varas ===\n"
+            << "config_path: " << config_path << "\n"
             << "sack: " << sack << "\n"
             << "recovery: " << recovery << "\n"
             << "app_packet_size: " << app_packet_size << "\n"
@@ -809,26 +827,28 @@ main (int argc, char *argv[])
   // Calculate overall JFI
   long double sum = 0.0;
   long double sum_squares = 0.0;  
+  oss << "=== avg_tpt_bottleneck[*] ===\n";
   for (uint32_t i = 0; i < avg_tpt_bottleneck.size(); i++) {
     sum += avg_tpt_bottleneck[i];
     sum_squares += (avg_tpt_bottleneck[i] * avg_tpt_bottleneck[i]);
-    oss << std::fixed << std::setprecision (3) << "avg_tpt_bottleneck[" << i << "]: " << avg_tpt_bottleneck[i] << "\n";
+    oss << std::fixed << std::setprecision (3) << i << " " << avg_tpt_bottleneck[i] << "\n";
   }
   oss << std::fixed << std::setprecision (3) << "avg_tpt_bottleneck_total: " << sum << "\n";
   oss << std::fixed << std::setprecision (3) << "avg_jfi_bottleneck [computed]: " << (sum*sum)/avg_tpt_bottleneck.size()/sum_squares << "\n";
 
   sum = 0.0;
-  sum_squares = 0.0;  
+  sum_squares = 0.0;
+  oss << "=== avg_tpt_app[*] ===\n";
   for (uint32_t i = 0; i < avg_tpt_app.size(); i++) {
     sum += avg_tpt_app[i];
     sum_squares += (avg_tpt_app[i] * avg_tpt_app[i]);
-    oss << std::fixed << std::setprecision (3) << "avg_tpt_app[" << i << "]: " << avg_tpt_app[i] << "\n";
+    oss << std::fixed << std::setprecision (3) << i << " " << avg_tpt_app[i] << "\n";
   }
   oss << std::fixed << std::setprecision (3) << "avg_tpt_app_total: " << sum << "\n";
   oss << std::fixed << std::setprecision (3) << "avg_jfi_app [computed]: " << (sum*sum)/avg_tpt_app.size()/sum_squares << "\n";
   
-  oss << std::fixed << std::setprecision (3) << "avg_jfi_bottleneck: " << avg_jfi_bottleneck << "\n"
-      << std::fixed << std::setprecision (3) << "avg_jfi_app: " << avg_jfi_app << "\n";
+  // oss << std::fixed << std::setprecision (3) << "avg_jfi_bottleneck: " << avg_jfi_bottleneck << "\n"
+  //     << std::fixed << std::setprecision (3) << "avg_jfi_app: " << avg_jfi_app << "\n";
 
   // Calculate avg. RTT and write RTT traces
   if (logrtt) {
@@ -861,7 +881,7 @@ main (int argc, char *argv[])
     oss << DynamicCast<CebinaeQueueDisc>(q)->DumpDebuggingStats();    
   }
 
-  std::ofstream summary_ofs (result_dir + "/summary", std::ios::out | std::ios::app);  
+  std::ofstream summary_ofs (result_dir + "/digest", std::ios::out | std::ios::app);  
   summary_ofs << oss.str();
 
   std::cout << oss.str() << std::endl;

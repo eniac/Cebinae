@@ -77,7 +77,7 @@ def ns_run_instance(config_path, enb_gdb):
     config=json.loads(f.read())
 
   # --cwd changes the working directory (for output files etc) with default being the top of the ns-3 tree
-  cmd = "./waf --cwd=\""+cwd+"/ns/cebinae/"+config["instance_type"]+"\" --run \""+config["instance_type"]+" " 
+  cmd = "./waf --cwd=\""+cwd+"/ns/cebinae/"+config["instance_type"]+"\" --run \""+config["instance_type"]+" --config_path="+config_path+" " 
 
   if len(config["batch_params"]) != 0 or config["batch_size"] > 1:
     print("ERR: batch_params: {0}, batch_size: {1}".format(config["batch_params"], config["batch_size"]))
@@ -108,7 +108,7 @@ def ns_run_batch(config_path):
     config=json.loads(f.read())
 
   cmds = []
-  cmd_base = "./waf --cwd=\""+cwd+"/ns/cebinae/"+config["instance_type"]+"\" --run \""+config["instance_type"]+" " 
+  cmd_base = "./waf --cwd=\""+cwd+"/ns/cebinae/"+config["instance_type"]+"\" --run \""+config["instance_type"]+" --config_path="+config_path+" "   
 
   if len(config["batch_params"]) == 0 or config["batch_size"] == 1:
     print("ERR: batch_params: {0}, batch_size: {1}".format(config["batch_params"], config["batch_size"]))
