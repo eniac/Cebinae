@@ -135,6 +135,17 @@ def ns_run_batch(config_path):
     print("======{}======".format(cmd))
     os.system(cmd)
 
+@timeit
+def ns_clear():
+  cwd = os.getcwd()
+  tmp_index_dirs = [
+    "/ns/cebinae/dumbbell_long/tmp_index"
+  ]
+  for tmp_index in tmp_index_dirs:
+    cmd = ("rm -rf "+cwd+tmp_index)
+    print(cmd)
+    subprocess.call(cmd.split())
+
 
 if __name__ == '__main__':
 
@@ -157,6 +168,8 @@ if __name__ == '__main__':
   ns_run_batch_prsr = ns_subsubprsr.add_parser("run_batch")
   ns_run_batch_prsr.add_argument("-c", "--config", type=str, required=True, help="Abs path of Json config file")
 
+  ns_run_clear_prsr = ns_subsubprsr.add_parser("clear")
+
   tofino_subprsr = subprsr.add_parser("tofino")
 
   args = parser.parse_args()
@@ -169,5 +182,7 @@ if __name__ == '__main__':
       ns_run_instance(args.config, args.gdb)
     elif args.ns_cmd == "run_batch":
       ns_run_batch(args.config)
+    elif args.ns_cmd == "clear":
+      ns_clear()
   elif args.cmd == "tofino":
     pass
