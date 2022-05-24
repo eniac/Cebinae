@@ -216,8 +216,24 @@ main (int argc, char *argv[])
   std::string queuedisc_type = "FifoQueueDisc";
   std::string bottleneck_bw = "5Mbps";
   std::string bottleneck_delay = "2ms";
-  std::string leaf_bw = "10Mbps";
-  std::string app_bw = "5Mbps";  
+  std::string leaf_bw0 = "0Mbps";
+  std::string leaf_bw1 = "0Mbps";
+  std::string leaf_bw2 = "0Mbps";
+  std::string leaf_bw3 = "0Mbps";
+  std::string leaf_bw4 = "0Mbps";
+  std::string leaf_bw5 = "0Mbps";
+  std::string leaf_bw6 = "0Mbps";
+  std::string leaf_bw7 = "0Mbps";
+  std::string leaf_bw8 = "0Mbps";
+  std::string app_bw0 = "0Mbps";  
+  std::string app_bw1 = "0Mbps"; 
+  std::string app_bw2 = "0Mbps"; 
+  std::string app_bw3 = "0Mbps"; 
+  std::string app_bw4 = "0Mbps"; 
+  std::string app_bw5 = "0Mbps"; 
+  std::string app_bw6 = "0Mbps"; 
+  std::string app_bw7 = "0Mbps"; 
+  std::string app_bw8 = "0Mbps";                 
   uint32_t num_cca = 0;
   std::string transport_prot0 = "TcpCubic";
   std::string transport_prot1 = "TcpCubic";
@@ -279,7 +295,15 @@ main (int argc, char *argv[])
   cmd.AddValue ("transport_prot8", "", transport_prot8);          
   cmd.AddValue ("bottleneck_bw", "BW of the bottleneck link", bottleneck_bw);
   cmd.AddValue ("bottleneck_delay", "Delay of the bottleneck link", bottleneck_delay);
-  cmd.AddValue ("leaf_bw", "BW of the leaf link", leaf_bw);
+  cmd.AddValue ("leaf_bw0", "BW of the leaf link grp 0", leaf_bw0);
+  cmd.AddValue ("leaf_bw1", "", leaf_bw1);
+  cmd.AddValue ("leaf_bw2", "", leaf_bw2);
+  cmd.AddValue ("leaf_bw3", "", leaf_bw3);
+  cmd.AddValue ("leaf_bw4", "", leaf_bw4);
+  cmd.AddValue ("leaf_bw5", "", leaf_bw5);
+  cmd.AddValue ("leaf_bw6", "", leaf_bw6);
+  cmd.AddValue ("leaf_bw7", "", leaf_bw7);
+  cmd.AddValue ("leaf_bw8", "", leaf_bw8);                
   cmd.AddValue ("leaf_delay0", "Delay of the leaf links for grp0", leaf_delay0);
   cmd.AddValue ("leaf_delay1", "", leaf_delay1);  
   cmd.AddValue ("leaf_delay2", "", leaf_delay2);  
@@ -289,7 +313,15 @@ main (int argc, char *argv[])
   cmd.AddValue ("leaf_delay6", "", leaf_delay6);  
   cmd.AddValue ("leaf_delay7", "", leaf_delay7);              
   cmd.AddValue ("leaf_delay8", "", leaf_delay8);    
-  cmd.AddValue ("app_bw", "BW of each application", app_bw);
+  cmd.AddValue ("app_bw0", "BW of each application", app_bw0);
+  cmd.AddValue ("app_bw1", "", app_bw1);  
+  cmd.AddValue ("app_bw2", "", app_bw2);  
+  cmd.AddValue ("app_bw3", "", app_bw3);  
+  cmd.AddValue ("app_bw4", "", app_bw4);  
+  cmd.AddValue ("app_bw5", "", app_bw5);  
+  cmd.AddValue ("app_bw6", "", app_bw6);  
+  cmd.AddValue ("app_bw7", "", app_bw7);  
+  cmd.AddValue ("app_bw8", "", app_bw8);                
   cmd.AddValue ("switch_total_bufsize_pkts", "Switch buffer size in pkts", switch_total_bufsize_pkts);
   cmd.AddValue ("queuedisc_type", "Queue Disc type", queuedisc_type);
   cmd.AddValue ("num_cca0", "Number of flows/mysource for cca0", num_cca0);
@@ -400,7 +432,15 @@ main (int argc, char *argv[])
             << "transport_prot8: " << transport_prot8 << "\n"
             << "bottleneck_bw: " << bottleneck_bw << "\n"
             << "bottleneck_delay: " << bottleneck_delay << "\n"
-            << "leaf_bw: " << leaf_bw << "\n"
+            << "leaf_bw0: " << leaf_bw0 << "\n"
+            << "leaf_bw1: " << leaf_bw1 << "\n"
+            << "leaf_bw2: " << leaf_bw2 << "\n"
+            << "leaf_bw3: " << leaf_bw3 << "\n"
+            << "leaf_bw4: " << leaf_bw4 << "\n"
+            << "leaf_bw5: " << leaf_bw5 << "\n"
+            << "leaf_bw6: " << leaf_bw6 << "\n"
+            << "leaf_bw7: " << leaf_bw7 << "\n"
+            << "leaf_bw8: " << leaf_bw8 << "\n"                                                                                                
             << "leaf_delay0: " << leaf_delay0 << "\n"
             << "leaf_delay1: " << leaf_delay1 << "\n"
             << "leaf_delay2: " << leaf_delay2 << "\n"
@@ -410,7 +450,15 @@ main (int argc, char *argv[])
             << "leaf_delay6: " << leaf_delay6 << "\n"
             << "leaf_delay7: " << leaf_delay7 << "\n"
             << "leaf_delay8: " << leaf_delay8 << "\n"
-            << "app_bw: " << app_bw << "\n"
+            << "app_bw0: " << app_bw0 << "\n"
+            << "app_bw1: " << app_bw1 << "\n"
+            << "app_bw2: " << app_bw2 << "\n"
+            << "app_bw3: " << app_bw3 << "\n"
+            << "app_bw4: " << app_bw4 << "\n"
+            << "app_bw5: " << app_bw5 << "\n"
+            << "app_bw6: " << app_bw6 << "\n"
+            << "app_bw7: " << app_bw7 << "\n"                                                                                    
+            << "app_bw8: " << app_bw8 << "\n"            
             << "switch_total_bufsize_pkts: " << switch_total_bufsize_pkts << "\n"
             << "queuedisc_type: " << queuedisc_type << "\n"
             << "num_cca0: " << num_cca0 << "\n"
@@ -441,31 +489,31 @@ main (int argc, char *argv[])
   p2p_bottleneck.SetDeviceAttribute ("DataRate", StringValue (bottleneck_bw));
   p2p_bottleneck.SetChannelAttribute ("Delay", StringValue (bottleneck_delay));
   PointToPointHelper p2p_leaf0;
-  p2p_leaf0.SetDeviceAttribute ("DataRate", StringValue (leaf_bw));
+  p2p_leaf0.SetDeviceAttribute ("DataRate", StringValue (leaf_bw0));
   p2p_leaf0.SetChannelAttribute ("Delay", StringValue (leaf_delay0));
   PointToPointHelper p2p_leaf1;
-  p2p_leaf1.SetDeviceAttribute ("DataRate", StringValue (leaf_bw));
+  p2p_leaf1.SetDeviceAttribute ("DataRate", StringValue (leaf_bw1));
   p2p_leaf1.SetChannelAttribute ("Delay", StringValue (leaf_delay1));  
   PointToPointHelper p2p_leaf2;
-  p2p_leaf2.SetDeviceAttribute ("DataRate", StringValue (leaf_bw));
+  p2p_leaf2.SetDeviceAttribute ("DataRate", StringValue (leaf_bw2));
   p2p_leaf2.SetChannelAttribute ("Delay", StringValue (leaf_delay2));  
   PointToPointHelper p2p_leaf3;
-  p2p_leaf3.SetDeviceAttribute ("DataRate", StringValue (leaf_bw));
+  p2p_leaf3.SetDeviceAttribute ("DataRate", StringValue (leaf_bw3));
   p2p_leaf3.SetChannelAttribute ("Delay", StringValue (leaf_delay3));  
   PointToPointHelper p2p_leaf4;
-  p2p_leaf4.SetDeviceAttribute ("DataRate", StringValue (leaf_bw));
+  p2p_leaf4.SetDeviceAttribute ("DataRate", StringValue (leaf_bw4));
   p2p_leaf4.SetChannelAttribute ("Delay", StringValue (leaf_delay4));  
   PointToPointHelper p2p_leaf5;
-  p2p_leaf5.SetDeviceAttribute ("DataRate", StringValue (leaf_bw));
+  p2p_leaf5.SetDeviceAttribute ("DataRate", StringValue (leaf_bw5));
   p2p_leaf5.SetChannelAttribute ("Delay", StringValue (leaf_delay5));  
   PointToPointHelper p2p_leaf6;
-  p2p_leaf6.SetDeviceAttribute ("DataRate", StringValue (leaf_bw));
+  p2p_leaf6.SetDeviceAttribute ("DataRate", StringValue (leaf_bw6));
   p2p_leaf6.SetChannelAttribute ("Delay", StringValue (leaf_delay6)); 
   PointToPointHelper p2p_leaf7;
-  p2p_leaf7.SetDeviceAttribute ("DataRate", StringValue (leaf_bw));
+  p2p_leaf7.SetDeviceAttribute ("DataRate", StringValue (leaf_bw7));
   p2p_leaf7.SetChannelAttribute ("Delay", StringValue (leaf_delay7)); 
   PointToPointHelper p2p_leaf8;
-  p2p_leaf8.SetDeviceAttribute ("DataRate", StringValue (leaf_bw));
+  p2p_leaf8.SetDeviceAttribute ("DataRate", StringValue (leaf_bw8));
   p2p_leaf8.SetChannelAttribute ("Delay", StringValue (leaf_delay8));        
 
   // Unclear of the right configuration, use default as it seems to match real world models more than using 1p
@@ -779,7 +827,25 @@ main (int argc, char *argv[])
     //   ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
     // }
     Ptr<MySource> app = CreateObject<MySource> ();
-    app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw), i, false);
+    if (i < num_cca0) {
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw0), i, false);
+    } else if (i < (num_cca0+num_cca1)) {
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw1), i, false);       
+    } else if (i < (num_cca0+num_cca1+num_cca2)) {
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw2), i, false);    
+    } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3)) {
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw3), i, false);      
+    } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3+num_cca4)) {
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw4), i, false);     
+    } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3+num_cca4+num_cca5)) {
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw5), i, false);       
+    } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3+num_cca4+num_cca5+num_cca6)) {
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw6), i, false);     
+    } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3+num_cca4+num_cca5+num_cca6+num_cca7)) {
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw7), i, false);       
+    } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3+num_cca4+num_cca5+num_cca6+num_cca7+num_cca8)) {
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw8), i, false);      
+    }                                    
     leftleaf.Get (i)->AddApplication (app);
     app->SetStartTime (Seconds (app_seconds_start));
     app->SetStopTime (Seconds (app_seconds_end));
