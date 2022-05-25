@@ -63,7 +63,12 @@ TypeId CebinaeQueueDisc::GetTypeId (void)
                    "The data rate for the attached NetDevice",
                    DataRateValue (DataRate ("32768b/s")),
                    MakeDataRateAccessor (&CebinaeQueueDisc::m_bps),
-                   MakeDataRateChecker ())                   
+                   MakeDataRateChecker ()) 
+    .AddAttribute ("debug", 
+                   "Whether to log debug state",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&CebinaeQueueDisc::m_debug),
+                   MakeBooleanChecker ()) 
   ;
   return tid;
 }
@@ -120,6 +125,7 @@ void CebinaeQueueDisc::ReactionFSM() {
     m_recomputation_ctr += 1;
 
     m_oss_summary << "--- Validate the effective CebinaeQueueDisc params ---\n"
+              << "m_debug: " << std::boolalpha << m_debug << "\n"
               << "m_maxSize: " << GetMaxSize() << "\n"
               << "GetInternalQueue(0)->GetMaxSize(): " << GetInternalQueue(0)->GetMaxSize() << "\n"
               << "GetInternalQueue(1)->GetMaxSize(): " << GetInternalQueue(1)->GetMaxSize() << "\n"
@@ -190,7 +196,7 @@ void CebinaeQueueDisc::ReactionFSM() {
 
   }  else if (m_state == RECONFIG) {
 
-    // headq is empty at RECONFIG
+    // headq guaranteed empty at RECONFIG, in this single-queue mode, you can change membership arbitrarily without worry about consistency
 
     // In hardware, DP does nothing and CP prepares shadow copies, and DP atomically use the copies upon ROTATE
     // If L is 0, in simulation, equivalent to have in-place replacement of primary copy directly at ROTATE time point
@@ -205,7 +211,7 @@ void CebinaeQueueDisc::ReactionFSM() {
       m_num_p += 1;
       m_recomputation_ctr = 0;
 
-      // Expected threshold bits during last window (discounted full utilization worth of bits)
+      // Measure uncongestion: expected threshold bits during last window (discounted full utilization worth of bits)
       uint64_t threshold_bits = m_bps.GetBitRate()*(m_p*m_dt.GetSeconds())*(1-m_delta_p);
 
       if (m_port_bytecounts*8 > threshold_bits) {
@@ -286,7 +292,7 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   if (Simulator::Now() - m_round_time >= m_vdt) {
     m_round_time = Simulator::Now();
   }
-  // Calculate relative round
+
   uint32_t relative_round = (m_round_time.GetNanoSeconds() - m_base_round_time.GetNanoSeconds())/m_vdt.GetNanoSeconds();
 
   NS_ASSERT_MSG (relative_round < 2*m_vb, "We've missed a deadline!");
@@ -301,7 +307,7 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       aggregate_size = m_lbf_bps_top[m_headq]*m_dt.GetSeconds()/8 + 
                         m_lbf_bps_top[m_neg_headq]*(m_round_time.GetSeconds()-m_base_round_time.GetSeconds()-m_dt.GetSeconds())/8;
     } else {
-      std::cout << "relative_round >= 2*m_vb!" << std::endl;
+      std::cout << "ERR: relative_round >= 2*m_vb!" << std::endl;
     }
   }
   else {
@@ -312,7 +318,7 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       aggregate_size = m_lbf_bps_bot[m_headq]*m_dt.GetSeconds()/8 + 
                         m_lbf_bps_bot[m_neg_headq]*(m_round_time.GetSeconds()-m_base_round_time.GetSeconds()-m_dt.GetSeconds())/8;
     } else {
-      std::cout << "relative_round >= 2*m_vb!" << std::endl;
+      std::cout << "ERR: relative_round >= 2*m_vb!" << std::endl;
     }
   }
 
@@ -344,7 +350,6 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
         past_tail = past_head - budget_neg_headq;
       }
     }
-    // Note that we update bytes later because register processing is delayed by 1 packet
     if (m_bytes_bot < aggregate_size) {
       m_bytes_bot = aggregate_size;
     }    
@@ -448,7 +453,7 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 std::string 
-CebinaeQueueDisc::DumpDebuggingStats() {
+CebinaeQueueDisc::DumpDigest() {
   NS_ASSERT (m_num_bottleneck_p+m_num_non_bottleneck_p == m_num_p);
   NS_ASSERT (m_lbf_past_head_pkts + m_lbf_past_tail_pkts + m_lbf_drop_pkts == m_arrived_pkts);
   m_oss_summary << "m_arrived_pkts: " << m_arrived_pkts << "\n"
@@ -462,7 +467,7 @@ CebinaeQueueDisc::DumpDebuggingStats() {
       << "m_num_bottleneck_p: " << m_num_bottleneck_p << "\n"
       << "m_num_non_bottleneck_p: " << m_num_non_bottleneck_p << "\n"
       << "m_num_rotated: " << m_num_rotated << "\n";
-  m_oss_summary << m_fbd.DumpStats();
+  m_oss_summary << m_fbd.DumpDigest();
   return m_oss_summary.str();
 }
 

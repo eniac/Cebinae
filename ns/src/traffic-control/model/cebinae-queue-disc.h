@@ -33,7 +33,7 @@ public:
     os << "------]\n";
   }
 
-  virtual std::string DumpStats() = 0;
+  virtual std::string DumpDigest() = 0;
 
 protected:
 
@@ -92,7 +92,7 @@ public:
     return std::make_pair(ret_vec, ret_bottleneck_bytes);
   }
 
-  std::string DumpStats() {
+  std::string DumpDigest() {
     m_oss << "--- FlowBottleneckDetector ---\n"
           << "m_num_gettopflows: " << m_num_gettopflows << "\n"
           << "m_sourceidtag2toptimes:\n";
@@ -154,7 +154,7 @@ public:
   // Reasons for dropping packets
   static constexpr const char* LIMIT_EXCEEDED_DROP = "Queue disc limit exceeded";  //!< Packet dropped due to queue disc limit exceeded
 
-  std::string DumpDebuggingStats();
+  std::string DumpDigest();
 
 private:
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
@@ -163,6 +163,7 @@ private:
   virtual bool CheckConfig (void);
   virtual void InitializeParams (void);
 
+  // State machine loops that locally verifies max-min fairness and push towards the 'fair' direction
   void ReactionFSM();
 
   // --- Cabinae params ---
@@ -228,7 +229,7 @@ private:
 
   // --- Debugging stats to dump ---
   std::ostringstream m_oss_summary {};
-  std::ostringstream m_oss_lbfrates {};  // TODO: Unused
+  bool m_debug;
   // Counter for all arrival packets
   uint64_t m_arrived_pkts {0};
   // Counter of LBF past head
@@ -249,8 +250,6 @@ private:
   uint64_t m_num_non_bottleneck_p {0};
   // Counter for experienced ROTATE state
   uint64_t m_num_rotated {0};
-  // TODO: Add more stats to dump
-
 
 };
 

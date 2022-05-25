@@ -408,6 +408,7 @@ main (int argc, char *argv[])
 
   std::ostringstream oss;
   oss       << "=== Non-CMD varas ===\n"
+            << "enable_debug: " << std::boolalpha << enable_debug << "\n" 
             << "config_path: " << config_path << "\n"
             << "sack: " << sack << "\n"
             << "recovery: " << recovery << "\n"
@@ -723,6 +724,7 @@ main (int argc, char *argv[])
     Ptr<QueueDisc> q = qdiscs.Get (0);
     oss << "Configured FifoQueueDisc\n";
   } else if (queuedisc_type.compare("CebinaeQueueDisc") == 0) {
+    Config::SetDefault ("ns3::CebinaeQueueDisc::debug", BooleanValue (enable_debug));
     Config::SetDefault ("ns3::CebinaeQueueDisc::dT", TimeValue (dt));
     Config::SetDefault ("ns3::CebinaeQueueDisc::vdT", TimeValue (vdt));
     Config::SetDefault ("ns3::CebinaeQueueDisc::L", TimeValue (l));
@@ -941,10 +943,10 @@ main (int argc, char *argv[])
     oss << "Source " << iter->first << ": " << iter->second << "\n";
   }
   
-  oss << "====== CebinaeQueueDisc debugging stats ======\n";
+  oss << "====== CebinaeQueueDisc digest ======\n";
   if (queuedisc_type.compare("CebinaeQueueDisc") == 0) {
     Ptr<QueueDisc> q = qdiscs.Get(0);
-    oss << DynamicCast<CebinaeQueueDisc>(q)->DumpDebuggingStats();    
+    oss << DynamicCast<CebinaeQueueDisc>(q)->DumpDigest();    
   }
 
   std::ofstream summary_ofs (result_dir + "/digest", std::ios::out | std::ios::app);  
