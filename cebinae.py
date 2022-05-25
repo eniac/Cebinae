@@ -146,6 +146,24 @@ def ns_clear():
     print(cmd)
     subprocess.call(cmd.split())
 
+@timeit
+def ns_prerequisite():
+  # Install packages on a clean Ubuntu 18.04 LTS machine for NS-3 dependencies: https://www.nsnam.org/wiki/Installation
+  install_cmds = [
+    "sudo apt-get update",
+    "sudo apt install python python3 g++ cmake python3-dev pkg-config sqlite3 python3-setuptools git qt5-default gdb valgrind",
+    "sudo apt install gir1.2-goocanvas-2.0 python3-gi python3-gi-cairo python3-pygraphviz gir1.2-gtk-3.0 ipython3",
+    "sudo apt install openmpi-bin openmpi-common openmpi-doc libopenmpi-dev autoconf cvs bzr unrar",
+    "sudp apt install uncrustify doxygen graphviz imagemagick texlive texlive-extra-utils texlive-latex-extra texlive-font-utils dvipng latexmk",
+    "sudo apt install python3-sphinx dia gsl-bin libgsl-dev libgslcblas0 sqlite sqlite3 libsqlite3-dev tcpdump",
+    "sudo apt install libxml2 libxml2-dev cmake libc6-dev libc6-dev-i386 libclang-dev llvm-dev automake python3-pip",
+    "python3 -m pip install --user cxxfilt",
+    "sudo apt install libgtk-3-dev libxml2 libxml2-dev libboost-all-dev"
+  ]
+  for cmd in install_cmds:
+    print(cmd)
+    subprocess.call(cmd.split())
+
 
 if __name__ == '__main__':
 
@@ -170,6 +188,8 @@ if __name__ == '__main__':
 
   ns_run_clear_prsr = ns_subsubprsr.add_parser("clear")
 
+  ns_run_clear_prsr = ns_subsubprsr.add_parser("prerequisite")
+
   tofino_subprsr = subprsr.add_parser("tofino")
 
   args = parser.parse_args()
@@ -184,5 +204,7 @@ if __name__ == '__main__':
       ns_run_batch(args.config)
     elif args.ns_cmd == "clear":
       ns_clear()
+    elif args.ns_cmd == "prerequisite":
+      ns_prerequisite()      
   elif args.cmd == "tofino":
     pass
