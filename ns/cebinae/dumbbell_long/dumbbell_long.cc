@@ -1,4 +1,5 @@
 #include <chrono>
+#include <deque>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -22,11 +23,24 @@ NS_LOG_COMPONENT_DEFINE ("DumbbellLong");
 
 #define MAX_CCA 9
 
-// static void
-// CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
-// {
-//   NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
-// }
+std::vector<std::deque<std::string>> sourceidtag2cwndlog {};
+// MakeBoundCallBack arg should come first
+static void
+CwndChange (int sourceidtag, uint32_t old_cwnd, uint32_t new_cwnd)
+{
+  std::string sample = std::to_string(Simulator::Now ().GetNanoSeconds ())+","+std::to_string(new_cwnd);
+  sourceidtag2cwndlog[sourceidtag].push_back(sample);
+}
+std::vector<std::deque<std::string>> sourceidtag2rttlog;
+std::vector<std::vector<uint64_t>> sourceidtag2rtttrace;
+static void
+TraceRtt (int sourceidtag, Time old_rtt, Time new_rtt) {
+  sourceidtag2rtttrace[sourceidtag].push_back(new_rtt.GetNanoSeconds());
+  std::string sample = std::to_string(Simulator::Now ().GetNanoSeconds ())+","+std::to_string(new_rtt.GetNanoSeconds());
+  sourceidtag2rttlog[sourceidtag].push_back(sample);
+}
+
+// Perhaps trace RTO
 
 // static void
 // RxDrop (Ptr<const Packet> p)
@@ -51,7 +65,6 @@ std::vector<double> avg_tpt_bottleneck;  // Avg over whole sim period
 std::vector<double> avg_tpt_app;  // This is actually goodput
 // double avg_jfi_bottleneck = 0.0;
 // double avg_jfi_app = 0.0;
-std::vector<std::vector<int64_t>> source2rtttrace;
 
 int num_tracing_periods = 0;
 double sim_seconds = 1;
@@ -97,13 +110,6 @@ RxWithAddressesMySink (Ptr<const Packet> p, const Address& from, const Address& 
                  << ", local: " << InetSocketAddress::ConvertFrom(local).GetIpv4());
   }
   mysink_mysourceidtag2bytecount[tag.Get()] += p->GetSize();
-}
-
-// MakeBoundCallBack arg should come first
-static void
-TraceRtt (int source_index, Time old_rtt, Time new_rtt) {
-  source2rtttrace[source_index].push_back(new_rtt.GetNanoSeconds());
-  NS_LOG_DEBUG("[" << Simulator::Now ().GetNanoSeconds() << ", " << source_index << "] old_rtt: " << old_rtt << ", new_rtt: " << new_rtt);
 }
 
 Time prevTime = Seconds (0);
@@ -207,7 +213,7 @@ main (int argc, char *argv[])
   tracing_period_us = 1000000;
   uint32_t progress_interval_ms = 1000;
   bool enable_debug = 0;  
-  bool logrtt = 0;
+  bool logtcp = 0;
   uint32_t seed = 1;  // Fixed
   uint32_t run = 1;  // Varry across replications
   sim_seconds = 10;
@@ -274,7 +280,7 @@ main (int argc, char *argv[])
   cmd.AddValue("seed", "Seed", seed);
   cmd.AddValue("run", "Run", run);
   cmd.AddValue ("enable_debug", "Enable logging", enable_debug);
-  cmd.AddValue ("logrtt", "Enable logging of RTT (large file size)", logrtt);  
+  cmd.AddValue ("logtcp", "Enable logging of TCP traces, such as RTT, RTO, cwnd (large file size)", logtcp);  
   cmd.AddValue ("sim_seconds", "Simulation time [s]", sim_seconds);
   cmd.AddValue ("app_seconds_start", "Application start time [s]", app_seconds_start);  
   cmd.AddValue ("app_seconds_end", "Application stop time [s]", app_seconds_end);
@@ -819,15 +825,11 @@ main (int argc, char *argv[])
     sink->TraceConnectWithoutContext("RxWithAddresses", MakeCallback(&RxWithAddressesMySink));
 
     Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (leftleaf.Get (i), TcpSocketFactory::GetTypeId ());
-    if (logrtt) {
-      // ns3TcpSocket->TraceConnectWithoutContext("RTT", MakeBoundCallback (&TraceRtt, i));
+    if (logtcp) {
       Config::ConnectWithoutContext ("/NodeList/"+std::to_string(2+i)+"/$ns3::TcpL4Protocol/SocketList/0/RTT", MakeBoundCallback (&TraceRtt, i));
+      ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, i));
     }
 
-    // Monitor CongestionWindow
-    // if (i == 0) {
-    //   ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
-    // }
     Ptr<MySource> app = CreateObject<MySource> ();
     if (i < num_cca0) {
       app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw0), i, false);
@@ -867,7 +869,9 @@ main (int argc, char *argv[])
   avg_tpt_bottleneck.resize(num_leaf, 0);
   avg_tpt_app.resize(num_leaf, 0);
   for (uint32_t sourceid = 0; sourceid < num_leaf; sourceid ++) {
-    source2rtttrace.push_back(std::vector<int64_t>());
+    sourceidtag2rtttrace.push_back(std::vector<uint64_t>());
+    sourceidtag2rttlog.push_back(std::deque<std::string>());    
+    sourceidtag2cwndlog.push_back(std::deque<std::string>());
   }
   num_tracing_periods = sim_seconds/(tracing_period_us/pow(10, 6));
   oss << "num_tracing_periods: " << num_tracing_periods << "\n";
@@ -919,17 +923,23 @@ main (int argc, char *argv[])
   //     << std::fixed << std::setprecision (3) << "avg_jfi_app: " << avg_jfi_app << "\n";
 
   // Calculate avg. RTT and write RTT traces
-  if (logrtt) {
+  if (logtcp) {
     for (uint16_t sourceid = 0; sourceid < num_leaf; sourceid++) {
       std::ofstream rtt_ofs (result_dir + "/rtt_"+std::to_string(sourceid)+".dat", std::ios::out | std::ios::app);
-      int num_rtt_samples = source2rtttrace[sourceid].size();
+      int num_rtt_samples = sourceidtag2rtttrace[sourceid].size();
       double avg_rtt_ns = 0.0;
       for (int i = 0; i < num_rtt_samples; i++) {
-        rtt_ofs << source2rtttrace[sourceid][i] << "\n";
-        avg_rtt_ns += static_cast<double>(source2rtttrace[sourceid][i])/num_rtt_samples;
+        rtt_ofs << sourceidtag2rttlog[sourceid][i] << "\n";
+        avg_rtt_ns += static_cast<double>(sourceidtag2rtttrace[sourceid][i])/num_rtt_samples;
       }
       oss << "# of RTT samples for source " << sourceid << ": " << num_rtt_samples << "\n";
       oss << "Avg. RTT for source " << sourceid << ": " << avg_rtt_ns << "ns\n";
+
+      std::ofstream cwnd_ofs (result_dir + "/cwnd_"+std::to_string(sourceid)+".dat", std::ios::out | std::ios::app);
+      int num_cwnd_samples = sourceidtag2cwndlog[sourceid].size();
+      for (int i = 0; i < num_cwnd_samples; i++) {
+        cwnd_ofs << sourceidtag2cwndlog[sourceid][i] << "\n";
+      }
     }
   }
 
