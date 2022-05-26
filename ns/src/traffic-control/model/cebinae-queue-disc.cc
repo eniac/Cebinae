@@ -214,27 +214,37 @@ void CebinaeQueueDisc::ReactionFSM() {
       // Measure uncongestion: expected threshold bits during last window (discounted full utilization worth of bits)
       uint64_t threshold_bits = m_bps.GetBitRate()*(m_p*m_dt.GetSeconds())*(1-m_delta_p);
 
+      // Whether to exert penalty
       if (m_port_bytecounts*8 > threshold_bits) {
 
-        NS_LOG_DEBUG("Port is saturated");
         m_num_bottleneck_p += 1;
 
         auto ret = m_fbd.GetTopFlows(m_delta_f);
         m_bottlenecked_flows_set = ret.first;
-        // std::cout << "[------" << std::endl;
-        // for (auto tag : m_bottlenecked_flows_set) {
-        //   std::cout << tag << std::endl;
-        // }
-        // std::cout << "------]" << std::endl;
+
         uint32_t bottleneck_bytes = ret.second;
 
         // Calculate after taxing
         bottleneck_bytes = bottleneck_bytes * (1-m_tau);
-        // std::cout << "bottleneck_bytes: " << bottleneck_bytes << std::endl;
 
         // Now configure the rates for the physical queue pointed by headq, rather than neg_headq
         m_computed_bps_top = bottleneck_bytes/m_p/m_dt.GetSeconds()*8;
         m_computed_bps_bot = m_bps.GetBitRate()-m_computed_bps_top;
+
+        if (m_debug) {
+          std::string event = ("["+std::to_string(ns3::Simulator::Now ().GetNanoSeconds())+",saturated] ");
+          event += ("status:"+std::to_string(m_port_bytecounts*8)+">"+std::to_string(threshold_bits)+",");
+          // Penalty target
+          event += "top_set:{";
+          for (auto tag : m_bottlenecked_flows_set) {
+            event += (std::to_string(tag)+",");
+          }
+          event += "},";
+          event += ("m_computed_bps_top:"+std::to_string(m_computed_bps_top)+",");
+          event += ("m_computed_bps_bot:"+std::to_string(m_computed_bps_bot)+",");
+          event += ("debug_stats:"+m_debugger.GetDebugStats());
+          m_debug_events.push_back(event);
+        }
       } else {
         m_num_non_bottleneck_p += 1;
         NS_LOG_DEBUG("Port not bottlenecked, no flows will be considered top in the next periods");
@@ -243,6 +253,17 @@ void CebinaeQueueDisc::ReactionFSM() {
         // Prepare the rates for the physical queue pointed by headq (which is flipped immediately below)
         m_computed_bps_top = 0;
         m_computed_bps_bot = m_bps.GetBitRate();
+        if (m_debug) {
+          std::string event = ("["+std::to_string(ns3::Simulator::Now ().GetNanoSeconds())+",non-saturated] ");
+          event += ("status:"+std::to_string(m_port_bytecounts*8)+"<="+std::to_string(threshold_bits)+",");
+          event += ("m_computed_bps_top:"+std::to_string(m_computed_bps_top)+",");
+          event += ("m_computed_bps_bot:"+std::to_string(m_computed_bps_bot)+",");
+          event += ("debug_stats:"+m_debugger.GetDebugStats());
+          m_debug_events.push_back(event);
+        }        
+      }
+      if (m_debug) {
+        m_debugger.FlushDebugStats();
       }
       // Flush flow bottleneck monitor (not only during saturated state)
       m_fbd.FlushCache();
@@ -254,17 +275,9 @@ void CebinaeQueueDisc::ReactionFSM() {
     m_last_rate_top = m_lbf_bps_top[m_headq];
     m_last_rate_bot = m_lbf_bps_bot[m_headq];
 
-    // Sets rate every round to prevent flip between oldrate and newrate for next P rounds
+    // Set rates *every round* to prevent flip between oldrate and newrate for next P rounds
     m_lbf_bps_top[m_headq] = m_computed_bps_top;
     m_lbf_bps_bot[m_headq] = m_computed_bps_bot;
-
-    // DEBUG the traces of configured rates and cardinality of bot flow set
-    // std::cout << "--- m_num_rotated: " << m_num_rotated << " ---\n"
-    //           << "headq: " << m_headq << ", neg_headq: " << m_neg_headq << "\n"
-    //           << "m_lbf_bps_top[0]: " << m_lbf_bps_top[0] << ", m_lbf_bps_bot[0]: " << m_lbf_bps_bot[0] << "\n"
-    //           << "m_lbf_bps_top[1]: " << m_lbf_bps_top[1] << ", m_lbf_bps_bot[1]: " << m_lbf_bps_bot[1] << "\n"
-    //           << "m_bottlenecked_flows_set.size(): " << m_bottlenecked_flows_set.size() << "\n"
-    //           << std::endl;
 
     m_state = ROTATE;
     Simulator::Schedule(m_l, &CebinaeQueueDisc::ReactionFSM, this);
@@ -286,7 +299,6 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   if (got != m_bottlenecked_flows_set.end()) {
     is_top = true;
   }
-  // std::cout << "is_top: " << is_top << std::endl;
   
   // Update round time
   if (Simulator::Now() - m_round_time >= m_vdt) {
@@ -356,11 +368,9 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     m_bytes_bot += item->GetSize();  
   }
 
-  // TODO Optional ECN bits marking (maybe in appendix)
+  // TODO Optional ECN bits marking
   // Now execute the queueing decision
   bool retval = false;  // whether the packet succeeds enqueue
-  // bool headq_drop = false;
-  // bool neg_headq_drop = false;
   if (past_head == 0) {
     m_lbf_past_head_pkts += 1;
     // enqueue(headq)
@@ -368,10 +378,15 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       // Drop because headq is full
       DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
       m_enqueue_drop_pkts[m_headq] += 1;
-      // headq_drop = true;
+      if (m_debug) {
+        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_DROP);
+      }
     } else {
       retval = GetInternalQueue (m_headq)->Enqueue (item);
       NS_ASSERT(retval == true);
+      if (m_debug) {
+        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_ENQUEUE);
+      }      
     }
   } 
   else if (past_tail == 0) {
@@ -381,21 +396,27 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       // Drop because neg_headq is full
       DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
       m_enqueue_drop_pkts[m_neg_headq] += 1;
-      // neg_headq_drop = true;
+      if (m_debug) {
+        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_DROP);
+      }      
     } else {
       retval = GetInternalQueue (m_neg_headq)->Enqueue (item);
       NS_ASSERT(retval == true); 
+      if (m_debug) {
+        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_ENQUEUE);
+      }         
     }
   } 
   else {
     // Drop because of LBF policy
     m_lbf_drop_pkts += 1;
     DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
-    // std::cout << "m_lbf_drop_pkts/m_arrival_pkts: " << std::to_string(m_lbf_drop_pkts*1.0/m_arrival_pkts) << std::endl;
+    if (m_debug) {
+      m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::LBF_DROP);
+    }    
   }
 
-  // If dropped, reaccounting the bytes 
-  // TODO In hardware, it is hard to re-account the bytes due to register constraint
+  // Reaccounting the bytes upon drop, doesn't matter in practice though. In hardware, it is hard to re-account the bytes due to register constraint.
   if (!retval) {
     if (is_top) {
       m_bytes_top -= item->GetSize();
@@ -403,23 +424,6 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       m_bytes_bot -= item->GetSize();
     }
   }
-
-  // Only print dropped packets
-  // if (!retval) {
-  //   std::cout << "--- m_arrived_pkts (0-index): " << m_arrived_pkts << " ---\n"
-  //           << "m_num_rotated: " << m_num_rotated << "\n"
-  //           << "packet size: " << item->GetSize() << "\n"
-  //           << "is_top: " << is_top << "\n"
-  //           << "relative_round: " << relative_round << "\n"
-  //           << "budget_headq: " << budget_headq << "\n"
-  //           << "budget_neg_headq: " << budget_neg_headq << "\n"
-  //           << "past_head: " << past_head << "\n"
-  //           << "past_tail: " << past_tail << "\n"
-  //           << "headq_drop: " << std::boolalpha << headq_drop << "\n"
-  //           << "neg_headq_drop: " << std::boolalpha << neg_headq_drop << "\n";
-
-  //   std::cout << std::boolalpha << "--------------------------------------------> ATENTION: retval: " << retval << "\n";
-  // }
 
   m_arrived_pkts += 1;
   return retval;
@@ -437,8 +441,6 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   //     DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
   //     return false;
   //   }
-
-  // TODO When is DoDequeue Called by NetDevice? Does NetDevice buffer size impact?
 
   // bool retval = GetInternalQueue (0)->Enqueue (item);
   // NS_ASSERT(retval == true);
@@ -468,6 +470,14 @@ CebinaeQueueDisc::DumpDigest() {
       << "m_num_non_bottleneck_p: " << m_num_non_bottleneck_p << "\n"
       << "m_num_rotated: " << m_num_rotated << "\n";
   m_oss_summary << m_fbd.DumpDigest();
+
+  if (m_debug) {
+    m_oss_summary << "=== Cebinae Debug Events ===\n";
+    for (auto event : m_debug_events) {
+      m_oss_summary << event << "\n";
+    }
+  }
+
   return m_oss_summary.str();
 }
 
@@ -496,8 +506,6 @@ CebinaeQueueDisc::DoDequeue (void)
 
     m_cebinae_dequeued_succeeded += 1;
 
-    // std::cout << ns3::Simulator::Now ().GetNanoSeconds() << ": " << m_port_saturation_detector.Get() << std::endl;
-    // m_fbd.Print(std::cout);
     return item;
   } else {
     return 0;

@@ -2,6 +2,7 @@
 #define CEBINAE_QUEUE_DISC_H
 
 #include "ns3/data-rate.h"
+#include "ns3/histogram.h"
 #include "ns3/my-source-id-tag.h"
 #include "ns3/queue-disc.h"
 #include "ns3/simulator.h"
@@ -137,6 +138,84 @@ public:
     "RECONFIG"
   };
 
+  class CebinaeDebugger {
+  public:
+    enum EnqueueType
+    {
+      HEADQ_ENQUEUE,
+      HEADQ_DROP,
+      NEGHEADQ_ENQUEUE,
+      NEGHEADQ_DROP,
+      LBF_DROP      
+    };  
+    class DebugStats {
+      public:
+        uint64_t num_headq_enqueue {0};
+        uint64_t num_headq_drop {0};
+        uint64_t num_negheadq_enqueue {0};
+        uint64_t num_negheadq_drop {0};
+        uint64_t num_lbf_drop {0};
+        // Alternative Histogram
+    };
+
+    void UpdateDebugStats(Ptr<Packet> p, EnqueueType type) {
+      MySourceIDTag tag;
+      if (p->FindFirstMatchingByteTag(tag)) {
+        auto got = m_sourceidtag2debugstats.find(tag.Get());
+        if (got != m_sourceidtag2debugstats.end()) {
+          if (type==HEADQ_ENQUEUE) {
+            m_sourceidtag2debugstats[tag.Get()].num_headq_enqueue += 1;
+          } else if (type==HEADQ_DROP) {
+            m_sourceidtag2debugstats[tag.Get()].num_headq_drop += 1;          
+          } else if (type==NEGHEADQ_ENQUEUE) {
+            m_sourceidtag2debugstats[tag.Get()].num_negheadq_enqueue += 1;          
+          } else if (type==NEGHEADQ_DROP) {
+            m_sourceidtag2debugstats[tag.Get()].num_negheadq_drop += 1;           
+          } else if (type==LBF_DROP) {
+            m_sourceidtag2debugstats[tag.Get()].num_lbf_drop += 1;          
+          }
+        } else {
+          DebugStats debug_stats;
+          if (type==HEADQ_ENQUEUE) {
+            debug_stats.num_headq_enqueue = 1;
+            m_sourceidtag2debugstats[tag.Get()] = debug_stats;
+          } else if (type==HEADQ_DROP) {
+            debug_stats.num_headq_drop = 1;
+            m_sourceidtag2debugstats[tag.Get()] = debug_stats;            
+          } else if (type==NEGHEADQ_ENQUEUE) {
+            debug_stats.num_negheadq_enqueue = 1;
+            m_sourceidtag2debugstats[tag.Get()] = debug_stats;            
+          } else if (type==NEGHEADQ_DROP) {
+            debug_stats.num_negheadq_drop = 1;
+            m_sourceidtag2debugstats[tag.Get()] = debug_stats;            
+          } else if (type==LBF_DROP) {
+            debug_stats.num_lbf_drop = 1;
+            m_sourceidtag2debugstats[tag.Get()] = debug_stats;            
+          }
+        }
+      }
+    }
+    void FlushDebugStats() {
+      m_sourceidtag2debugstats.clear();
+    }
+    std::string GetDebugStats() {
+      std::ostringstream oss;
+      for (auto iter = m_sourceidtag2debugstats.begin(); iter != m_sourceidtag2debugstats.end(); iter ++) {
+        oss << iter->first << ":["
+            << iter->second.num_headq_enqueue << ","
+            << iter->second.num_headq_drop << ","
+            << iter->second.num_negheadq_enqueue << ","
+            << iter->second.num_negheadq_drop << ","
+            << iter->second.num_lbf_drop << ","
+            << "],";
+      }
+      return oss.str();
+    }
+
+  private:
+    std::unordered_map<uint32_t, DebugStats> m_sourceidtag2debugstats {};
+  };
+
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -227,9 +306,13 @@ private:
 
   // History of top flows
 
-  // --- Debugging stats to dump ---
+  // --- Debugging stats ---
   std::ostringstream m_oss_summary {};
   bool m_debug;
+  std::vector<std::string> m_debug_events {};
+  CebinaeDebugger m_debugger {};
+
+  // --- Digest stats ---
   // Counter for all arrival packets
   uint64_t m_arrived_pkts {0};
   // Counter of LBF past head
