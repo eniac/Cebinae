@@ -965,7 +965,7 @@ main (int argc, char *argv[])
   summary_ofs << oss.str();
 
   std::cout << oss.str() << std::endl;
-  std::cout << "Folder timestamp/name for experiment index: " << current_time << std::endl;
+  std::cout << "Result_dir: " << result_dir << std::endl;
 
   Simulator::Destroy ();
 

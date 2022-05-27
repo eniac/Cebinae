@@ -27,8 +27,15 @@ For the ease of running the evaluation process, `cebinae.py` is created as the m
 3. `python cebinae.py ns validate -p optimized` to validate if the environment is well set up, which typically takes around 15 min.
     * Upon failure of compilation or tests, check if the [prerequisite packages](https://www.nsnam.org/wiki/Installation#Ubuntu.2FDebian.2FMint) are installed for the corresponding platform. For Ubuntu 18.04 or 16.04, `python cebinae.py ns prerequisite` auto-installs the set of packages needed.
 
-4. `python cebinae.py ns configure -p optimized` for faster experiment execution.
+4. `python cebinae.py ns configure -p optimized` to configure optimized build profile before experiment execution.
 
+5. Confirm that [gnuplot](http://www.gnuplot.info/) is installed by typing `gnuplot` in the linux prompt and type `q` to quit its terminal.
+
+**Reproduce Figure 1 Illustrative Example**
+
+* Run the experiment batch: `python cebinae.py ns run_batch -c fig1.json`. The tracing outputs of the experiments will appear under `ns/tmp_index/fig1/` by default.
+* Plot Figure 1: `python cebinae.py plot --plot_target fig1 --data_dir ns/tmp_index/fig1/`. The output plot `figure1.eps` will show up under `ns/tmp_index/fig1/`.
+* Expected outputs and plots are also stored under `ns/index/fig1/` for reference.
 
 
 ### Further Questions

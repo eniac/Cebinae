@@ -71,13 +71,13 @@ def ns_run_instance(config_path, enb_gdb):
   cwd = os.getcwd()
   if not os.path.isabs(config_path):
     config_path = (cwd + "/ns/configs/" + config_path)
-  print("config_path: {}", config_path)
+  print("config_path: {}".format(config_path))
 
   with open(config_path, 'r') as f:
     config=json.loads(f.read())
 
   # --cwd changes the working directory (for output files etc) with default being the top of the ns-3 tree
-  cmd = "./waf --cwd=\""+cwd+"/ns/cebinae/"+config["instance_type"]+"\" --run \""+config["instance_type"]+" --config_path="+config_path+" " 
+  cmd = "./waf --cwd=\""+cwd+"/ns/"+"\" --run \""+config["instance_type"]+" --config_path="+config_path+" " 
 
   if len(config["batch_params"]) != 0 or config["batch_size"] > 1:
     print("ERR: batch_params: {0}, batch_size: {1}".format(config["batch_params"], config["batch_size"]))
@@ -102,13 +102,13 @@ def ns_run_batch(config_path):
   cwd = os.getcwd()
   if not os.path.isabs(config_path):
     config_path = (cwd + "/ns/configs/" + config_path)
-  print("config_path: {}", config_path)
+  print("config_path: {}".format(config_path))
 
   with open(config_path, 'r') as f:
     config=json.loads(f.read())
 
   cmds = []
-  cmd_base = "./waf --cwd=\""+cwd+"/ns/cebinae/"+config["instance_type"]+"\" --run \""+config["instance_type"]+" --config_path="+config_path+" "   
+  cmd_base = "./waf --cwd=\""+cwd+"/ns/"+"\" --run \""+config["instance_type"]+" --config_path="+config_path+" "   
 
   if len(config["batch_params"]) == 0 or config["batch_size"] == 1:
     print("ERR: batch_params: {0}, batch_size: {1}".format(config["batch_params"], config["batch_size"]))
@@ -138,11 +138,11 @@ def ns_run_batch(config_path):
 @timeit
 def ns_clear():
   cwd = os.getcwd()
-  tmp_index_dirs = [
-    "/ns/cebinae/dumbbell_long/tmp_index"
+  tmp_dirs = [
+    "/ns/tmp_index"
   ]
-  for tmp_index in tmp_index_dirs:
-    cmd = ("rm -rf "+cwd+tmp_index)
+  for tmp_dir in tmp_dirs:
+    cmd = ("rm -rf "+cwd+tmp_dir)
     print(cmd)
     subprocess.call(cmd.split())
 
@@ -163,6 +163,55 @@ def ns_prerequisite():
   for cmd in install_cmds:
     print(cmd)
     subprocess.call(cmd.split())
+
+@timeit
+def plot_fig1(data_dir):
+  cwd = os.getcwd()
+  if not os.path.isabs(data_dir):
+    data_dir = (cwd+"/"+data_dir)
+  print("data_dir: {}".format(data_dir))
+
+  gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "figure1.eps"
+
+set size 1,0.618 
+set border 3
+set tics nomirror
+
+set nologscale x
+
+set key reverse Left
+set key at graph 0.675,1.0
+set key font ",16"
+set key maxrows 2
+set key samplen 2
+set key width -5
+
+set xlabel "Time [s]"
+set ylabel 'Goodput [MBps]'
+
+set xrange [1:60]
+set xtics 0,5,60
+
+myred = '#A90533'
+myblue = '#004785'
+mygrey = 'grey70'
+
+plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT=20.4ms)" with lines lw 5 dt 3 lc rgb myred, \
+	 "fifo/app_tpt_1000000.dat" using ($2/1000000) title "FIFO (RTT=40ms)" with lines lw 5 dt 3 lc rgb myblue, \
+	 "cebinae/app_tpt_1000000.dat" using ($1/1000000) title "Cebinae (RTT=20.4ms)" with lines lw 5 dt 1 lc rgb myred, \
+	 "cebinae/app_tpt_1000000.dat" using ($2/1000000) title "Cebinae (RTT=40ms)" with lines lw 5 dt 1 lc rgb myblue,
+'''
+
+  with open(data_dir+"/plot.gp", "w") as gp_file:
+    gp_file.write(gp_str)
+
+  os.chdir(data_dir)
+  cmd = "gnuplot plot.gp"
+  print(cmd)
+  subprocess.call(cmd.split())
 
 
 if __name__ == '__main__':
@@ -188,7 +237,11 @@ if __name__ == '__main__':
 
   ns_run_clear_prsr = ns_subsubprsr.add_parser("clear")
 
-  ns_run_clear_prsr = ns_subsubprsr.add_parser("prerequisite")
+  ns_run_prerequisite_prsr = ns_subsubprsr.add_parser("prerequisite")
+
+  plot_subprsr = subprsr.add_parser("plot")
+  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1"], help="Plot target")
+  plot_subprsr.add_argument("--data_dir", type=str, required=True, help="Absolute/relative path of plotting data root directory")
 
   tofino_subprsr = subprsr.add_parser("tofino")
 
@@ -206,5 +259,8 @@ if __name__ == '__main__':
       ns_clear()
     elif args.ns_cmd == "prerequisite":
       ns_prerequisite()      
+  elif args.cmd == "plot":
+    if args.plot_target == "fig1":
+      plot_fig1(args.data_dir)
   elif args.cmd == "tofino":
     pass
