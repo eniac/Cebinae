@@ -205,8 +205,6 @@ main (int argc, char *argv[])
   strftime (buffer, sizeof (buffer), "%Y-%m-%d-%H-%M-%S-%Z", timeinfo);
   std::string current_time (buffer);
   result_dir = "tmp_index/" + current_time + "/";
-  std::string create_dir_cmd = "mkdir -p " + result_dir;
-  if (system (create_dir_cmd.c_str ()) == -1) exit (1);
 
   // CMD configurable params
   std::string config_path = "";  
@@ -277,6 +275,7 @@ main (int argc, char *argv[])
   double delta_flow {0.05};
 
   cmd.AddValue("config_path", "Path to the json configuration file", config_path);
+  cmd.AddValue("result_dir", "Optional path to the output dir", result_dir);  
   cmd.AddValue("seed", "Seed", seed);
   cmd.AddValue("run", "Run", run);
   cmd.AddValue ("enable_debug", "Enable logging", enable_debug);
@@ -354,6 +353,8 @@ main (int argc, char *argv[])
     LogComponentEnable ("DumbbellLong", LOG_LEVEL_DEBUG);
   }
 
+  std::string create_dir_cmd = "mkdir -p " + result_dir;
+  if (system (create_dir_cmd.c_str ()) == -1) exit (1);
   std::ifstream in_file {config_path};
   std::ofstream out_file {result_dir+"/config.json"};
   std::string line;
@@ -416,6 +417,7 @@ main (int argc, char *argv[])
   oss       << "=== Non-CMD varas ===\n"
             << "enable_debug: " << std::boolalpha << enable_debug << "\n" 
             << "config_path: " << config_path << "\n"
+            << "result_dir: " << result_dir << "\n"
             << "sack: " << sack << "\n"
             << "recovery: " << recovery << "\n"
             << "app_packet_size: " << app_packet_size << "\n"
