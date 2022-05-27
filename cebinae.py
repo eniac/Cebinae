@@ -70,7 +70,7 @@ def ns_configure(profile):
 def ns_run_instance(config_path, enb_gdb):
   cwd = os.getcwd()
   if not os.path.isabs(config_path):
-    config_path = (cwd + "/ns/cebinae/configs/" + config_path)
+    config_path = (cwd + "/ns/configs/" + config_path)
   print("config_path: {}", config_path)
 
   with open(config_path, 'r') as f:
@@ -101,7 +101,7 @@ def ns_run_instance(config_path, enb_gdb):
 def ns_run_batch(config_path):
   cwd = os.getcwd()
   if not os.path.isabs(config_path):
-    config_path = (cwd + "/ns/cebinae/configs/" + config_path)
+    config_path = (cwd + "/ns/configs/" + config_path)
   print("config_path: {}", config_path)
 
   with open(config_path, 'r') as f:

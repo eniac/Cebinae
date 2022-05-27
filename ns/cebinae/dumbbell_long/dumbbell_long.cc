@@ -105,9 +105,9 @@ static void
 RxWithAddressesMySink (Ptr<const Packet> p, const Address& from, const Address& local) {
   MySourceIDTag tag;
   if (p->FindFirstMatchingByteTag(tag)) {
-    NS_LOG_DEBUG ("[" << Simulator::Now ().GetNanoSeconds() << "] SourceIDTag: " << tag.Get() << ", size: " << p->GetSize()
-                 << ", from: " << InetSocketAddress::ConvertFrom(from).GetIpv4()
-                 << ", local: " << InetSocketAddress::ConvertFrom(local).GetIpv4());
+    // NS_LOG_DEBUG ("[" << Simulator::Now ().GetNanoSeconds() << "] SourceIDTag: " << tag.Get() << ", size: " << p->GetSize()
+    //              << ", from: " << InetSocketAddress::ConvertFrom(from).GetIpv4()
+    //              << ", local: " << InetSocketAddress::ConvertFrom(local).GetIpv4());
   }
   mysink_mysourceidtag2bytecount[tag.Get()] += p->GetSize();
 }
@@ -180,7 +180,7 @@ TraceThroughputJFI(std::string bottleneck_fn, std::string app_fn, std::string jf
 void
 PrintProgress (Time interval)
 {
-  std::cout << "Progress: " << std::fixed << std::setprecision (1) << Simulator::Now ().GetSeconds () << "[s] simulation time" << std::endl;
+  std::cout << "Progress: " << std::fixed << std::setprecision (1) << Simulator::Now ().GetSeconds () << "[s]" << std::endl;
   Simulator::Schedule (interval, &PrintProgress, interval);
 }
 
