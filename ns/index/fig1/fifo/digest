@@ -1,0 +1,87 @@
+=== Non-CMD varas ===
+enable_debug: true
+config_path: /home/leoyu/Cebinae/ns/configs/fig1.json
+result_dir: tmp_index/fig1/fifo/
+sack: true
+recovery: ns3::TcpClassicRecovery
+app_packet_size: 1440
+num_sender_pkt: 1000000000
+=== CMD vars ===
+seed: 2022
+run: 1205
+tracing_period_us: 1000000
+progress_interval_ms: 1000
+sim_seconds: 100
+app_seconds_start: 1
+app_seconds_end: 100
+transport_prot0: ns3::TcpNewReno
+transport_prot1: ns3::TcpNewReno
+transport_prot2: ns3::TcpCubic
+transport_prot3: ns3::TcpCubic
+transport_prot4: ns3::TcpCubic
+transport_prot5: ns3::TcpCubic
+transport_prot6: ns3::TcpCubic
+transport_prot7: ns3::TcpCubic
+transport_prot8: ns3::TcpCubic
+bottleneck_bw: 100Mbps
+bottleneck_delay: 10ms
+leaf_bw0: 100Mbps
+leaf_bw1: 100Mbps
+leaf_bw2: 0Mbps
+leaf_bw3: 0Mbps
+leaf_bw4: 0Mbps
+leaf_bw5: 0Mbps
+leaf_bw6: 0Mbps
+leaf_bw7: 0Mbps
+leaf_bw8: 0Mbps
+leaf_delay0: 0.1ms
+leaf_delay1: 5ms
+leaf_delay2: 1ms
+leaf_delay3: 1ms
+leaf_delay4: 1ms
+leaf_delay5: 1ms
+leaf_delay6: 1ms
+leaf_delay7: 1ms
+leaf_delay8: 1ms
+app_bw0: 100Mbps
+app_bw1: 100Mbps
+app_bw2: 0Mbps
+app_bw3: 0Mbps
+app_bw4: 0Mbps
+app_bw5: 0Mbps
+app_bw6: 0Mbps
+app_bw7: 0Mbps
+app_bw8: 0Mbps
+switch_total_bufsize_pkts: 200
+queuedisc_type: FifoQueueDisc
+num_cca0: 1
+num_cca1: 1
+num_cca2: 0
+num_cca3: 0
+num_cca4: 0
+num_cca5: 0
+num_cca6: 0
+num_cca7: 0
+num_cca8: 0
+num_leaf: 2
+======
+Configured FifoQueueDisc
+num_tracing_periods: 100
+=== elapsed_seconds: 56.1184===
+=== avg_tpt_bottleneck[*] ===
+0 15903886.545
+1 82944948.364
+avg_tpt_bottleneck_total: 98848834.909
+avg_jfi_bottleneck [computed]: 0.685
+=== avg_tpt_app[*] ===
+0 15328814.545
+1 79818356.364
+avg_tpt_app_total: 95147170.909
+avg_jfi_app [computed]: 0.685
+====== Number of packets sent ======
+MySource 0:859375
+MySource 1:859375
+====== Number of packets at bottleneck link ======
+Source 1: 695136
+Source 0: 132009
+====== CebinaeQueueDisc digest ======
