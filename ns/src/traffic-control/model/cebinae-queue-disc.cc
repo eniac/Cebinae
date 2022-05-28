@@ -2,6 +2,8 @@
 
 #include "cebinae-queue-disc.h"
 #include "ns3/drop-tail-queue.h"
+#include "ns3/ipv4-header.h"
+#include "ns3/ipv4-queue-disc-item.h"
 #include "ns3/log.h"
 #include "ns3/object-factory.h"
 #include "ns3/simulator.h"
@@ -189,7 +191,6 @@ void CebinaeQueueDisc::ReactionFSM() {
 
     // No need to drop the virual ROTATE packet in simulation
 
-    // --- Update FSM ---
     m_state = RECONFIG;
     m_num_rotated += 1;
     Simulator::Schedule(m_dt-m_l, &CebinaeQueueDisc::ReactionFSM, this);
@@ -502,7 +503,7 @@ CebinaeQueueDisc::DoDequeue (void)
   if (got_item) {
 
     m_port_bytecounts += item->GetSize();
-    m_fbd.UpdateCache(item->GetPacket());
+    m_fbd.UpdateCache(item);
 
     m_cebinae_dequeued_succeeded += 1;
 
@@ -510,6 +511,7 @@ CebinaeQueueDisc::DoDequeue (void)
   } else {
     return 0;
   }
+  // Time delay = Simulator::Now () - item->GetTimeStamp ();
 }
 
 Ptr<const QueueDiscItem>

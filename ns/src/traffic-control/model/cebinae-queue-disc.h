@@ -1,6 +1,7 @@
 #ifndef CEBINAE_QUEUE_DISC_H
 #define CEBINAE_QUEUE_DISC_H
 
+#include <deque>
 #include "ns3/data-rate.h"
 #include "ns3/histogram.h"
 #include "ns3/my-source-id-tag.h"
@@ -13,7 +14,7 @@ template <class K, class V>
 class FlowBottleneckDetector {
 public:
 
-  virtual void UpdateCache(Ptr<Packet> p) = 0;
+  virtual void UpdateCache(Ptr<QueueDiscItem> qdi) = 0;
 
   virtual std::pair<std::vector<K>, V> GetTopFlows(double delta_f) = 0;
 
@@ -51,7 +52,8 @@ class MySourceIDTagFBD: public FlowBottleneckDetector<uint32_t, uint64_t>
 {
 public:
 
-  void UpdateCache(Ptr<Packet> p) {
+  void UpdateCache(Ptr<QueueDiscItem> qdi) {
+    Ptr<Packet> p = qdi->GetPacket();
     MySourceIDTag tag;
     if (p->FindFirstMatchingByteTag(tag)) {
       auto got = m_flow_cache.find(tag.Get());
@@ -155,7 +157,7 @@ public:
         uint64_t num_negheadq_enqueue {0};
         uint64_t num_negheadq_drop {0};
         uint64_t num_lbf_drop {0};
-        // Alternative Histogram
+        // Skipped Histogram or qtime quantiles due to overly verbose printing
     };
 
     void UpdateDebugStats(Ptr<Packet> p, EnqueueType type) {
@@ -255,8 +257,8 @@ private:
   // Number of dT periods before recomputing utilization and rate limits
   // Note that P can be either odd or even as we set every dT (but recomputes every P*dT)
   uint32_t m_p {1};  
-  // Control plane execution deadline
-  Time m_l {NanoSeconds (65536)};
+  // Control plane execution deadline, can be effectively close to 0
+  Time m_l {NanoSeconds (1024)};
   Time m_dt {NanoSeconds (1048576)};  // Default 2^20
   Time m_vdt {NanoSeconds (1024)};  
 
@@ -309,7 +311,7 @@ private:
   // --- Debugging stats ---
   std::ostringstream m_oss_summary {};
   bool m_debug;
-  std::vector<std::string> m_debug_events {};
+  std::deque<std::string> m_debug_events {};
   CebinaeDebugger m_debugger {};
 
   // --- Digest stats ---
