@@ -199,9 +199,9 @@ myred = '#A90533'
 myblue = '#004785'
 mygrey = 'grey70'
 
-plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT=20.4ms)" with lines lw 5 dt 3 lc rgb myred, \
-	 "fifo/app_tpt_1000000.dat" using ($2/1000000) title "FIFO (RTT=40ms)" with lines lw 5 dt 3 lc rgb myblue, \
-	 "cebinae/app_tpt_1000000.dat" using ($1/1000000) title "Cebinae (RTT=20.4ms)" with lines lw 5 dt 1 lc rgb myred, \
+plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT=20.4ms)" with lines lw 5 dt 3 lc rgb myred, \\
+	 "fifo/app_tpt_1000000.dat" using ($2/1000000) title "FIFO (RTT=40ms)" with lines lw 5 dt 3 lc rgb myblue, \\
+	 "cebinae/app_tpt_1000000.dat" using ($1/1000000) title "Cebinae (RTT=20.4ms)" with lines lw 5 dt 1 lc rgb myred, \\
 	 "cebinae/app_tpt_1000000.dat" using ($2/1000000) title "Cebinae (RTT=40ms)" with lines lw 5 dt 1 lc rgb myblue,
 '''
 
