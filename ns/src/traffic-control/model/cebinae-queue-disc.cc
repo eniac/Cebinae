@@ -2,8 +2,6 @@
 
 #include "cebinae-queue-disc.h"
 #include "ns3/drop-tail-queue.h"
-#include "ns3/ipv4-header.h"
-#include "ns3/ipv4-queue-disc-item.h"
 #include "ns3/log.h"
 #include "ns3/object-factory.h"
 #include "ns3/simulator.h"
@@ -287,18 +285,22 @@ void CebinaeQueueDisc::ReactionFSM() {
 
 bool
 CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
-{
+{   
 
   // Process NORMAL packet; note that the processing of ROTATE is embedded in Reaction FSM
   // Regardless of whether the port is saturated or not
 
   // First check if the packet belongs to top or not
-  MySourceIDTag tag;
-  item->GetPacket()->FindFirstMatchingByteTag(tag);
-  auto got = std::find(m_bottlenecked_flows_set.begin(), m_bottlenecked_flows_set.end(), tag.Get());
   bool is_top = false;
-  if (got != m_bottlenecked_flows_set.end()) {
-    is_top = true;
+  MySourceIDTag tag;
+  bool has_tag = item->GetPacket()->FindFirstMatchingByteTag(tag);
+  if (has_tag) {
+    auto got = std::find(m_bottlenecked_flows_set.begin(), m_bottlenecked_flows_set.end(), tag.Get());
+    if (got != m_bottlenecked_flows_set.end()) {
+      is_top = true;
+    }
+  } else {
+    // Non-app traffic, considered non-top for simplicity of tracing, worst case false negative which is ok
   }
   
   // Update round time

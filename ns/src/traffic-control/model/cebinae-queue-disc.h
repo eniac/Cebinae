@@ -4,6 +4,8 @@
 #include <deque>
 #include "ns3/data-rate.h"
 #include "ns3/histogram.h"
+#include "ns3/ipv4-header.h"
+#include "ns3/ipv4-queue-disc-item.h"
 #include "ns3/my-source-id-tag.h"
 #include "ns3/queue-disc.h"
 #include "ns3/simulator.h"
@@ -18,18 +20,15 @@ public:
 
   virtual std::pair<std::vector<K>, V> GetTopFlows(double delta_f) = 0;
 
-  virtual void FlushCache() {
-    m_flow_cache.clear();
-    m_max_bytes = 0;
+  virtual void FlushCache() = 0; 
+
+  virtual std::unordered_map<K, V> GetMysourceid2bytecount() {
+    return m_mysourceid2bytecount;
   }
 
-  virtual std::unordered_map<K, V> GetCache() {
-    return m_flow_cache;
-  }
-
-  virtual void PrintCache(std::ostream &os) const {
+  virtual void PrintMysourceid2bytecount(std::ostream &os) const {
     os << "[------\n";
-    for (auto iter = m_flow_cache.begin(); iter != m_flow_cache.end(); iter++) {
+    for (auto iter = m_mysourceid2bytecount.begin(); iter != m_mysourceid2bytecount.end(); iter++) {
       os << iter->first << ": " << iter->second << "\n";
     }
     os << "------]\n";
@@ -39,8 +38,11 @@ public:
 
 protected:
 
-  // Flow identifier K (e.g., source tag, 5-tuple hash) to byte count V
-  std::unordered_map<K, V> m_flow_cache {};
+  // Flow identifier K (MySourceIDTag value, 1:1 mapping to 5-tuple) to byte count V
+  std::unordered_map<K, V> m_mysourceid2bytecount {};
+  // Equivalent to hash to 5-tuple registers, but better interpretability
+  std::vector<K> m_hash2mysourceid {};
+  std::vector<V> m_hash2bytecount {}; 
 
   V m_max_bytes {0};
 
@@ -56,19 +58,24 @@ public:
     Ptr<Packet> p = qdi->GetPacket();
     MySourceIDTag tag;
     if (p->FindFirstMatchingByteTag(tag)) {
-      auto got = m_flow_cache.find(tag.Get());
-      if (got != m_flow_cache.end()) {
-        m_flow_cache[tag.Get()] += p->GetSize();
+      auto got = m_mysourceid2bytecount.find(tag.Get());
+      if (got != m_mysourceid2bytecount.end()) {
+        m_mysourceid2bytecount[tag.Get()] += p->GetSize();
       } else {
-        m_flow_cache[tag.Get()] = p->GetSize();
+        m_mysourceid2bytecount[tag.Get()] = p->GetSize();
       }
 
-      if (m_flow_cache[tag.Get()] > m_max_bytes) {
-        m_max_bytes = m_flow_cache[tag.Get()];
+      if (m_mysourceid2bytecount[tag.Get()] > m_max_bytes) {
+        m_max_bytes = m_mysourceid2bytecount[tag.Get()];
       }
     } else {
-      // Doesn't matter
+      // Non application traffic
     }
+  }
+
+  void FlushCache() {
+    m_mysourceid2bytecount.clear();
+    m_max_bytes = 0;
   }
 
   std::pair<std::vector<uint32_t>, uint64_t> GetTopFlows(double delta_f) {
@@ -77,7 +84,7 @@ public:
 
     m_num_gettopflows += 1;
 
-    for (auto iter = m_flow_cache.begin(); iter != m_flow_cache.end(); iter++) {
+    for (auto iter = m_mysourceid2bytecount.begin(); iter != m_mysourceid2bytecount.end(); iter++) {
       if (iter->second > m_max_bytes*(1-delta_f)) {
         // Add the flow signature to set
         ret_vec.push_back(iter->first);
@@ -107,14 +114,120 @@ public:
   }
 
 private:
+  uint32_t m_num_gettopflows {0}; // Counters for GetTopFlows invocations
+  std::unordered_map<uint32_t, uint32_t> m_sourceidtag2toptimes {}; // Records of bottlenecked times for each tag for accounting and calculate the ratio
+};
+
+class HashPipe1StageFBD: public FlowBottleneckDetector<uint32_t, uint64_t>
+{
+public:
+  HashPipe1StageFBD(int num_slot_pow2) {
+    m_num_slot = pow(2, num_slot_pow2);
+    m_num_slot_pow2 = num_slot_pow2;
+    m_hash2mysourceid.resize(m_num_slot, 0);
+    m_hash2bytecount.resize(m_num_slot, 0);
+  }
+
+  void UpdateCache(Ptr<QueueDiscItem> qdi) {
+    // Get 5-tuple hash: an uncoorperative host my claim more BW by generating multiple flows, one could use alternative flow id (e.g., 2 tuple) to prevent this
+    uint32_t h_5tuple = qdi->Hash();
+    uint32_t h_slot = (h_5tuple % m_num_slot);
+
+    Ptr<Packet> p = qdi->GetPacket();
+    MySourceIDTag tag;
+    if (p->FindFirstMatchingByteTag(tag)) {
+
+      // Single stage HashPipe
+      if(m_hash2mysourceid[h_slot] == tag.Get()) {
+        m_hash2bytecount[h_slot] += p->GetSize();
+      } else {
+        // Reclaim the slot without recirculation
+        m_hash2bytecount[h_slot] = p->GetSize();
+      }
+      m_hash2mysourceid[h_slot] = tag.Get();
+      
+      // Keep a ground truth map for debugging
+      auto got = m_mysourceid2bytecount.find(tag.Get());
+      if (got != m_mysourceid2bytecount.end()) {
+        m_mysourceid2bytecount[tag.Get()] += p->GetSize();
+      } else {
+        m_mysourceid2bytecount[tag.Get()] = p->GetSize();
+      }
+      if (m_mysourceid2bytecount[tag.Get()] > m_max_bytes) {
+        m_max_bytes = m_mysourceid2bytecount[tag.Get()];
+      }
+    } else {
+      // Non-application traffic (ACKs), considered negligible size (i.e., non-top) for better simulation result tracing and interpretability
+      Ptr<const Ipv4QueueDiscItem> iqdi = Ptr<const Ipv4QueueDiscItem> (dynamic_cast<const Ipv4QueueDiscItem *> (PeekPointer (qdi)));
+      Ipv4Header ipv4_header = iqdi->GetHeader ();
+      Ipv4Address ipv4_src = ipv4_header.GetSource ();
+      Ipv4Address ipv4_dst = ipv4_header.GetDestination ();      
+      NS_LOG_DEBUG("MySourceIDTag not found: " << ipv4_src << "->" << ipv4_dst);
+    }
+  }
+
+  void FlushCache() {
+    m_mysourceid2bytecount.clear();
+    m_hash2mysourceid.resize(0);
+    m_hash2mysourceid.resize(m_num_slot, 0);
+    m_hash2bytecount.resize(0);
+    m_hash2bytecount.resize(m_num_slot, 0);
+    m_max_bytes = 0;
+  }
+
+  std::pair<std::vector<uint32_t>, uint64_t> GetTopFlows(double delta_f) {
+    std::vector<uint32_t> ret_vec;
+    uint64_t ret_bottleneck_bytes = 0;
+
+    m_num_gettopflows += 1;
+
+    // Get max bytes in cache
+    uint64_t max_bytes = 0;
+    for (int i = 0; i < m_num_slot; i++) {
+      if (m_hash2bytecount[i] > max_bytes) {
+        max_bytes = m_hash2bytecount[i];
+      }
+    }
+    for (int i = 0; i < m_num_slot; i++) {
+      if (m_hash2bytecount[i] > max_bytes*(1-delta_f)) {
+        ret_vec.push_back(m_hash2mysourceid[i]);
+        ret_bottleneck_bytes += m_hash2bytecount[i];
+        // Update histroy accounting
+        auto got = m_sourceidtag2toptimes.find(m_hash2mysourceid[i]);
+        if (got != m_sourceidtag2toptimes.end()) {
+          m_sourceidtag2toptimes[m_hash2mysourceid[i]] += 1;
+        } else {
+          m_sourceidtag2toptimes[m_hash2mysourceid[i]] = 1;
+        }        
+      }
+    }
+    return std::make_pair(ret_vec, ret_bottleneck_bytes);
+  }
+
+  std::string DumpDigest() {
+    m_oss << "--- FlowBottleneckDetector ---\n"
+          << "m_num_gettopflows: " << m_num_gettopflows << "\n"
+          << "m_num_slot_pow2: " << m_num_slot_pow2 << "\n"
+          << "m_num_slot: " << m_num_slot << "\n"
+          << "m_hash2mysourceid.size(): " << m_hash2mysourceid.size() << "\n"
+          << "m_hash2bytecount.size(): " << m_hash2bytecount.size() << "\n"
+          << "m_sourceidtag2toptimes:\n";
+    for (auto iter = m_sourceidtag2toptimes.begin(); iter != m_sourceidtag2toptimes.end(); iter ++) {
+      m_oss << iter->first << ": " << iter->second << "\n";
+    }
+    m_oss << "------\n";
+    return m_oss.str();
+  }
+
+private:
+
+  int m_num_slot_pow2 = 11;
+  int m_num_slot = 2048;
 
   uint32_t m_num_gettopflows {0}; // Counters for GetTopFlows invocations
-
   // Records of bottlenecked times for each tag for accounting and calculate the ratio
   std::unordered_map<uint32_t, uint32_t> m_sourceidtag2toptimes {};
 };
-
-// Add another implementation for real 5-tuple and apply HashPipe data struct with n slots
 
 /**
  * \ingroup traffic-control
@@ -300,7 +413,9 @@ private:
   // each CebinaeQueueDisc (attached to a single egress port/NetDevice) only needs to record its own local byte count.  
   uint64_t m_port_bytecounts {0};
 
-  MySourceIDTagFBD m_fbd {};
+  // Use a subroutine of top flow detection
+  // MySourceIDTagFBD m_fbd {};
+  HashPipe1StageFBD m_fbd{11};
 
   // Set of bottlenecked flows, typically a small set as in reality, only a small portion of elephant flows
   // TODO: use unordered_set
