@@ -371,6 +371,8 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     m_bytes_bot += item->GetSize();  
   }
 
+  uint32_t total_qlen = GetInternalQueue (m_headq)->GetCurrentSize().GetValue() + GetInternalQueue (m_neg_headq)->GetCurrentSize().GetValue();
+
   // TODO Optional ECN bits marking
   // Now execute the queueing decision
   bool retval = false;  // whether the packet succeeds enqueue
@@ -382,13 +384,13 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
       m_enqueue_drop_pkts[m_headq] += 1;
       if (m_debug) {
-        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_DROP);
+        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_DROP, total_qlen);
       }
     } else {
       retval = GetInternalQueue (m_headq)->Enqueue (item);
       NS_ASSERT(retval == true);
       if (m_debug) {
-        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_ENQUEUE);
+        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_ENQUEUE, total_qlen);
       }      
     }
   } 
@@ -400,13 +402,13 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
       m_enqueue_drop_pkts[m_neg_headq] += 1;
       if (m_debug) {
-        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_DROP);
+        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_DROP, total_qlen);
       }      
     } else {
       retval = GetInternalQueue (m_neg_headq)->Enqueue (item);
       NS_ASSERT(retval == true); 
       if (m_debug) {
-        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_ENQUEUE);
+        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_ENQUEUE, total_qlen);
       }         
     }
   } 
@@ -415,7 +417,7 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     m_lbf_drop_pkts += 1;
     DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
     if (m_debug) {
-      m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::LBF_DROP);
+      m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::LBF_DROP, total_qlen);
     }    
   }
 

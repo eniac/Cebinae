@@ -270,10 +270,11 @@ public:
         uint64_t num_negheadq_enqueue {0};
         uint64_t num_negheadq_drop {0};
         uint64_t num_lbf_drop {0};
+        uint32_t max_total_qlen_pkts {0};
         // Skipped Histogram or qtime quantiles due to overly verbose printing
     };
 
-    void UpdateDebugStats(Ptr<Packet> p, EnqueueType type) {
+    void UpdateDebugStats(Ptr<Packet> p, EnqueueType type, uint32_t qlen) {
       MySourceIDTag tag;
       if (p->FindFirstMatchingByteTag(tag)) {
         auto got = m_sourceidtag2debugstats.find(tag.Get());
@@ -289,24 +290,24 @@ public:
           } else if (type==LBF_DROP) {
             m_sourceidtag2debugstats[tag.Get()].num_lbf_drop += 1;          
           }
+          if (qlen > m_sourceidtag2debugstats[tag.Get()].max_total_qlen_pkts) {
+            m_sourceidtag2debugstats[tag.Get()].max_total_qlen_pkts = qlen;
+          }          
         } else {
           DebugStats debug_stats;
           if (type==HEADQ_ENQUEUE) {
             debug_stats.num_headq_enqueue = 1;
-            m_sourceidtag2debugstats[tag.Get()] = debug_stats;
           } else if (type==HEADQ_DROP) {
             debug_stats.num_headq_drop = 1;
-            m_sourceidtag2debugstats[tag.Get()] = debug_stats;            
           } else if (type==NEGHEADQ_ENQUEUE) {
             debug_stats.num_negheadq_enqueue = 1;
-            m_sourceidtag2debugstats[tag.Get()] = debug_stats;            
           } else if (type==NEGHEADQ_DROP) {
             debug_stats.num_negheadq_drop = 1;
-            m_sourceidtag2debugstats[tag.Get()] = debug_stats;            
           } else if (type==LBF_DROP) {
             debug_stats.num_lbf_drop = 1;
-            m_sourceidtag2debugstats[tag.Get()] = debug_stats;            
           }
+          debug_stats.max_total_qlen_pkts = qlen;
+          m_sourceidtag2debugstats[tag.Get()] = debug_stats;
         }
       }
     }
@@ -322,6 +323,7 @@ public:
             << iter->second.num_negheadq_enqueue << ","
             << iter->second.num_negheadq_drop << ","
             << iter->second.num_lbf_drop << ","
+            << iter->second.max_total_qlen_pkts << ","
             << "],";
       }
       return oss.str();
