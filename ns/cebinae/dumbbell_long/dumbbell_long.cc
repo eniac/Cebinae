@@ -895,8 +895,32 @@ main (int argc, char *argv[])
   auto stop = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed_seconds = stop - start;
 
+  NS_LOG_DEBUG("================== Export digest ==================");
+
   std::cout << elapsed_seconds.count() << "s" << std::endl;
   oss << "=== elapsed_seconds: " << elapsed_seconds.count() << "===\n";
+
+  oss << "=== Ipv4 addresses ===\n";
+  oss << "--- leftleaf_ifc ---\n";
+  for (uint32_t i = 0; i < num_leaf; i++) {
+    oss << i << " " << leftleaf_ifc.GetAddress(i) << "\n";
+  }
+  oss << "--- leftrouter_ifc ---\n";
+  for (uint32_t i = 0; i < num_leaf; i++) {
+    oss << i << " " << leftrouter_ifc.GetAddress(i) << "\n";
+  }
+  oss << "--- rightleaf_ifc ---\n";
+  for (uint32_t i = 0; i < num_leaf; i++) {
+    oss << i << " " << rightleaf_ifc.GetAddress(i) << "\n";
+  }  
+  oss << "--- rightrouter_ifc ---\n";
+  for (uint32_t i = 0; i < num_leaf; i++) {
+    oss << i << " " << rightrouter_ifc.GetAddress(i) << "\n";
+  }
+  oss << "--- router_ifc ---\n";
+  for (uint32_t i = 0; i < 2; i++) {
+    oss << i << " " << router_ifc.GetAddress(i) << "\n";
+  }  
 
   // Calculate overall JFI
   long double sum = 0.0;
