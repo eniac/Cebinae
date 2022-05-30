@@ -183,7 +183,8 @@ void CebinaeQueueDisc::ReactionFSM() {
       event += ("m_bytes_bot:"+std::to_string(m_bytes_bot)+",");
       event += ("m_headq:"+std::to_string(m_headq)+",");
       event += ("m_neg_headq:"+std::to_string(m_neg_headq)+",");
-      event += "},after:{";
+      event += ("m_base_round_time:"+std::to_string(m_base_round_time.GetNanoSeconds())+",");
+      event += "},";
     }
 
     if (m_bytes_top > budget_top) {
@@ -204,6 +205,7 @@ void CebinaeQueueDisc::ReactionFSM() {
     m_neg_headq = 1 - m_neg_headq;
 
     if (m_debug) {
+      event += "after:{";
       event += ("m_bytes_top:"+std::to_string(m_bytes_top)+",");
       event += ("m_bytes_bot:"+std::to_string(m_bytes_bot)+",");
       event += ("m_headq:"+std::to_string(m_headq)+",");
