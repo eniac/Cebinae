@@ -174,6 +174,10 @@ void CebinaeQueueDisc::ReactionFSM() {
     std::string event;
     if (m_debug) {
       event = ("["+std::to_string(ns3::Simulator::Now ().GetNanoSeconds())+",rotate] ");
+      event += ("budget_top:"+std::to_string(budget_top)+",");
+      event += ("budget_bot:"+std::to_string(budget_bot)+",");
+      event += ("m_last_rate_top:"+std::to_string(m_last_rate_top)+",");
+      event += ("m_last_rate_bot:"+std::to_string(m_last_rate_bot)+",");
       event += "before:{";
       event += ("m_bytes_top:"+std::to_string(m_bytes_top)+",");
       event += ("m_bytes_bot:"+std::to_string(m_bytes_bot)+",");
@@ -206,7 +210,17 @@ void CebinaeQueueDisc::ReactionFSM() {
       event += ("m_neg_headq:"+std::to_string(m_neg_headq)+",");
       event += ("m_base_round_time:"+std::to_string(m_base_round_time.GetNanoSeconds())+",");
       event += "},";
-      event += ("debug_stats:"+m_debugger.GetDebugStats());
+      event += ("debug_stats:{"+m_debugger.GetDebugStats()+"},");
+
+      event += ("m_lbf_bps_top[m_headq]:"+std::to_string(m_lbf_bps_top[m_headq])+",");
+      event += ("m_lbf_bps_top[m_neg_headq]:"+std::to_string( m_lbf_bps_top[m_neg_headq])+",");
+      event += ("budget_headq:"+std::to_string(m_lbf_bps_top[m_headq]*m_dt.GetSeconds()/8)+",");      
+      event += ("budget_neg_headq:"+std::to_string(m_lbf_bps_top[m_neg_headq]*m_dt.GetSeconds()/8)+",");
+
+      event += ("m_lbf_bps_bot[m_headq]:"+std::to_string(m_lbf_bps_bot[m_headq])+",");
+      event += ("m_lbf_bps_bot[m_neg_headq]:"+std::to_string( m_lbf_bps_bot[m_neg_headq])+",");
+      event += ("budget_headq:"+std::to_string(m_lbf_bps_bot[m_headq]*m_dt.GetSeconds()/8)+",");
+      event += ("budget_neg_headq:"+std::to_string(m_lbf_bps_bot[m_neg_headq]*m_dt.GetSeconds()/8)+",");
     }
     m_debug_events.push_back(event);
 
@@ -266,7 +280,7 @@ void CebinaeQueueDisc::ReactionFSM() {
           event += ("m_computed_bps_bot:"+std::to_string(m_computed_bps_bot)+",");
           event += ("m_bytes_top:"+std::to_string(m_bytes_top)+",");
           event += ("m_bytes_bot:"+std::to_string(m_bytes_bot)+",");         
-          event += ("debug_stats:"+m_debugger.GetDebugStats());
+          event += ("debug_stats:{"+m_debugger.GetDebugStats()+"},");
           m_debug_events.push_back(event);
         }
       } else {
@@ -284,8 +298,8 @@ void CebinaeQueueDisc::ReactionFSM() {
           event += ("m_computed_bps_bot:"+std::to_string(m_computed_bps_bot)+",");
           event += ("m_bytes_top:"+std::to_string(m_bytes_top)+",");
           event += ("m_bytes_bot:"+std::to_string(m_bytes_bot)+",");          
-          event += ("debug_stats:"+m_debugger.GetDebugStats());
-          m_debug_events.push_back(event);
+          event += ("debug_stats:{"+m_debugger.GetDebugStats()+"},");   
+          m_debug_events.push_back(event);       
         }        
       }
       if (m_debug) {
@@ -297,13 +311,24 @@ void CebinaeQueueDisc::ReactionFSM() {
       m_port_bytecounts = 0;
     }
     
-    // Save last rate for data plane reset
+    // Save last rate for data plane reset during ROTATE
     m_last_rate_top = m_lbf_bps_top[m_headq];
     m_last_rate_bot = m_lbf_bps_bot[m_headq];
 
     // Set rates *every round* to prevent flip between oldrate and newrate for next P rounds
     m_lbf_bps_top[m_headq] = m_computed_bps_top;
     m_lbf_bps_bot[m_headq] = m_computed_bps_bot;
+
+    if (m_debug) {
+      std::string event = ("["+std::to_string(ns3::Simulator::Now ().GetNanoSeconds())+",RECONFIG] ");
+      event += ("m_high_prio_queue:"+std::to_string(m_high_prio_queue)+",");
+      event += ("m_last_rate_top:"+std::to_string(m_last_rate_top)+",");
+      event += ("m_last_rate_bot:"+std::to_string(m_last_rate_bot)+",");
+      event += ("m_lbf_bps_top[m_headq]/m_computed_bps_top:"+std::to_string(m_computed_bps_top)+",");
+      event += ("m_lbf_bps_bot[m_headq]/m_computed_bps_bot:"+std::to_string(m_computed_bps_bot)+",");
+      event += ("m_recomputation_ctr:"+std::to_string(m_recomputation_ctr)+",");
+      m_debug_events.push_back(event);
+    }
 
     m_state = ROTATE;
     Simulator::Schedule(m_l, &CebinaeQueueDisc::ReactionFSM, this);
