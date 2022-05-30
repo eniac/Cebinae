@@ -176,6 +176,7 @@ public:
   }
 
   std::pair<std::vector<uint32_t>, uint64_t> GetTopFlows(double delta_f) {
+    // MA table in HW as top flows are typically of a small subset, o.w., may apply for instance counting BF
     std::vector<uint32_t> ret_vec;
     uint64_t ret_bottleneck_bytes = 0;
 

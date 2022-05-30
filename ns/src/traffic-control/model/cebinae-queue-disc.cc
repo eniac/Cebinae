@@ -169,12 +169,24 @@ void CebinaeQueueDisc::ReactionFSM() {
     // --- Data plane operations upon ROTATE packets ---
     // Update bytes count for top and bot, taking saturated subtraction of last dT bytes budget (rate*dT)
     uint32_t budget_top = m_last_rate_top*m_dt.GetSeconds()/8;
+    uint32_t budget_bot = m_last_rate_bot*m_dt.GetSeconds()/8;
+
+    std::string event;
+    if (m_debug) {
+      event = ("["+std::to_string(ns3::Simulator::Now ().GetNanoSeconds())+",rotate] ");
+      event += "before:{";
+      event += ("m_bytes_top:"+std::to_string(m_bytes_top)+",");
+      event += ("m_bytes_bot:"+std::to_string(m_bytes_bot)+",");
+      event += ("m_headq:"+std::to_string(m_headq)+",");
+      event += ("m_neg_headq:"+std::to_string(m_neg_headq)+",");
+      event += "},after:{";
+    }
+
     if (m_bytes_top > budget_top) {
       m_bytes_top = m_bytes_top - budget_top;
     } else {
       m_bytes_top = 0;
     }
-    uint32_t budget_bot = m_last_rate_bot*m_dt.GetSeconds()/8;
     if (m_bytes_bot > budget_bot) {
       m_bytes_bot = m_bytes_bot - budget_bot;
     } else {
@@ -186,6 +198,17 @@ void CebinaeQueueDisc::ReactionFSM() {
     // Flip headq and neg_headq
     m_headq = 1 - m_headq;
     m_neg_headq = 1 - m_neg_headq;
+
+    if (m_debug) {
+      event += ("m_bytes_top:"+std::to_string(m_bytes_top)+",");
+      event += ("m_bytes_bot:"+std::to_string(m_bytes_bot)+",");
+      event += ("m_headq:"+std::to_string(m_headq)+",");
+      event += ("m_neg_headq:"+std::to_string(m_neg_headq)+",");
+      event += ("m_base_round_time:"+std::to_string(m_base_round_time.GetNanoSeconds())+",");
+      event += "},";
+      event += ("debug_stats:"+m_debugger.GetDebugStats());
+    }
+    m_debug_events.push_back(event);
 
     // No need to drop the virual ROTATE packet in simulation
 
@@ -241,6 +264,8 @@ void CebinaeQueueDisc::ReactionFSM() {
           event += "},";
           event += ("m_computed_bps_top:"+std::to_string(m_computed_bps_top)+",");
           event += ("m_computed_bps_bot:"+std::to_string(m_computed_bps_bot)+",");
+          event += ("m_bytes_top:"+std::to_string(m_bytes_top)+",");
+          event += ("m_bytes_bot:"+std::to_string(m_bytes_bot)+",");         
           event += ("debug_stats:"+m_debugger.GetDebugStats());
           m_debug_events.push_back(event);
         }
@@ -257,6 +282,8 @@ void CebinaeQueueDisc::ReactionFSM() {
           event += ("status:"+std::to_string(m_port_bytecounts*8)+"<="+std::to_string(threshold_bits)+",");
           event += ("m_computed_bps_top:"+std::to_string(m_computed_bps_top)+",");
           event += ("m_computed_bps_bot:"+std::to_string(m_computed_bps_bot)+",");
+          event += ("m_bytes_top:"+std::to_string(m_bytes_top)+",");
+          event += ("m_bytes_bot:"+std::to_string(m_bytes_bot)+",");          
           event += ("debug_stats:"+m_debugger.GetDebugStats());
           m_debug_events.push_back(event);
         }        
@@ -351,7 +378,7 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
         past_tail = past_head - budget_neg_headq;
       }
     }
-    // Note that we update bytes later because register processing is delayed by 1 packet
+    // Update bytes later (after calculating past_head and past_tail) per HW register access pattern
     if (m_bytes_top < aggregate_size) {
       m_bytes_top = aggregate_size;
     }    
@@ -423,6 +450,7 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   // Shouldn't reaccount dropped bytes to respect feed-forward hardware constraint
   // bytes_register --> decision stage (TM or LBF decision) [can't feedback a posteriori unless recirculation]
+  // I.e., m_bytes_top account for arrival bytes (transmission rate) rather than egressing bytes per physical semantics
   // if (!retval) {
   //   if (is_top) {
   //     m_bytes_top -= item->GetSize();
