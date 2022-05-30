@@ -24,9 +24,9 @@
     "vdt": "1ns",
     "dt": "12ms",
     "l": "10000ns",
-    "p": 10,
+    "p": 4,
     "tau": 0.01,
-    "delta_port": 0.0,
+    "delta_port": 0.01,
     "delta_flow": 0.01,
     "queuedisc_type": [
         "FifoQueueDisc",

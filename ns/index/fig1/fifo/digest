@@ -67,7 +67,7 @@ num_leaf: 2
 ======
 Configured FifoQueueDisc
 num_tracing_periods: 100
-=== elapsed_seconds: 59.5954===
+=== elapsed_seconds: 59.3074===
 === Ipv4 addresses ===
 --- leftleaf_ifc ---
 0 10.1.1.1
