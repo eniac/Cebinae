@@ -338,10 +338,10 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   }
 
   // Now calculate the number of bytes passed
-  uint32_t past_head = 0;
-  uint32_t past_tail = 0;
-  uint32_t budget_headq = 0;
-  uint32_t budget_neg_headq = 0;
+  uint64_t past_head = 0;
+  uint64_t past_tail = 0;
+  uint64_t budget_headq = 0;
+  uint64_t budget_neg_headq = 0;
   if (is_top) {
     budget_headq = m_lbf_bps_top[m_headq]*m_dt.GetSeconds()/8;
     budget_neg_headq = m_lbf_bps_top[m_neg_headq]*m_dt.GetSeconds()/8;
@@ -421,42 +421,23 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     }    
   }
 
-  // Reaccounting the bytes upon drop, doesn't matter in practice though. In hardware, it is hard to re-account the bytes due to register constraint.
-  if (!retval) {
-    if (is_top) {
-      m_bytes_top -= item->GetSize();
-    } else {
-      m_bytes_bot -= item->GetSize();
-    }
-  }
+  // Shouldn't reaccount dropped bytes to respect feed-forward hardware constraint
+  // bytes_register --> decision stage (TM or LBF decision) [can't feedback a posteriori unless recirculation]
+  // if (!retval) {
+  //   if (is_top) {
+  //     m_bytes_top -= item->GetSize();
+  //   } else {
+  //     m_bytes_bot -= item->GetSize();
+  //   }
+  // }
 
   m_arrived_pkts += 1;
   return retval;
-
-  // if (GetCurrentSize () + item > GetMaxSize ())
-  //   {
-  //     NS_LOG_LOGIC ("Queue full -- dropping pkt");
-  //     DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
-  //     return false;
-  //   }
-
-  // if (GetInternalQueue (0)->GetCurrentSize() + item > GetInternalQueue (0)->GetMaxSize ())
-  //   {
-  //     // std::cout << "Queue full -- dropping pkt" << std::endl;
-  //     DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
-  //     return false;
-  //   }
-
-  // bool retval = GetInternalQueue (0)->Enqueue (item);
-  // NS_ASSERT(retval == true);
 
   // If Queue::Enqueue fails, QueueDisc::DropBeforeEnqueue is called by the
   // internal queue because QueueDisc::AddInternalQueue sets the trace callback
 
   // NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
-  // NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
-
-  // return retval;
 }
 
 std::string 
