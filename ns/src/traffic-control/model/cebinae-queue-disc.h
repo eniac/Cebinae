@@ -353,6 +353,8 @@ public:
 
   std::string DumpDigest();
 
+  std::string DumpDebugEvents();
+
 private:
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
   virtual Ptr<QueueDiscItem> DoDequeue (void);

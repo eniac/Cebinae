@@ -67,7 +67,7 @@ num_leaf: 2
 ======
 Configured FifoQueueDisc
 num_tracing_periods: 100
-=== elapsed_seconds: 59.3074===
+=== elapsed_seconds: 60.6633===
 === Ipv4 addresses ===
 --- leftleaf_ifc ---
 0 10.1.1.1
@@ -104,4 +104,3 @@ MySource 1:859375
 ====== Number of packets at bottleneck link ======
 Source 1: 695136
 Source 0: 132009
-====== CebinaeQueueDisc digest ======

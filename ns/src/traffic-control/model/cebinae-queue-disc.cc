@@ -520,15 +520,18 @@ CebinaeQueueDisc::DumpDigest() {
       << "m_num_non_bottleneck_p: " << m_num_non_bottleneck_p << "\n"
       << "m_num_rotated: " << m_num_rotated << "\n";
   m_oss_summary << m_fbd.DumpDigest();
+  return m_oss_summary.str();
+}
 
+std::string 
+CebinaeQueueDisc::DumpDebugEvents() {
+  std::ostringstream oss;
   if (m_debug) {
-    m_oss_summary << "=== Cebinae Debug Events ===\n";
     for (auto event : m_debug_events) {
-      m_oss_summary << event << "\n";
+      oss << event << "\n";
     }
   }
-
-  return m_oss_summary.str();
+  return oss.str();
 }
 
 Ptr<QueueDiscItem>

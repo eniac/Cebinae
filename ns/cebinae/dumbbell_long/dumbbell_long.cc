@@ -979,10 +979,16 @@ main (int argc, char *argv[])
     oss << "Source " << iter->first << ": " << iter->second << "\n";
   }
   
-  oss << "====== CebinaeQueueDisc digest ======\n";
   if (queuedisc_type.compare("CebinaeQueueDisc") == 0) {
+    oss << "====== CebinaeQueueDisc digest ======\n";
     Ptr<QueueDisc> q = qdiscs.Get(0);
     oss << DynamicCast<CebinaeQueueDisc>(q)->DumpDigest();    
+  }
+
+  if (queuedisc_type.compare("CebinaeQueueDisc") == 0) {
+    std::ofstream cebinae_ofs (result_dir + "/cebinae_debug", std::ios::out | std::ios::app);    
+    Ptr<QueueDisc> q = qdiscs.Get(0);
+    cebinae_ofs << DynamicCast<CebinaeQueueDisc>(q)->DumpDebugEvents();    
   }
 
   std::ofstream summary_ofs (result_dir + "/digest", std::ios::out | std::ios::app);  
