@@ -163,6 +163,10 @@ void CebinaeQueueDisc::ReactionFSM() {
 
   } else if (m_state == ROTATE) {
 
+    // RECONFIG W operation should be instead executed here intended for current round's tail rate
+    m_lbf_bps_top[m_headq] = m_computed_bps_top;
+    m_lbf_bps_bot[m_headq] = m_computed_bps_bot;
+
     // --- Control plane operations upon ROTATE packet detection during busy polling (headq != last_headq) ---
     // Implicit busy_sleep(m_dt-m_L) in event schedule
 
@@ -313,13 +317,18 @@ void CebinaeQueueDisc::ReactionFSM() {
       m_port_bytecounts = 0;
     }
     
-    // Save last rate for data plane reset during ROTATE
+    // Save history rate of the last round for data plane reset during ROTATE (pktgen pkt piggybacked state)
     m_last_rate_top = m_lbf_bps_top[m_headq];
     m_last_rate_bot = m_lbf_bps_bot[m_headq];
 
-    // Set rates *every round* to prevent flip between oldrate and newrate for next P rounds
-    m_lbf_bps_top[m_headq] = m_computed_bps_top;
-    m_lbf_bps_bot[m_headq] = m_computed_bps_bot;
+    // Only W operation to LBF rates
+    // Intent: set *the next round* headq rates *every round* to prevent flip between oldrate and newrate for next P rounds
+    // However, shouldn't write directly to precent inconsistencies due to packets in between RECONFIG and upcoming ROTATE state (that calculates aggregate_size based on history headq rate as base_round_time hasn't evolved), 
+    // for instance, if no top flows (hence m_lbf_bps_top[m_headq]=0) in the last round.
+    // The operation is moved to the incoming ROTATE state (the time point of base_round_time advancement and the flip of headq pointers).
+    // In HW, this is a serializable operation that prepares a mirror copy of lbf rates and atomically flipped upon pktgen/ROTATE packets.
+    // m_lbf_bps_top[m_headq] = m_computed_bps_top;
+    // m_lbf_bps_bot[m_headq] = m_computed_bps_bot;
 
     if (m_debug) {
       std::string event = ("["+std::to_string(ns3::Simulator::Now ().GetNanoSeconds())+",RECONFIG] ");
