@@ -20,7 +20,7 @@
     "progress_interval_ms": 1000,
     "bottleneck_bw": "100Mbps",
     "bottleneck_delay": "10ms",
-    "switch_total_bufsize_pkts": 200,
+    "switch_total_bufsize": "200p",
     "vdt": "1ns",
     "dt": "12ms",
     "l": "10000ns",

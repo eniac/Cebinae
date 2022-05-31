@@ -52,7 +52,7 @@ app_bw5: 0Mbps
 app_bw6: 0Mbps
 app_bw7: 0Mbps
 app_bw8: 0Mbps
-switch_total_bufsize_pkts: 200
+switch_total_bufsize: 200p
 queuedisc_type: FifoQueueDisc
 num_cca0: 1
 num_cca1: 1
@@ -67,7 +67,7 @@ num_leaf: 2
 ======
 Configured FifoQueueDisc
 num_tracing_periods: 100
-=== elapsed_seconds: 60.6633===
+=== elapsed_seconds: 59.8738===
 === Ipv4 addresses ===
 --- leftleaf_ifc ---
 0 10.1.1.1

@@ -52,7 +52,7 @@ app_bw5: 0Mbps
 app_bw6: 0Mbps
 app_bw7: 0Mbps
 app_bw8: 0Mbps
-switch_total_bufsize_pkts: 200
+switch_total_bufsize: 200p
 queuedisc_type: CebinaeQueueDisc
 num_cca0: 1
 num_cca1: 1
@@ -75,7 +75,7 @@ delta_port: 0.01
 delta_flow: 0.01
 ------
 num_tracing_periods: 100
-=== elapsed_seconds: 44.3935===
+=== elapsed_seconds: 45.1444===
 === Ipv4 addresses ===
 --- leftleaf_ifc ---
 0 10.1.1.1

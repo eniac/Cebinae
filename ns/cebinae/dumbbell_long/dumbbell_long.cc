@@ -216,7 +216,7 @@ main (int argc, char *argv[])
   uint32_t run = 1;  // Varry across replications
   sim_seconds = 10;
   // Configure 0 will give 1000
-  int switch_total_bufsize_pkts = 100;
+  std::string switch_total_bufsize = "100p";
   std::string queuedisc_type = "FifoQueueDisc";
   std::string bottleneck_bw = "5Mbps";
   std::string bottleneck_delay = "2ms";
@@ -327,7 +327,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("app_bw6", "", app_bw6);  
   cmd.AddValue ("app_bw7", "", app_bw7);  
   cmd.AddValue ("app_bw8", "", app_bw8);                
-  cmd.AddValue ("switch_total_bufsize_pkts", "Switch buffer size in pkts", switch_total_bufsize_pkts);
+  cmd.AddValue ("switch_total_bufsize", "Switch buffer size", switch_total_bufsize);
   cmd.AddValue ("queuedisc_type", "Queue Disc type", queuedisc_type);
   cmd.AddValue ("num_cca0", "Number of flows/mysource for cca0", num_cca0);
   cmd.AddValue ("num_cca1", "Number of flows/mysource for cca1", num_cca1);
@@ -468,7 +468,7 @@ main (int argc, char *argv[])
             << "app_bw6: " << app_bw6 << "\n"
             << "app_bw7: " << app_bw7 << "\n"                                                                                    
             << "app_bw8: " << app_bw8 << "\n"            
-            << "switch_total_bufsize_pkts: " << switch_total_bufsize_pkts << "\n"
+            << "switch_total_bufsize: " << switch_total_bufsize << "\n"
             << "queuedisc_type: " << queuedisc_type << "\n"
             << "num_cca0: " << num_cca0 << "\n"
             << "num_cca1: " << num_cca1 << "\n"
@@ -727,7 +727,7 @@ main (int argc, char *argv[])
   TrafficControlHelper tch_switch;
   QueueDiscContainer qdiscs;
   if (queuedisc_type.compare("FifoQueueDisc") == 0) {
-    tch_switch.SetRootQueueDisc ("ns3::FifoQueueDisc", "MaxSize", StringValue (std::to_string(switch_total_bufsize_pkts)+"p"));
+    tch_switch.SetRootQueueDisc ("ns3::FifoQueueDisc", "MaxSize", StringValue (switch_total_bufsize));
     qdiscs = tch_switch.Install(router_devices.Get(0));
     Ptr<QueueDisc> q = qdiscs.Get (0);
     oss << "Configured FifoQueueDisc\n";
@@ -742,7 +742,7 @@ main (int argc, char *argv[])
     Config::SetDefault ("ns3::CebinaeQueueDisc::delta_flow", DoubleValue (delta_flow));
     Config::SetDefault ("ns3::CebinaeQueueDisc::DataRate", StringValue (bottleneck_bw));
 
-    tch_switch.SetRootQueueDisc ("ns3::CebinaeQueueDisc", "MaxSize", StringValue (std::to_string(switch_total_bufsize_pkts)+"p"));
+    tch_switch.SetRootQueueDisc ("ns3::CebinaeQueueDisc", "MaxSize", StringValue (switch_total_bufsize));
 
     qdiscs = tch_switch.Install(router_devices.Get(0));
     Ptr<QueueDisc> q = qdiscs.Get (0);
@@ -757,7 +757,7 @@ main (int argc, char *argv[])
         << "------\n";
     // DynamicCast<Ptr<CebinaeQueueDisc>>(q)->Configure(Time dt, Time vdt, uint32_t p, double tau, double delta);
   } else if (queuedisc_type.compare("FqCoDelQueueDisc") == 0) {
-    tch_switch.SetRootQueueDisc ("ns3::FqCoDelQueueDisc", "MaxSize", StringValue (std::to_string(switch_total_bufsize_pkts)+"p"),
+    tch_switch.SetRootQueueDisc ("ns3::FqCoDelQueueDisc", "MaxSize", StringValue (switch_total_bufsize),
                                                           "Flows", UintegerValue (4294967295));
     qdiscs = tch_switch.Install(router_devices.Get(0));    
     oss << "Configured FqCoDelQueueDisc\n";
