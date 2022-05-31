@@ -96,6 +96,7 @@ def ns_run_instance(config_path, enb_gdb):
   os.chdir(cwd+"/ns")
   print(cmd)
   os.system(cmd)
+  os.chdir(cwd)
 
 @timeit
 def ns_run_batch(config_path):
@@ -134,6 +135,24 @@ def ns_run_batch(config_path):
   for cmd in cmds:
     print("======{}======".format(cmd))
     os.system(cmd)
+  os.chdir(cwd)
+
+@timeit
+def ns_run_batches(config_path):
+  cwd = os.getcwd()
+  if not os.path.isabs(config_path):
+    config_path = (cwd + "/ns/configs/" + config_path)
+  print("config_path: {}".format(config_path))
+  if not os.path.isdir(config_path):
+    print("ERR: not dir!")
+    exit()
+  
+  json_files = sorted([fn for fn in os.listdir(config_path) if fn.endswith('.json')])
+  print("=== List of config files: {} ===".format(json_files))
+
+  for json_file in json_files:
+    print("=== ns_run_batch({}) ===".format(config_path+"/"+json_file))
+    ns_run_batch(config_path+"/"+json_file)
 
 @timeit
 def ns_clear():
@@ -289,11 +308,14 @@ if __name__ == '__main__':
   ns_validate_prsr.add_argument("-p", "--profile", type=str, required=False, default="default", choices=["default", "debug", "optimized"], help="Build profile")
 
   ns_run_instance_prsr = ns_subsubprsr.add_parser("run_instance")
-  ns_run_instance_prsr.add_argument("-c", "--config", type=str, required=True, help="Abs path of Json config file")
+  ns_run_instance_prsr.add_argument("-c", "--config", type=str, required=True, help="Absolute or relative path (w.r.t. ns/configs) of Json config file")
   ns_run_instance_prsr.add_argument("--gdb", action="store_true", help="Whether to enable gdb")
 
   ns_run_batch_prsr = ns_subsubprsr.add_parser("run_batch")
-  ns_run_batch_prsr.add_argument("-c", "--config", type=str, required=True, help="Abs path of Json config file")
+  ns_run_batch_prsr.add_argument("-c", "--config", type=str, required=True, help="Absolute or relative path (w.r.t. ns/configs) of Json config file")
+
+  ns_run_batch_prsr = ns_subsubprsr.add_parser("run_batches") # Run all run_batch configs under the specified dir sequentially
+  ns_run_batch_prsr.add_argument("-c", "--config_dir", type=str, required=True, help="Absolute or relative path (w.r.t. ns/configs) of the directory containing Json config files")
 
   ns_run_clear_prsr = ns_subsubprsr.add_parser("clear")
 
@@ -301,7 +323,7 @@ if __name__ == '__main__':
 
   plot_subprsr = subprsr.add_parser("plot")
   plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "time_tpt"], help="Plot target")
-  plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute/relative path of plotting data file or directory")
+  plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of plotting data file or directory")
   plot_subprsr.add_argument("--w_total", action="store_true", help="Whether to plot total line used by time_tpt target")
 
   tofino_subprsr = subprsr.add_parser("tofino")
@@ -316,6 +338,8 @@ if __name__ == '__main__':
       ns_run_instance(args.config, args.gdb)
     elif args.ns_cmd == "run_batch":
       ns_run_batch(args.config)
+    elif args.ns_cmd == "run_batches":
+      ns_run_batches(args.config_dir)      
     elif args.ns_cmd == "clear":
       ns_clear()
     elif args.ns_cmd == "prerequisite":
