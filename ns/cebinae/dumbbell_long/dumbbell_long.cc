@@ -931,7 +931,7 @@ main (int argc, char *argv[])
     sum_squares += (avg_tpt_bottleneck[i] * avg_tpt_bottleneck[i]);
     oss << std::fixed << std::setprecision (3) << i << " " << avg_tpt_bottleneck[i] << "\n";
   }
-  oss << std::fixed << std::setprecision (3) << "avg_tpt_bottleneck_total: " << sum << "\n";
+  oss << std::fixed << std::setprecision (3) << "Avg. Throughput [bps]: " << sum << "\n";
   oss << std::fixed << std::setprecision (3) << "avg_jfi_bottleneck [computed]: " << (sum*sum)/avg_tpt_bottleneck.size()/sum_squares << "\n";
 
   sum = 0.0;
@@ -942,7 +942,7 @@ main (int argc, char *argv[])
     sum_squares += (avg_tpt_app[i] * avg_tpt_app[i]);
     oss << std::fixed << std::setprecision (3) << i << " " << avg_tpt_app[i] << "\n";
   }
-  oss << std::fixed << std::setprecision (3) << "avg_tpt_app_total: " << sum << "\n";
+  oss << std::fixed << std::setprecision (3) << "Avg. Goodput [bps]: " << sum << "\n";
   oss << std::fixed << std::setprecision (3) << "avg_jfi_app [computed]: " << (sum*sum)/avg_tpt_app.size()/sum_squares << "\n";
   
   // oss << std::fixed << std::setprecision (3) << "avg_jfi_bottleneck: " << avg_jfi_bottleneck << "\n"

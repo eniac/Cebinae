@@ -170,6 +170,9 @@ def plot_fig1(data_dir):
   if not os.path.isabs(data_dir):
     data_dir = (cwd+"/"+data_dir)
   print("data_dir: {}".format(data_dir))
+  if not os.path.isdir(data_dir):
+    print("ERR: not dir!")
+    exit()
 
   gp_str = '''
 reset
@@ -213,6 +216,63 @@ plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT=20.4ms)" wit
   print(cmd)
   subprocess.call(cmd.split())
 
+@timeit
+def plot_time_tpt(data_path, w_total):
+  cwd = os.getcwd()
+  if not os.path.isabs(data_path):
+    data_path = (cwd+"/"+data_path)
+  print("data_path: {0}".format(data_path))
+  if not os.path.isfile(data_path):
+    print("ERR: not data file!")
+    exit()
+  data_dir = os.path.dirname(data_path)
+  print("data_dir: {}".format(data_dir))
+  file_name = os.path.basename(data_path)
+  print("file_name: {}".format(file_name))
+
+  gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "graph.eps"
+
+set size 1,0.618 
+set border 3
+set tics nomirror
+
+set nologscale x
+
+set key font ",16"
+set key samplen 2
+set key width -5
+
+set xlabel "Time [s]"
+set ylabel 'Rate [MBps]'
+
+set xrange [1:100]
+set xtics 0,5,100
+
+plot '''
+
+  curves = []
+  with open(data_path, "r") as f:
+    lines = f.readlines()
+    num_flows = len(lines[0].split())-1
+    for i in range(num_flows):
+      curves.append(("\""+file_name+"\""+" using ($"+str(i+1)+"/1000000) title \""+str(i)+"\","))
+    if w_total:
+      curves.append(("\""+file_name+"\""+" using ($"+str(num_flows+1)+"/1000000) title \"agg.\","))
+  for i in range(len(curves)-1):
+    gp_str += (curves[i]+"\\\n")
+  gp_str += curves[-1]
+
+  with open(data_dir+"/plot.gp", "w") as gp_file:
+    gp_file.write(gp_str)
+
+  os.chdir(data_dir)
+  cmd = "gnuplot plot.gp"
+  print(cmd)
+  subprocess.call(cmd.split())
+
 
 if __name__ == '__main__':
 
@@ -240,8 +300,9 @@ if __name__ == '__main__':
   ns_run_prerequisite_prsr = ns_subsubprsr.add_parser("prerequisite")
 
   plot_subprsr = subprsr.add_parser("plot")
-  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1"], help="Plot target")
-  plot_subprsr.add_argument("--data_dir", type=str, required=True, help="Absolute/relative path of plotting data root directory")
+  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "time_tpt"], help="Plot target")
+  plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute/relative path of plotting data file or directory")
+  plot_subprsr.add_argument("--w_total", action="store_true", help="Whether to plot total line used by time_tpt target")
 
   tofino_subprsr = subprsr.add_parser("tofino")
 
@@ -261,6 +322,8 @@ if __name__ == '__main__':
       ns_prerequisite()      
   elif args.cmd == "plot":
     if args.plot_target == "fig1":
-      plot_fig1(args.data_dir)
+      plot_fig1(args.data_path)
+    if args.plot_target == "time_tpt":
+      plot_time_tpt(args.data_path, args.w_total)
   elif args.cmd == "tofino":
     pass
