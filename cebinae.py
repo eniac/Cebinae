@@ -111,6 +111,9 @@ def ns_run_batch(config_path, parallel):
   if not os.path.isabs(config_path):
     config_path = (cwd + "/ns/configs/" + config_path)
   print("config_path: {}".format(config_path))
+  if not os.path.isfile(config_path):
+    print("ERR: not file!")
+    exit()
 
   with open(config_path, 'r') as f:
     config=json.loads(f.read())
@@ -151,7 +154,8 @@ def ns_run_batch(config_path, parallel):
   else:
     for cmd in cmds:
       print("======{}======".format(cmd))
-      waf_cmd_wrapper(cmd)
+      if os.system(cmd) != 0:
+        exit()
   os.chdir(cwd)
 
   t2 = time.time()
@@ -173,7 +177,7 @@ def ns_run_batches(config_path, parallel):
   if parallel:
     print("=== Parallel branch ===") 
     print("PPID: {0}, PGID: {1}".format(os.getppid(), os.getpgid(os.getpid())))
-    pool = multiprocessing.Pool() # Default to os.cpu_count()
+    pool = multiprocessing.Pool() # Default to os.cpu_count() logical cores
     try:
       processes = []
       for json_file in json_files:
@@ -188,6 +192,59 @@ def ns_run_batches(config_path, parallel):
   else:
     for json_file in json_files:
       ns_run_batch(config_path+"/"+json_file)    
+
+@timeit
+def ns_run_instances(config_path, parallel):
+  cwd = os.getcwd()
+  if not os.path.isabs(config_path):
+    config_path = (cwd + "/ns/configs/" + config_path)
+  print("config_path: {}".format(config_path))
+  if not os.path.isdir(config_path):
+    print("ERR: not dir!")
+    exit()
+  json_files = sorted([fn for fn in os.listdir(config_path) if fn.endswith('.json')])
+  print("=== List of config files: {} ===".format(json_files))
+
+  cmds = []  
+  for json_file in json_files:
+    with open(config_path+"/"+json_file, 'r') as f:
+      config=json.loads(f.read())
+      cmd_base = "./waf --cwd=\""+cwd+"/ns/"+"\" --run \""+config["instance_type"]+" --config_path="+config_path+"/"+json_file+" "  
+      if len(config["batch_params"]) == 0 or config["batch_size"] == 1:
+        params = ""
+        for param in config.keys():
+          if param != "instance_type" and param != "batch_size" and param != "batch_params":
+            params += ("--"+param+"="+str(config[param])+" ")
+        params = params[0:-1]
+        cmd = (bmd_base+params+"\"")
+        cmds.append(cmd)  
+      else:
+        for param in config["batch_params"]:
+          if len(config[param]) != config["batch_size"]:
+            print("ERR: {0} != {1}")
+            exit()
+
+        for instance_id in range(config["batch_size"]):
+          params = ""
+          for param in config.keys():
+            if param != "instance_type" and param != "batch_params" and param != "batch_size":
+              if param in config["batch_params"]:
+                params += ("--"+param+"="+str(config[param][instance_id])+" ")
+              else:
+                params += ("--"+param+"="+str(config[param])+" ")
+          params = params[0:-1]
+          cmd = (cmd_base+params+"\"")
+          cmds.append(cmd)
+
+  os.chdir(cwd+"/ns")
+ 
+  if parallel:
+    pool = multiprocessing.Pool()    
+    pool.map(waf_cmd_wrapper, cmds)
+  else:
+    for cmd in cmds:
+      if os.system(cmd) != 0:
+        exit()
 
 @timeit
 def ns_clear():
@@ -484,6 +541,10 @@ if __name__ == '__main__':
   ns_run_batches_prsr.add_argument("-c", "--config_dir", type=str, required=True, help="Absolute or relative path (w.r.t. ns/configs) of the directory containing Json config files")
   ns_run_batches_prsr.add_argument("--parallel", action="store_true", help="Whether to execute with multiprocessing")  
 
+  ns_run_instances_prsr = ns_subsubprsr.add_parser("run_instances") # Run all configs (decompose each batch into instances, if any) under the specified dir sequentially
+  ns_run_instances_prsr.add_argument("-c", "--config_dir", type=str, required=True, help="Absolute or relative path (w.r.t. ns/configs) of the directory containing Json config files")
+  ns_run_instances_prsr.add_argument("--parallel", action="store_true", help="Whether to execute with multiprocessing")  
+
   ns_run_clear_prsr = ns_subsubprsr.add_parser("clear")
 
   ns_run_prerequisite_prsr = ns_subsubprsr.add_parser("prerequisite")
@@ -510,7 +571,9 @@ if __name__ == '__main__':
     elif args.ns_cmd == "run_batch":
       ns_run_batch(args.config, args.parallel)
     elif args.ns_cmd == "run_batches":
-      ns_run_batches(args.config_dir, args.parallel)      
+      ns_run_batches(args.config_dir, args.parallel)
+    elif args.ns_cmd == "run_instances":
+      ns_run_instances(args.config_dir, args.parallel)            
     elif args.ns_cmd == "clear":
       ns_clear()
     elif args.ns_cmd == "prerequisite":
