@@ -67,7 +67,6 @@ num_leaf: 2
 ======
 Configured FifoQueueDisc
 num_tracing_periods: 100
-=== elapsed_seconds: 59.8738===
 === Ipv4 addresses ===
 --- leftleaf_ifc ---
 0 10.1.1.1
@@ -87,12 +86,12 @@ num_tracing_periods: 100
 === avg_tpt_bottleneck[*] ===
 0 15903886.545
 1 82944948.364
-avg_tpt_bottleneck_total: 98848834.909
+Avg. Throughput [bps]: 98848834.909
 avg_jfi_bottleneck [computed]: 0.685
 === avg_tpt_app[*] ===
 0 15328814.545
 1 79818356.364
-avg_tpt_app_total: 95147170.909
+Avg. Goodput [bps]: 95147170.909
 avg_jfi_app [computed]: 0.685
 # of RTT samples for source 0: 63603
 Avg. RTT for source 0: 50632561.471ns
@@ -104,3 +103,5 @@ MySource 1:859375
 ====== Number of packets at bottleneck link ======
 Source 1: 695136
 Source 0: 132009
+
+=== Completion time [s]: 62.909===

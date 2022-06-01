@@ -898,7 +898,6 @@ main (int argc, char *argv[])
   NS_LOG_DEBUG("================== Export digest ==================");
 
   std::cout << elapsed_seconds.count() << "s" << std::endl;
-  oss << "=== elapsed_seconds: " << elapsed_seconds.count() << "===\n";
 
   oss << "=== Ipv4 addresses ===\n";
   oss << "--- leftleaf_ifc ---\n";
@@ -991,6 +990,7 @@ main (int argc, char *argv[])
     cebinae_ofs << DynamicCast<CebinaeQueueDisc>(q)->DumpDebugEvents();    
   }
 
+  oss << "\n=== Completion time [s]: " << elapsed_seconds.count() << "===\n";
   std::ofstream summary_ofs (result_dir + "/digest", std::ios::out | std::ios::app);  
   summary_ofs << oss.str();
 

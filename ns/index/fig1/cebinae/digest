@@ -75,7 +75,6 @@ delta_port: 0.01
 delta_flow: 0.01
 ------
 num_tracing_periods: 100
-=== elapsed_seconds: 45.1444===
 === Ipv4 addresses ===
 --- leftleaf_ifc ---
 0 10.1.1.1
@@ -95,12 +94,12 @@ num_tracing_periods: 100
 === avg_tpt_bottleneck[*] ===
 0 45571044.364
 1 36775821.091
-avg_tpt_bottleneck_total: 82346865.455
+Avg. Throughput [bps]: 82346865.455
 avg_jfi_bottleneck [computed]: 0.989
 === avg_tpt_app[*] ===
 0 43910516.364
 1 35439825.455
-avg_tpt_app_total: 79350341.818
+Avg. Goodput [bps]: 79350341.818
 avg_jfi_app [computed]: 0.989
 # of RTT samples for source 0: 186750
 Avg. RTT for source 0: 21293276.190ns
@@ -152,3 +151,5 @@ m_sourceidtag2toptimes:
 1: 15
 0: 40
 ------
+
+=== Completion time [s]: 47.649===
