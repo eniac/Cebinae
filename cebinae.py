@@ -294,17 +294,17 @@ def parse_bigtbl(data_path):
 
   ccas = []
   rtts = []
-  re_num_unit = re.compile("([0-9]+)([a-zA-Z]+)")
+  re_num_unit = re.compile("([0-9\.]+)([a-zA-Z]+)")
   m = re_num_unit.match(batch_config["bottleneck_delay"])
   rtt_unit = m.group(2)
-  bottleneck_delay = int(m.group(1))
+  bottleneck_delay = float(m.group(1))
   for i in range(num_cca):
     ccas.append(batch_config["transport_prot"+str(i)])
     m = re_num_unit.match(batch_config["leaf_delay"+str(i)])
     if m.group(2) != rtt_unit:
       print("ERR: unit mismatch")
       exit()
-    rtt = 2*(bottleneck_delay+2*int(m.group(1)))
+    rtt = 2*(bottleneck_delay+2*float(m.group(1)))
     rtts.append(str(rtt)+rtt_unit)
 
   tpt_fifo = None
