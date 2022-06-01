@@ -103,8 +103,8 @@ def waf_cmd_wrapper(cmd):
   print(cmd)
   os.system(cmd)
 
-@timeit
 def ns_run_batch(config_path, parallel):
+  t1 = time.time()
   print("=== ns_run_batch({0}), PID {1} ===".format(config_path, os.getppid()))
   cwd = os.getcwd()
   if not os.path.isabs(config_path):
@@ -153,6 +153,9 @@ def ns_run_batch(config_path, parallel):
       waf_cmd_wrapper(cmd)
   os.chdir(cwd)
 
+  t2 = time.time()
+  print("{0}: {1:.2f}s".format(func.__name__, (t2-t1)))    
+
 @timeit
 def ns_run_batches(config_path, parallel):
   cwd = os.getcwd()
@@ -168,11 +171,13 @@ def ns_run_batches(config_path, parallel):
 
   if parallel:
     print("=== Parallel branch ===") 
-    print('PPID:', os.getppid())
+    print('PPID: {0}, PGID: {1}'.format(os.getppid(), os.getpgid()))
+    pool = multiprocessing.Pool() # Default to os.cpu_count()
+    processes = [pool.apply_async(ns_run_batch, args=(config_path+"/"+json_file,False,)) for json_file in json_files]
+    results = [p.get() for p in processes]
   else:
     for json_file in json_files:
       ns_run_batch(config_path+"/"+json_file)    
-  print("Finished ns_run_batches")
 
 @timeit
 def ns_clear():
