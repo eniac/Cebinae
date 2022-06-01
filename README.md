@@ -37,18 +37,18 @@ Feel free to reach out if any question arises!
 **Reproduce Figure 1 Illustrative Example**
 
 * Before launching any experiments, run `python cebinae.py ns configure -p optimized` to configure optimized build profile for faster execution.
-* Run the experiment batch: `python cebinae.py ns run_batch -c fig1.json` (takes ~2 min). The tracing outputs of the experiments will appear under temporary created direcotry `ns/tmp_index/fig1/` by default.
+* Run the experiment batch: `python cebinae.py ns run_batch -c fig1.json` (takes ~2 min, or < 1min if with `--parallel` flag). The tracing outputs of the experiments will appear under temporary created direcotry `ns/tmp_index/fig1/` by default.
 * Plot Figure 1: `python cebinae.py plot --plot_target fig1 --data_path ns/tmp_index/fig1/`. The output plot `figure1.eps` will show up under `ns/tmp_index/fig1/`.
-* Expected outputs and plots are also stored under [ns/index/fig1/](https://github.com/eniac/Cebinae/tree/main/ns/index/fig1) for reference. The `*.eps` plot can be displayed by any EPS Viewer (e.g., Mac's built-in reader).
+* Expected outputs and plots are also stored under `ns/index/fig1/` for reference. The `*.eps` plot can be displayed by any EPS Viewer (e.g., Mac's built-in reader).
 
 **Reproduce Table 2 TODO**
 
 * `ns/configurs/bigtbl/` stores the configuration of experiments for the batch of experiments (3 instances) for each row, for instance, `ns/configurs/bigtbl/r0.json` corresponds to row 0 in the table.
-* Run the corresponding experiment batch: `python cebinae.py ns run_batch -c bigtbl/r0.json`, the results will appear under `ns/tmp_index/bigtbl/r0/`.
-* Read the metrics manually by examining the digest file for each experiment instance or run, for instance, `python cebinae.py parse bigtbl ns/tmp_index/bigtbl/r0` to print the parsed results automatically at the terminal.
-* One could also run `python cebinae.py ns run_batches -c bigtbl` in single command that will run all experiment batches under `ns/configs/bigtbl/`. However, as many of them will take hours or >24h to finish for a single experiement batch, one may want to split them into sub-dirs and run separately on different machines for faster completion.
+* Run a single experiment batch, for instance `r0.json`
+    * `python cebinae.py ns run_batch -c bigtbl/r0.json` (or `python cebinae.py ns run_batch -c bigtbl/r0.json --parallel` to decompose the batch instances for parallel execution), the results will appear under `ns/tmp_index/bigtbl/r0/`.
+    * Read the metrics manually by examining the digest file for each experiment instance or run, for instance, `python cebinae.py parse --target bigtbl --data_path ns/tmp_index/bigtbl0/r0` to print the parsed results automatically at the terminal.
+* Alternatively, one could also run `python cebinae.py ns run_instances -c bigtbl --parallel` in single command that will run all experiments under `ns/configs/bigtbl/` and exploits the underlying multi-core architecture if any. However, due to the number of experiment batches/instances and that a single experiment instance may take more than hours, one may further want to split the configuration files into sub-dirs and run separately on different machines.
 * The expected results are stored under `ns/index/bigtbl/`, the digest file contains the expected completion time for the corresponding experiment instance.
-
 
 
 ### Further Questions
