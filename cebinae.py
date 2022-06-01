@@ -3,6 +3,7 @@ import json
 import multiprocessing
 import os
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -171,10 +172,19 @@ def ns_run_batches(config_path, parallel):
 
   if parallel:
     print("=== Parallel branch ===") 
-    print('PPID: {0}, PGID: {1}'.format(os.getppid(), os.getpgid()))
+    print("PPID: {0}, PGID: {1}".format(os.getppid(), os.getpgid(os.getpid())))
     pool = multiprocessing.Pool() # Default to os.cpu_count()
-    processes = [pool.apply_async(ns_run_batch, args=(config_path+"/"+json_file,False,)) for json_file in json_files]
-    results = [p.get() for p in processes]
+    try:
+      processes = []
+      for json_file in json_files:
+        processes.append(pool.apply_async(ns_run_batch, args=(config_path+"/"+json_file,False,)))
+      results = [p.get() for p in processes]
+      pool.close()
+      pool.join()
+    except KeyboardInterrupt:
+      print("Captured KeyboardInterrupt")
+      pool.terminate()
+      exit(1)
   else:
     for json_file in json_files:
       ns_run_batch(config_path+"/"+json_file)    
