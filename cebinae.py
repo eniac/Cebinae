@@ -1,5 +1,6 @@
 import argparse
 import json
+import multiprocessing
 import os
 import re
 import subprocess
@@ -95,12 +96,16 @@ def ns_run_instance(config_path, enb_gdb):
     cmd += " --gdb"
 
   os.chdir(cwd+"/ns")
-  print(cmd)
-  os.system(cmd)
+  waf_cmd_wrapper(cmd)
   os.chdir(cwd)
 
+def waf_cmd_wrapper(cmd):
+  print(cmd)
+  os.system(cmd)
+
 @timeit
-def ns_run_batch(config_path):
+def ns_run_batch(config_path, parallel):
+  print("=== ns_run_batch({0}), PID {1} ===".format(config_path, os.getppid()))
   cwd = os.getcwd()
   if not os.path.isabs(config_path):
     config_path = (cwd + "/ns/configs/" + config_path)
@@ -133,13 +138,23 @@ def ns_run_batch(config_path):
     cmds.append(cmd)
 
   os.chdir(cwd+"/ns")
-  for cmd in cmds:
-    print("======{}======".format(cmd))
-    os.system(cmd)
+  if parallel:
+    processes = []
+    processes_target = []
+    for cmd in cmds:
+      p = multiprocessing.Process(target=waf_cmd_wrapper, args=(cmd,))
+      p.start()
+      processes.append(p)
+    for p in processes:
+      p.join()
+  else:
+    for cmd in cmds:
+      print("======{}======".format(cmd))
+      waf_cmd_wrapper(cmd)
   os.chdir(cwd)
 
 @timeit
-def ns_run_batches(config_path):
+def ns_run_batches(config_path, parallel):
   cwd = os.getcwd()
   if not os.path.isabs(config_path):
     config_path = (cwd + "/ns/configs/" + config_path)
@@ -151,9 +166,13 @@ def ns_run_batches(config_path):
   json_files = sorted([fn for fn in os.listdir(config_path) if fn.endswith('.json')])
   print("=== List of config files: {} ===".format(json_files))
 
-  for json_file in json_files:
-    print("=== ns_run_batch({}) ===".format(config_path+"/"+json_file))
-    ns_run_batch(config_path+"/"+json_file)
+  if parallel:
+    print("=== Parallel branch ===") 
+    print('PPID:', os.getppid())
+  else:
+    for json_file in json_files:
+      ns_run_batch(config_path+"/"+json_file)    
+  print("Finished ns_run_batches")
 
 @timeit
 def ns_clear():
@@ -444,9 +463,11 @@ if __name__ == '__main__':
 
   ns_run_batch_prsr = ns_subsubprsr.add_parser("run_batch")
   ns_run_batch_prsr.add_argument("-c", "--config", type=str, required=True, help="Absolute or relative path (w.r.t. ns/configs) of Json config file")
+  ns_run_batch_prsr.add_argument("--parallel", action="store_true", help="Whether to parallize the execution of the experiment instances within a batch")
 
-  ns_run_batch_prsr = ns_subsubprsr.add_parser("run_batches") # Run all run_batch configs under the specified dir sequentially
-  ns_run_batch_prsr.add_argument("-c", "--config_dir", type=str, required=True, help="Absolute or relative path (w.r.t. ns/configs) of the directory containing Json config files")
+  ns_run_batches_prsr = ns_subsubprsr.add_parser("run_batches") # Run all run_batch configs under the specified dir sequentially
+  ns_run_batches_prsr.add_argument("-c", "--config_dir", type=str, required=True, help="Absolute or relative path (w.r.t. ns/configs) of the directory containing Json config files")
+  ns_run_batches_prsr.add_argument("--parallel", action="store_true", help="Whether to execute with multiprocessing")  
 
   ns_run_clear_prsr = ns_subsubprsr.add_parser("clear")
 
@@ -472,9 +493,9 @@ if __name__ == '__main__':
     elif args.ns_cmd == "run_instance":
       ns_run_instance(args.config, args.gdb)
     elif args.ns_cmd == "run_batch":
-      ns_run_batch(args.config)
+      ns_run_batch(args.config, args.parallel)
     elif args.ns_cmd == "run_batches":
-      ns_run_batches(args.config_dir)      
+      ns_run_batches(args.config_dir, args.parallel)      
     elif args.ns_cmd == "clear":
       ns_clear()
     elif args.ns_cmd == "prerequisite":
