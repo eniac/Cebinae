@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -184,6 +185,136 @@ def ns_prerequisite():
     subprocess.call(cmd.split())
 
 @timeit
+def parse_bigtbl(data_path):
+  cwd = os.getcwd()
+  if not os.path.isabs(data_path):
+    data_path = (cwd+"/"+data_path)
+  print("data_path pointing to the root dir of the bigtbl row: {0}".format(data_path))
+  if not os.path.isdir(data_path):
+    print("ERR: not dir!")
+    exit()
+  
+  batch_config = None
+  with open(data_path+"/fifo/config.json", 'r') as f:
+    batch_config=json.loads(f.read())
+
+  bottleneck_bw = batch_config["bottleneck_bw"]
+  num_cca = batch_config["num_cca"]
+
+  ccas = []
+  rtts = []
+  re_num_unit = re.compile("([0-9]+)([a-zA-Z]+)")
+  m = re_num_unit.match(batch_config["bottleneck_delay"])
+  rtt_unit = m.group(2)
+  bottleneck_delay = int(m.group(1))
+  for i in range(num_cca):
+    ccas.append(batch_config["transport_prot"+str(i)])
+    m = re_num_unit.match(batch_config["leaf_delay"+str(i)])
+    if m.group(2) != rtt_unit:
+      print("ERR: unit mismatch")
+      exit()
+    rtt = 2*(bottleneck_delay+2*int(m.group(1)))
+    rtts.append(str(rtt)+rtt_unit)
+
+  tpt_fifo = None
+  tpt_fq = None
+  tpt_cebinae = None
+  gpt_fifo = None
+  gpt_fq = None
+  gpt_cebinae = None
+  tpt_jfi_fifo = None
+  tpt_jfi_fq = None
+  tpt_jfi_cebinae = None
+  gpt_jfi_fifo = None
+  gpt_jfi_fq = None
+  gpt_jfi_cebinae = None  
+
+  with open(data_path+"/fifo/digest", 'r') as f:
+    lines = f.readlines()
+    for line in lines:
+      if line.startswith("Avg. Throughput [bps]"):
+        line = line.split(":")
+        tpt_fifo = line[1].strip("\n ")
+      elif line.startswith("Avg. Goodput [bps]"):
+        line = line.split(":")
+        gpt_fifo = line[1].strip("\n ")        
+      elif line.startswith("avg_jfi_bottleneck [computed]:"):
+        line = line.split(":")
+        tpt_jfi_fifo = line[1].strip("\n ")   
+      elif line.startswith("avg_jfi_app [computed]:"):
+        line = line.split(":")
+        gpt_jfi_fifo = line[1].strip("\n ")           
+
+  with open(data_path+"/fq/digest", 'r') as f:
+    lines = f.readlines()
+    for line in lines:
+      if line.startswith("Avg. Throughput [bps]"):
+        line = line.split(":")
+        tpt_fq = line[1].strip("\n ")
+      elif line.startswith("Avg. Goodput [bps]"):
+        line = line.split(":")
+        gpt_fq = line[1].strip("\n ")
+      elif line.startswith("avg_jfi_bottleneck [computed]:"):
+        line = line.split(":")
+        tpt_jfi_fq = line[1].strip("\n ")   
+      elif line.startswith("avg_jfi_app [computed]:"):
+        line = line.split(":")
+        gpt_jfi_fq = line[1].strip("\n ")        
+
+  with open(data_path+"/cebinae/digest", 'r') as f:
+    lines = f.readlines()
+    for line in lines:
+      if line.startswith("Avg. Throughput [bps]"):
+        line = line.split(":")
+        tpt_cebinae = line[1].strip("\n ")
+      elif line.startswith("Avg. Goodput [bps]"):
+        line = line.split(":")
+        gpt_cebinae = line[1].strip("\n ") 
+      elif line.startswith("avg_jfi_bottleneck [computed]:"):
+        line = line.split(":")
+        tpt_jfi_cebinae = line[1].strip("\n ")   
+      elif line.startswith("avg_jfi_app [computed]:"):
+        line = line.split(":")
+        gpt_jfi_cebinae = line[1].strip("\n ")                       
+
+  print_str = '''Bottleneck BW: {0}
+RTTs: {1}
+CCAs: {2}
+--- Throughput ---
+  FIFO: {3}
+  FQ: {4}
+  Cebinae: {5}
+--- Goodput ---
+  FIFO: {6}
+  FQ: {7}
+  Cebinae: {8}
+--- JFI (tpt) ---
+  FIFO: {9}
+  FQ: {10}
+  Cebinae: {11}
+--- JFI (gpt) ---
+  FIFO: {12}
+  FQ: {13}
+  Cebinae: {14}  
+'''.format(bottleneck_bw,
+    rtts,
+    ccas,
+    tpt_fifo,
+    tpt_fq,
+    tpt_cebinae,
+    gpt_fifo,
+    gpt_fq,
+    gpt_cebinae,
+    tpt_jfi_fifo,
+    tpt_jfi_fq,
+    tpt_jfi_cebinae,
+    gpt_jfi_fifo,
+    gpt_jfi_fq,
+    gpt_jfi_cebinae    
+  )
+  print(print_str)
+
+@timeit
 def plot_fig1(data_dir):
   cwd = os.getcwd()
   if not os.path.isabs(data_dir):
@@ -321,6 +452,10 @@ if __name__ == '__main__':
 
   ns_run_prerequisite_prsr = ns_subsubprsr.add_parser("prerequisite")
 
+  parse_subprsr = subprsr.add_parser("parse")
+  parse_subprsr.add_argument("--target", type=str, required=True, choices=["bigtbl"], help="Parse target")
+  parse_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of data file or directory")  
+
   plot_subprsr = subprsr.add_parser("plot")
   plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "time_tpt"], help="Plot target")
   plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of plotting data file or directory")
@@ -344,6 +479,9 @@ if __name__ == '__main__':
       ns_clear()
     elif args.ns_cmd == "prerequisite":
       ns_prerequisite()      
+  elif args.cmd == "parse":
+    if args.target == "bigtbl":
+      parse_bigtbl(args.data_path)
   elif args.cmd == "plot":
     if args.plot_target == "fig1":
       plot_fig1(args.data_path)
