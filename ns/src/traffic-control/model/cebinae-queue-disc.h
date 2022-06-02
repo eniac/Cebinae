@@ -2,6 +2,7 @@
 #define CEBINAE_QUEUE_DISC_H
 
 #include <deque>
+#include <unordered_map>
 #include "ns3/data-rate.h"
 #include "ns3/histogram.h"
 #include "ns3/ipv4-header.h"
@@ -410,7 +411,7 @@ private:
   uint64_t m_last_rate_top {0};
   uint64_t m_last_rate_bot {0};
   // Whether port is saturated (one flag per port/NetDevice/CebinaeQueueDisc)
-  bool m_port_saturated {false};
+  // bool m_port_saturated {false};
 
   // Having a class for port saturation detector is an overkill.
   // The egress pipeline maintains a port to byte count register.
