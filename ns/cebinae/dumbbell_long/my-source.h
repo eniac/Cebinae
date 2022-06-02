@@ -20,7 +20,7 @@ public:
   virtual ~MySource();
 
   // Default OnOffApp creates socket until app start time, can't access and configure the tracing externally
-  void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate, uint32_t appid, bool poisson);
+  void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, DataRate dataRate, uint32_t appid, bool poisson);
 
   uint32_t GetPacketsSent();
 
@@ -34,7 +34,6 @@ private:
   Ptr<Socket>     m_socket;
   Address         m_peer;
   uint32_t        m_packetSize;
-  uint32_t        m_nPackets;
   DataRate        m_dataRate;
   EventId         m_sendEvent;
   bool            m_running;
@@ -49,7 +48,6 @@ MySource::MySource ()
   : m_socket (0), 
     m_peer (), 
     m_packetSize (0), 
-    m_nPackets (0), 
     m_dataRate (0), 
     m_sendEvent (), 
     m_running (false), 
@@ -63,12 +61,11 @@ MySource::~MySource()
 }
 
 void
-MySource::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate, uint32_t sourceid, bool poisson)
+MySource::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, DataRate dataRate, uint32_t sourceid, bool poisson)
 {
   m_socket = socket;
   m_peer = address;
   m_packetSize = packetSize;
-  m_nPackets = nPackets;
   m_dataRate = dataRate;
   m_sourceid = sourceid;
 
@@ -115,10 +112,10 @@ MySource::SendPacket (void)
 
   m_socket->Send (packet);
 
-  if (++m_packetsSent < m_nPackets)
-    {
-      ScheduleTx ();
-    }
+  // Infinite demand
+  // if (++m_packetsSent < m_nPackets)
+  ++m_packetsSent;
+  ScheduleTx ();
 }
 
 void 

@@ -4,7 +4,6 @@ config_path: /home/leoyu/Cebinae/ns/configs/fig1.json
 result_dir: tmp_index/fig1/fifo/
 sack: true
 recovery: ns3::TcpClassicRecovery
-num_sender_pkt: 1000000000
 app_packet_size: 1440
 delackcount: 2
 seed: 2022
@@ -104,4 +103,4 @@ MySource 1:859375
 Source 1: 695136
 Source 0: 132009
 
-=== Completion time [s]: 80.980===
+=== Completion time [s]: 75.776===

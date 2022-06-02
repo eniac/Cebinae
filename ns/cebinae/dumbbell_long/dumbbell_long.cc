@@ -192,7 +192,6 @@ main (int argc, char *argv[])
   uint32_t num_leaf = 2;
   bool sack = true;  
   std::string recovery = "ns3::TcpClassicRecovery";
-  uint32_t num_sender_pkt = 1000000000;  // Infinite demand
   // Naming the output directory using local system time
   time_t rawtime;
   struct tm * timeinfo;
@@ -422,7 +421,6 @@ main (int argc, char *argv[])
             << "result_dir: " << result_dir << "\n"
             << "sack: " << sack << "\n"
             << "recovery: " << recovery << "\n"
-            << "num_sender_pkt: " << num_sender_pkt << "\n"
             << "app_packet_size: " << app_packet_size << "\n"            
             << "delackcount: " << delackcount << "\n"
             << "seed: " << seed << "\n"
@@ -847,23 +845,23 @@ main (int argc, char *argv[])
 
     Ptr<MySource> app = CreateObject<MySource> ();
     if (i < num_cca0) {
-      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw0), i, false);
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, DataRate (app_bw0), i, false);
     } else if (i < (num_cca0+num_cca1)) {
-      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw1), i, false);       
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, DataRate (app_bw1), i, false);       
     } else if (i < (num_cca0+num_cca1+num_cca2)) {
-      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw2), i, false);    
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, DataRate (app_bw2), i, false);    
     } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3)) {
-      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw3), i, false);      
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, DataRate (app_bw3), i, false);      
     } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3+num_cca4)) {
-      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw4), i, false);     
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, DataRate (app_bw4), i, false);     
     } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3+num_cca4+num_cca5)) {
-      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw5), i, false);       
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, DataRate (app_bw5), i, false);       
     } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3+num_cca4+num_cca5+num_cca6)) {
-      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw6), i, false);     
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, DataRate (app_bw6), i, false);     
     } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3+num_cca4+num_cca5+num_cca6+num_cca7)) {
-      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw7), i, false);       
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, DataRate (app_bw7), i, false);       
     } else if (i < (num_cca0+num_cca1+num_cca2+num_cca3+num_cca4+num_cca5+num_cca6+num_cca7+num_cca8)) {
-      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, num_sender_pkt, DataRate (app_bw8), i, false);      
+      app->Setup (ns3TcpSocket, sinkAddress, app_packet_size, DataRate (app_bw8), i, false);      
     }                                    
     leftleaf.Get (i)->AddApplication (app);
     app->SetStartTime (Seconds (app_seconds_start));
