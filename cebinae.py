@@ -159,7 +159,7 @@ def ns_run_batch(config_path, parallel):
   os.chdir(cwd)
 
   t2 = time.time()
-  print("{0}: {1:.2f}s".format(func.__name__, (t2-t1)))    
+  print("ns_run_batch: {0:.2f}s".format(t2-t1))    
 
 @timeit
 def ns_run_batches(config_path, parallel):

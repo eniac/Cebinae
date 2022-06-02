@@ -13,8 +13,7 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/traffic-control-module.h"
 
-#include "../utils/my-sink.h"
-#include "../utils/my-source.h"
+#include "my-source.h"
 
 using namespace ns3;
 
@@ -100,16 +99,16 @@ PhyTxEndCb (Ptr<const Packet> p)
   }
 }
 
-std::vector<std::uint64_t> mysink_mysourceidtag2bytecount;
+std::vector<std::uint64_t> packetsink_mysourceidtag2bytecount;
 static void
-RxWithAddressesMySink (Ptr<const Packet> p, const Address& from, const Address& local) {
+RxWithAddressesPacketSink (Ptr<const Packet> p, const Address& from, const Address& local) {
   MySourceIDTag tag;
   if (p->FindFirstMatchingByteTag(tag)) {
     // NS_LOG_DEBUG ("[" << Simulator::Now ().GetNanoSeconds() << "] SourceIDTag: " << tag.Get() << ", size: " << p->GetSize()
     //              << ", from: " << InetSocketAddress::ConvertFrom(from).GetIpv4()
     //              << ", local: " << InetSocketAddress::ConvertFrom(local).GetIpv4());
   }
-  mysink_mysourceidtag2bytecount[tag.Get()] += p->GetSize();
+  packetsink_mysourceidtag2bytecount[tag.Get()] += p->GetSize();
 }
 
 Time prevTime = Seconds (0);
@@ -133,11 +132,11 @@ TraceThroughputJFI(std::string bottleneck_fn, std::string app_fn, std::string jf
 
   std::ofstream app_ofs (result_dir + "/" + app_fn, std::ios::out | std::ios::app);
   total = 0.0;
-  for (uint32_t i = 0; i < mysink_mysourceidtag2bytecount.size(); i++) {
+  for (uint32_t i = 0; i < packetsink_mysourceidtag2bytecount.size(); i++) {
     // bps
-    app_ofs << std::fixed << std::setprecision (3) << 8.0*mysink_mysourceidtag2bytecount[i]/(curTime.GetSeconds () - prevTime.GetSeconds ()) << " ";
-    avg_tpt_app[i] += (8.0*mysink_mysourceidtag2bytecount[i]/(sim_seconds-app_seconds_start));
-    total += 8.0*mysink_mysourceidtag2bytecount[i]/(curTime.GetSeconds () - prevTime.GetSeconds ());
+    app_ofs << std::fixed << std::setprecision (3) << 8.0*packetsink_mysourceidtag2bytecount[i]/(curTime.GetSeconds () - prevTime.GetSeconds ()) << " ";
+    avg_tpt_app[i] += (8.0*packetsink_mysourceidtag2bytecount[i]/(sim_seconds-app_seconds_start));
+    total += 8.0*packetsink_mysourceidtag2bytecount[i]/(curTime.GetSeconds () - prevTime.GetSeconds ());
   }
   app_ofs << std::fixed << std::setprecision (3) << total << std::endl;
 
@@ -154,14 +153,14 @@ TraceThroughputJFI(std::string bottleneck_fn, std::string app_fn, std::string jf
     // Reset each period
     mysourceidtag2bytecount[i] = 0;
   }
-  for (uint32_t i = 0; i < mysink_mysourceidtag2bytecount.size(); i++) {
-    sum_app += mysink_mysourceidtag2bytecount[i];
-    sum_squares_app += (mysink_mysourceidtag2bytecount[i] * mysink_mysourceidtag2bytecount[i]);
+  for (uint32_t i = 0; i < packetsink_mysourceidtag2bytecount.size(); i++) {
+    sum_app += packetsink_mysourceidtag2bytecount[i];
+    sum_squares_app += (packetsink_mysourceidtag2bytecount[i] * packetsink_mysourceidtag2bytecount[i]);
     // Reset each period
-    mysink_mysourceidtag2bytecount[i] = 0;
+    packetsink_mysourceidtag2bytecount[i] = 0;
   }
   double jfi_bottleneck = static_cast<double> (sum_bottleneck * sum_bottleneck) / sum_squares_bottleneck / mysourceidtag2bytecount.size();
-  double jfi_app = static_cast<double> (sum_app * sum_app) / sum_squares_app / mysink_mysourceidtag2bytecount.size();
+  double jfi_app = static_cast<double> (sum_app * sum_app) / sum_squares_app / packetsink_mysourceidtag2bytecount.size();
 
   // // Avoid NaN during first period (no traffic)
   // if (sum_squares_app != 0) {
@@ -774,9 +773,9 @@ main (int argc, char *argv[])
   NS_LOG_DEBUG("================== Configure Ipv4AddressHelper ==================");
 
   Ipv4AddressHelper ipv4_left;
-  ipv4_left.SetBase ("10.1.1.0", "255.255.255.0");  
-  Ipv4AddressHelper ipv4_right("10.2.1.0", "255.255.255.0");
-  Ipv4AddressHelper ipv4_router("10.3.1.0", "255.255.255.0");
+  ipv4_left.SetBase ("1.1.1.0", "255.255.255.0");  
+  Ipv4AddressHelper ipv4_right("100.1.1.0", "255.255.255.0");
+  Ipv4AddressHelper ipv4_router("200.1.1.0", "255.255.255.0");
 
   Ipv4InterfaceContainer leftleaf_ifc;
   Ipv4InterfaceContainer leftrouter_ifc;
@@ -817,14 +816,14 @@ main (int argc, char *argv[])
     Address sinkAddress (InetSocketAddress (rightleaf_ifc.GetAddress(i), sinkPort));
     // PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort)); 
     // ApplicationContainer sinkApps = packetSinkHelper.Install (rightleaf.Get(i));
-    Ptr<MySink> sink = CreateObject<MySink> ();
+    Ptr<PacketSink> sink = CreateObject<PacketSink> ();
     sink->SetAttribute ("Protocol", StringValue ("ns3::TcpSocketFactory"));
     sink->SetAttribute ("Local", AddressValue (InetSocketAddress (Ipv4Address::GetAny (), sinkPort)));
     rightleaf.Get(i)->AddApplication(sink);
     sink->SetStartTime (Seconds (0.));
     sink->SetStopTime (Seconds (app_seconds_end));  
 
-    sink->TraceConnectWithoutContext("RxWithAddresses", MakeCallback(&RxWithAddressesMySink));
+    sink->TraceConnectWithoutContext("RxWithAddresses", MakeCallback(&RxWithAddressesPacketSink));
 
     Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (leftleaf.Get (i), TcpSocketFactory::GetTypeId ());
     if (logtcp) {
@@ -867,7 +866,7 @@ main (int argc, char *argv[])
   // The other NetDevice only transmits ACK packets
   // router_devices.Get(1)->TraceConnectWithoutContext("PhyTxEnd", MakeCallback (&PhyTxEndCb));
   mysourceidtag2bytecount.resize(num_leaf, 0);
-  mysink_mysourceidtag2bytecount.resize(num_leaf, 0);
+  packetsink_mysourceidtag2bytecount.resize(num_leaf, 0);
   avg_tpt_bottleneck.resize(num_leaf, 0);
   avg_tpt_app.resize(num_leaf, 0);
   for (uint32_t sourceid = 0; sourceid < num_leaf; sourceid ++) {
