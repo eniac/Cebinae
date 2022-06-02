@@ -192,7 +192,6 @@ main (int argc, char *argv[])
   uint32_t num_leaf = 2;
   bool sack = true;  
   std::string recovery = "ns3::TcpClassicRecovery";
-  uint32_t app_packet_size = 1440;
   uint32_t num_sender_pkt = 1000000000;  // Infinite demand
   // Naming the output directory using local system time
   time_t rawtime;
@@ -214,6 +213,8 @@ main (int argc, char *argv[])
   uint32_t seed = 1;  // Fixed
   uint32_t run = 1;  // Varry across replications
   sim_seconds = 10;
+  uint32_t delackcount = 1;
+  uint32_t app_packet_size = 1440;  
   // Configure 0 will give 1000
   std::string switch_total_bufsize = "100p";
   std::string queuedisc_type = "FifoQueueDisc";
@@ -284,6 +285,8 @@ main (int argc, char *argv[])
   cmd.AddValue ("app_seconds_end", "Application stop time [s]", app_seconds_end);
   cmd.AddValue ("tracing_period_us", "Tracing period [us]", tracing_period_us);
   cmd.AddValue ("progress_interval_ms", "Prograss interval [ms]", progress_interval_ms);    
+  cmd.AddValue ("delackcount", "TcpSocket::DelAckCount", delackcount);  
+  cmd.AddValue ("app_packet_size", "App payload size", app_packet_size);    
   cmd.AddValue("num_cca", "Number of CCA groups", num_cca);
   cmd.AddValue ("transport_prot0", "Transport protocol to use: TcpNewReno, TcpLinuxReno, "
                 "TcpHybla, TcpHighSpeed, TcpHtcp, TcpVegas, TcpScalable, TcpVeno, "
@@ -413,15 +416,15 @@ main (int argc, char *argv[])
   }
 
   std::ostringstream oss;
-  oss       << "=== Non-CMD varas ===\n"
+  oss       << "=== CMD varas ===\n"
             << "enable_debug: " << std::boolalpha << enable_debug << "\n" 
             << "config_path: " << config_path << "\n"
             << "result_dir: " << result_dir << "\n"
             << "sack: " << sack << "\n"
             << "recovery: " << recovery << "\n"
-            << "app_packet_size: " << app_packet_size << "\n"
             << "num_sender_pkt: " << num_sender_pkt << "\n"
-            << "=== CMD vars ===\n"
+            << "app_packet_size: " << app_packet_size << "\n"            
+            << "delackcount: " << delackcount << "\n"
             << "seed: " << seed << "\n"
             << "run: " << run << "\n"
             << "tracing_period_us: " << tracing_period_us << "\n"   
@@ -495,33 +498,43 @@ main (int argc, char *argv[])
 
   PointToPointHelper p2p_bottleneck;
   p2p_bottleneck.SetDeviceAttribute ("DataRate", StringValue (bottleneck_bw));
+  p2p_bottleneck.SetDeviceAttribute ("Mtu", UintegerValue(1500));   
   p2p_bottleneck.SetChannelAttribute ("Delay", StringValue (bottleneck_delay));
   PointToPointHelper p2p_leaf0;
   p2p_leaf0.SetDeviceAttribute ("DataRate", StringValue (leaf_bw0));
+  p2p_leaf0.SetDeviceAttribute ("Mtu", UintegerValue(1500));  
   p2p_leaf0.SetChannelAttribute ("Delay", StringValue (leaf_delay0));
   PointToPointHelper p2p_leaf1;
   p2p_leaf1.SetDeviceAttribute ("DataRate", StringValue (leaf_bw1));
+  p2p_leaf1.SetDeviceAttribute ("Mtu", UintegerValue(1500));    
   p2p_leaf1.SetChannelAttribute ("Delay", StringValue (leaf_delay1));  
   PointToPointHelper p2p_leaf2;
   p2p_leaf2.SetDeviceAttribute ("DataRate", StringValue (leaf_bw2));
+  p2p_leaf2.SetDeviceAttribute ("Mtu", UintegerValue(1500));   
   p2p_leaf2.SetChannelAttribute ("Delay", StringValue (leaf_delay2));  
   PointToPointHelper p2p_leaf3;
   p2p_leaf3.SetDeviceAttribute ("DataRate", StringValue (leaf_bw3));
+  p2p_leaf3.SetDeviceAttribute ("Mtu", UintegerValue(1500));   
   p2p_leaf3.SetChannelAttribute ("Delay", StringValue (leaf_delay3));  
   PointToPointHelper p2p_leaf4;
   p2p_leaf4.SetDeviceAttribute ("DataRate", StringValue (leaf_bw4));
+  p2p_leaf4.SetDeviceAttribute ("Mtu", UintegerValue(1500));   
   p2p_leaf4.SetChannelAttribute ("Delay", StringValue (leaf_delay4));  
   PointToPointHelper p2p_leaf5;
   p2p_leaf5.SetDeviceAttribute ("DataRate", StringValue (leaf_bw5));
+  p2p_leaf5.SetDeviceAttribute ("Mtu", UintegerValue(1500));   
   p2p_leaf5.SetChannelAttribute ("Delay", StringValue (leaf_delay5));  
   PointToPointHelper p2p_leaf6;
   p2p_leaf6.SetDeviceAttribute ("DataRate", StringValue (leaf_bw6));
+  p2p_leaf6.SetDeviceAttribute ("Mtu", UintegerValue(1500));   
   p2p_leaf6.SetChannelAttribute ("Delay", StringValue (leaf_delay6)); 
   PointToPointHelper p2p_leaf7;
   p2p_leaf7.SetDeviceAttribute ("DataRate", StringValue (leaf_bw7));
+  p2p_leaf7.SetDeviceAttribute ("Mtu", UintegerValue(1500));   
   p2p_leaf7.SetChannelAttribute ("Delay", StringValue (leaf_delay7)); 
   PointToPointHelper p2p_leaf8;
   p2p_leaf8.SetDeviceAttribute ("DataRate", StringValue (leaf_bw8));
+  p2p_leaf8.SetDeviceAttribute ("Mtu", UintegerValue(1500));   
   p2p_leaf8.SetChannelAttribute ("Delay", StringValue (leaf_delay8));        
 
   // Unclear of the right configuration, use default as it seems to match real world models more than using 1p
@@ -605,16 +618,17 @@ main (int argc, char *argv[])
   stack.Install(router.Get(1));
 
   NS_LOG_DEBUG("================== Install TCP transport ==================");
-  // 2 MB of TCP buffer
+  // 2 MB (large enough) TCP buffers to prevent the applications from bottlenecking the exp
   Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
-  // By default, MSS = ~500
-  // IP MTU = IP header (>=20B) + TCP header (20B) + TCP MSS
+  // Reset the default MSS ~500
+  // IP MTU = IP header (20B-60B) + TCP header (20B-60B) + TCP MSS
   // Ethernet frame = Ethernet header (14B) + IP MTU + FCS (4B)
+  // The additional header overhead for this instance is 20+20+14=54B, hence app_packet_size <= 1500-54 = 1446
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (app_packet_size));
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (sack));
   // Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (10));
-  // Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (delAckCount));
+  Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (delackcount));
   // Config::SetDefault ("ns3::TcpSocketBase::MinRto", TimeValue (Seconds (minRto)));
   Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
                       TypeIdValue (TypeId::LookupByName (recovery)));
