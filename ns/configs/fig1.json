@@ -18,6 +18,8 @@
     "app_seconds_end": 100,
     "tracing_period_us": 1000000,
     "progress_interval_ms": 1000,
+    "delackcount": 2,
+    "app_packet_size": 1440,
     "bottleneck_bw": "100Mbps",
     "bottleneck_delay": "10ms",
     "switch_total_bufsize": "200p",

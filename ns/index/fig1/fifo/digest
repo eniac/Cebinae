@@ -1,12 +1,12 @@
-=== Non-CMD varas ===
+=== CMD varas ===
 enable_debug: true
 config_path: /home/leoyu/Cebinae/ns/configs/fig1.json
 result_dir: tmp_index/fig1/fifo/
 sack: true
 recovery: ns3::TcpClassicRecovery
-app_packet_size: 1440
 num_sender_pkt: 1000000000
-=== CMD vars ===
+app_packet_size: 1440
+delackcount: 2
 seed: 2022
 run: 1205
 tracing_period_us: 1000000
@@ -69,20 +69,20 @@ Configured FifoQueueDisc
 num_tracing_periods: 100
 === Ipv4 addresses ===
 --- leftleaf_ifc ---
-0 10.1.1.1
-1 10.1.2.1
+0 1.1.1.1
+1 1.1.2.1
 --- leftrouter_ifc ---
-0 10.1.1.2
-1 10.1.2.2
+0 1.1.1.2
+1 1.1.2.2
 --- rightleaf_ifc ---
-0 10.2.1.1
-1 10.2.2.1
+0 100.1.1.1
+1 100.1.2.1
 --- rightrouter_ifc ---
-0 10.2.1.2
-1 10.2.2.2
+0 100.1.1.2
+1 100.1.2.2
 --- router_ifc ---
-0 10.3.1.1
-1 10.3.1.2
+0 200.1.1.1
+1 200.1.1.2
 === avg_tpt_bottleneck[*] ===
 0 15903886.545
 1 82944948.364
@@ -104,4 +104,4 @@ MySource 1:859375
 Source 1: 695136
 Source 0: 132009
 
-=== Completion time [s]: 62.909===
+=== Completion time [s]: 80.980===
