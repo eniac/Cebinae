@@ -176,6 +176,7 @@ TraceThroughputJFI(std::string bottleneck_fn, std::string app_fn, std::string jf
   Simulator::Schedule(MicroSeconds(tracing_period_us), &TraceThroughputJFI, bottleneck_fn, app_fn, jfi_fn);
 }
 
+bool printprogress = true;
 void
 PrintProgress (Time interval)
 {
@@ -209,6 +210,7 @@ main (int argc, char *argv[])
   uint32_t progress_interval_ms = 1000;
   bool enable_debug = 0;  
   bool logtcp = 0;
+  bool enable_stdout = 1; 
   uint32_t seed = 1;  // Fixed
   uint32_t run = 1;  // Varry across replications
   sim_seconds = 10;
@@ -279,6 +281,8 @@ main (int argc, char *argv[])
   cmd.AddValue("run", "Run", run);
   cmd.AddValue ("enable_debug", "Enable logging", enable_debug);
   cmd.AddValue ("logtcp", "Enable logging of TCP traces, such as RTT, RTO, cwnd (large file size)", logtcp);  
+  cmd.AddValue ("enable_stdout", "Enable verbose rmterminal print", enable_stdout);  
+  cmd.AddValue ("printprogress", "Enable verbose rmterminal print", printprogress);    
   cmd.AddValue ("sim_seconds", "Simulation time [s]", sim_seconds);
   cmd.AddValue ("app_seconds_start", "Application start time [s]", app_seconds_start);  
   cmd.AddValue ("app_seconds_end", "Application stop time [s]", app_seconds_end);
@@ -417,6 +421,8 @@ main (int argc, char *argv[])
   std::ostringstream oss;
   oss       << "=== CMD varas ===\n"
             << "enable_debug: " << std::boolalpha << enable_debug << "\n" 
+            << "enable_stdout: " << std::boolalpha << enable_stdout << "\n"      
+            << "printprogress: " << std::boolalpha << printprogress << "\n"
             << "config_path: " << config_path << "\n"
             << "result_dir: " << result_dir << "\n"
             << "sack: " << sack << "\n"
@@ -896,7 +902,9 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  Simulator::Schedule (MilliSeconds(progress_interval_ms), &PrintProgress, MilliSeconds(progress_interval_ms));
+  if (printprogress) {
+    Simulator::Schedule (MilliSeconds(progress_interval_ms), &PrintProgress, MilliSeconds(progress_interval_ms));
+  }
 
   NS_LOG_DEBUG("================== Run ==================");
 
@@ -1005,7 +1013,9 @@ main (int argc, char *argv[])
   std::ofstream summary_ofs (result_dir + "/digest", std::ios::out | std::ios::app);  
   summary_ofs << oss.str();
 
-  std::cout << oss.str() << std::endl;
+  if (enable_stdout) {
+    std::cout << oss.str() << std::endl;
+  }
   std::cout << "Result_dir: " << result_dir << std::endl;
 
   Simulator::Destroy ();
