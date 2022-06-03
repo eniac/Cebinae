@@ -101,7 +101,7 @@ def ns_run_instance(config_path, enb_gdb):
   os.chdir(cwd)
 
 def waf_cmd_wrapper(cmd):
-  print(cmd)
+  print("PID {0}: {1}".format(os.getppid(), cmd))
   os.system(cmd)
 
 def ns_run_batch(config_path, parallel):
@@ -241,6 +241,7 @@ def ns_run_instances(config_path, parallel):
   if parallel:
     pool = multiprocessing.Pool()    
     pool.map(waf_cmd_wrapper, cmds)
+    print("=== Unblocked from pool map ===")
   else:
     for cmd in cmds:
       if os.system(cmd) != 0:
@@ -499,9 +500,9 @@ plot '''
     lines = f.readlines()
     num_flows = len(lines[0].split())-1
     for i in range(num_flows):
-      curves.append(("\""+file_name+"\""+" using ($"+str(i+1)+"/1000000) title \""+str(i)+"\","))
+      curves.append(("\""+file_name+"\""+" using ($"+str(i+1)+"/1000000) title \""+str(i)+"\" with lines lw 5 dt 1,"))
     if w_total:
-      curves.append(("\""+file_name+"\""+" using ($"+str(num_flows+1)+"/1000000) title \"agg.\","))
+      curves.append(("\""+file_name+"\""+" using ($"+str(num_flows+1)+"/1000000) title \"agg.\" with lines lw 5 dt 1,"))
   for i in range(len(curves)-1):
     gp_str += (curves[i]+"\\\n")
   gp_str += curves[-1]
