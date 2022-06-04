@@ -485,7 +485,7 @@ set nologscale x
 
 set key font ",16"
 set key samplen 2
-set key width -5
+set key maxrows 3
 
 set xlabel "Time [s]"
 set ylabel 'Rate [MBps]'
@@ -493,16 +493,34 @@ set ylabel 'Rate [MBps]'
 set xrange [1:100]
 set xtics 0,5,100
 
-plot '''
+myred = '#A90533'
+mypink = '#f89588'
+myblue = '#63b2ee'
+mygreen = '#76da91'
+mypurple = '#9987ce'
+'''
 
   curves = []
   with open(data_path, "r") as f:
     lines = f.readlines()
     num_flows = len(lines[0].split())-1
+  
+    # Define enough line styles
+    colors = ['myred', 'mypink', 'myblue', 'mygreen', 'mypurple']
+    point_types = [2, 4, 6, 8, 10, 12, 14, 5, 7, 9, 11, 13, 15]
+    num_ls = 0
+    point_type = 0
+    while num_ls <= num_flows:
+      for color in colors:
+        num_ls += 1
+        gp_str += ("set style line {0} lc rgb {1} dt 1 lw 3 pt {2}\n".format(num_ls, color, point_types[point_type]))
+      point_type += 1
+
+    gp_str += "plot "
     for i in range(num_flows):
-      curves.append(("\""+file_name+"\""+" using ($"+str(i+1)+"/1000000) title \""+str(i)+"\" with lines lw 5 dt 1,"))
+      curves.append(("\""+file_name+"\""+" using ($"+str(i+1)+"/1000000) title \""+str(i)+"\" with lp ls "+str(i+1)+","))
     if w_total:
-      curves.append(("\""+file_name+"\""+" using ($"+str(num_flows+1)+"/1000000) title \"agg.\" with lines lw 5 dt 1,"))
+      curves.append(("\""+file_name+"\""+" using ($"+str(num_flows+1)+"/1000000) title \"agg.\" with lp ls "+str(num_flows+1)+","))
   for i in range(len(curves)-1):
     gp_str += (curves[i]+"\\\n")
   gp_str += curves[-1]
@@ -589,3 +607,4 @@ if __name__ == '__main__':
       plot_time_tpt(args.data_path, args.w_total)
   elif args.cmd == "tofino":
     pass
+
