@@ -295,12 +295,14 @@ def parse_bigtbl(data_path):
 
   ccas = []
   rtts = []
+  num_ccas = []
   re_num_unit = re.compile("([0-9\.]+)([a-zA-Z]+)")
   m = re_num_unit.match(batch_config["bottleneck_delay"])
   rtt_unit = m.group(2)
   bottleneck_delay = float(m.group(1))
   for i in range(num_cca):
     ccas.append(batch_config["transport_prot"+str(i)])
+    num_ccas.append(batch_config["num_cca"+str(i)])
     m = re_num_unit.match(batch_config["leaf_delay"+str(i)])
     if m.group(2) != rtt_unit:
       print("ERR: unit mismatch")
@@ -372,6 +374,7 @@ def parse_bigtbl(data_path):
   print_str = '''Bottleneck BW: {0}
 RTTs: {1}
 CCAs: {2}
+# flows per group: {15}
 --- Throughput ---
   FIFO: {3}
   FQ: {4}
@@ -402,7 +405,8 @@ CCAs: {2}
     tpt_jfi_cebinae,
     gpt_jfi_fifo,
     gpt_jfi_fq,
-    gpt_jfi_cebinae    
+    gpt_jfi_cebinae,
+    num_ccas
   )
   print(print_str)
 
