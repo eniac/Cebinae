@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <iostream>
 #include <math.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <unordered_map>
 #include "ns3/applications-module.h"
 #include "ns3/core-module.h"
@@ -180,7 +182,7 @@ bool printprogress = true;
 void
 PrintProgress (Time interval)
 {
-  std::cout << "Progress: " << std::fixed << std::setprecision (1) << Simulator::Now ().GetSeconds () << "[s]" << std::endl;
+  std::cout << "[PID:" << getpid() << "] Progress: " << std::fixed << std::setprecision (1) << Simulator::Now ().GetSeconds () << "[s]" << std::endl;
   Simulator::Schedule (interval, &PrintProgress, interval);
 }
 
@@ -358,6 +360,8 @@ main (int argc, char *argv[])
     LogComponentEnable ("DumbbellLong", LOG_LEVEL_DEBUG);
   }
 
+  std::string rm_dir_cmd = "rm -rf " + result_dir;
+  if (system (rm_dir_cmd.c_str ()) == -1) exit (1);
   std::string create_dir_cmd = "mkdir -p " + result_dir;
   if (system (create_dir_cmd.c_str ()) == -1) exit (1);
   std::ifstream in_file {config_path};
