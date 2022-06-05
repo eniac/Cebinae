@@ -1,4 +1,4 @@
-data_path pointing to the root dir of the bigtbl row: /home/leoyu/Cebinae/ns/tmp_index/bigtbl/r1/
+data_path pointing to the root dir of the bigtbl row: /home/leoyu/Cebinae/ns/index/bigtbl/r1/
 Bottleneck BW: 100Mbps
 RTTs: [u'20.4ms', u'40.0ms']
 CCAs: [u'TcpCubic', u'TcpCubic']
