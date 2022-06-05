@@ -845,9 +845,10 @@ main (int argc, char *argv[])
 
     Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (leftleaf.Get (i), TcpSocketFactory::GetTypeId ());
     if (logtcp) {
-      Config::ConnectWithoutContext ("/NodeList/"+std::to_string(2+i)+"/$ns3::TcpL4Protocol/SocketList/0/RTT", MakeBoundCallback (&TraceRtt, i));
       ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, i));
     }
+    // Always log RTT though (not necessarily write to file)
+    Config::ConnectWithoutContext ("/NodeList/"+std::to_string(2+i)+"/$ns3::TcpL4Protocol/SocketList/0/RTT", MakeBoundCallback (&TraceRtt, i));
 
     Ptr<MySource> app = CreateObject<MySource> ();
     if (i < num_cca0) {
@@ -967,23 +968,25 @@ main (int argc, char *argv[])
   //     << std::fixed << std::setprecision (3) << "avg_jfi_app: " << avg_jfi_app << "\n";
 
   // Calculate avg. RTT and write RTT traces
-  if (logtcp) {
-    for (uint16_t sourceid = 0; sourceid < num_leaf; sourceid++) {
+  for (uint16_t sourceid = 0; sourceid < num_leaf; sourceid++) {
+    int num_rtt_samples = sourceidtag2rtttrace[sourceid].size();
+    double avg_rtt_ns = 0.0;
+    for (int i = 0; i < num_rtt_samples; i++) {
+      avg_rtt_ns += static_cast<double>(sourceidtag2rtttrace[sourceid][i])/num_rtt_samples;
+    }    
+    // Print summary RTT info regardless
+    oss << "# of RTT samples for source " << sourceid << ": " << num_rtt_samples << "\n";
+    oss << "Avg. RTT for source " << sourceid << ": " << avg_rtt_ns << "ns\n";    
+    if (logtcp) {
       std::ofstream rtt_ofs (result_dir + "/rtt_"+std::to_string(sourceid)+".dat", std::ios::out | std::ios::app);
-      int num_rtt_samples = sourceidtag2rtttrace[sourceid].size();
-      double avg_rtt_ns = 0.0;
       for (int i = 0; i < num_rtt_samples; i++) {
         rtt_ofs << sourceidtag2rttlog[sourceid][i] << "\n";
-        avg_rtt_ns += static_cast<double>(sourceidtag2rtttrace[sourceid][i])/num_rtt_samples;
       }
-      oss << "# of RTT samples for source " << sourceid << ": " << num_rtt_samples << "\n";
-      oss << "Avg. RTT for source " << sourceid << ": " << avg_rtt_ns << "ns\n";
-
       std::ofstream cwnd_ofs (result_dir + "/cwnd_"+std::to_string(sourceid)+".dat", std::ios::out | std::ios::app);
       int num_cwnd_samples = sourceidtag2cwndlog[sourceid].size();
       for (int i = 0; i < num_cwnd_samples; i++) {
         cwnd_ofs << sourceidtag2cwndlog[sourceid][i] << "\n";
-      }
+      }      
     }
   }
 
