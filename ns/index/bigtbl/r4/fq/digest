@@ -1,0 +1,258 @@
+=== CMD varas ===
+enable_debug: true
+enable_stdout: false
+printprogress: true
+config_path: /home/leoyu/Cebinae/ns/configs/bigtbl_test/r4.json
+result_dir: tmp_index/bigtbl/r4/fq/
+sack: true
+recovery: ns3::TcpClassicRecovery
+app_packet_size: 1440
+delackcount: 1
+seed: 2022
+run: 1205
+tracing_period_us: 1000000
+progress_interval_ms: 1000
+sim_seconds: 100
+app_seconds_start: 1
+app_seconds_end: 100
+transport_prot0: ns3::TcpVegas
+transport_prot1: ns3::TcpCubic
+transport_prot2: ns3::TcpCubic
+transport_prot3: ns3::TcpCubic
+transport_prot4: ns3::TcpCubic
+transport_prot5: ns3::TcpCubic
+transport_prot6: ns3::TcpCubic
+transport_prot7: ns3::TcpCubic
+transport_prot8: ns3::TcpCubic
+bottleneck_bw: 100Mbps
+bottleneck_delay: 4ms
+leaf_bw0: 10000Mbps
+leaf_bw1: 10000Mbps
+leaf_bw2: 0Mbps
+leaf_bw3: 0Mbps
+leaf_bw4: 0Mbps
+leaf_bw5: 0Mbps
+leaf_bw6: 0Mbps
+leaf_bw7: 0Mbps
+leaf_bw8: 0Mbps
+leaf_delay0: 0.5ms
+leaf_delay1: 0.5ms
+leaf_delay2: 1ms
+leaf_delay3: 1ms
+leaf_delay4: 1ms
+leaf_delay5: 1ms
+leaf_delay6: 1ms
+leaf_delay7: 1ms
+leaf_delay8: 1ms
+app_bw0: 100Mbps
+app_bw1: 100Mbps
+app_bw2: 0Mbps
+app_bw3: 0Mbps
+app_bw4: 0Mbps
+app_bw5: 0Mbps
+app_bw6: 0Mbps
+app_bw7: 0Mbps
+app_bw8: 0Mbps
+switch_total_bufsize: 85p
+queuedisc_type: FqCodelQueueDisc
+num_cca0: 16
+num_cca1: 1
+num_cca2: 0
+num_cca3: 0
+num_cca4: 0
+num_cca5: 0
+num_cca6: 0
+num_cca7: 0
+num_cca8: 0
+num_leaf: 17
+======
+Configured NULL QueueDisc (which is the default FqCoDelQueueDisc and buffer size)
+num_tracing_periods: 100
+=== Ipv4 addresses ===
+--- leftleaf_ifc ---
+0 1.1.1.1
+1 1.1.2.1
+2 1.1.3.1
+3 1.1.4.1
+4 1.1.5.1
+5 1.1.6.1
+6 1.1.7.1
+7 1.1.8.1
+8 1.1.9.1
+9 1.1.10.1
+10 1.1.11.1
+11 1.1.12.1
+12 1.1.13.1
+13 1.1.14.1
+14 1.1.15.1
+15 1.1.16.1
+16 1.1.17.1
+--- leftrouter_ifc ---
+0 1.1.1.2
+1 1.1.2.2
+2 1.1.3.2
+3 1.1.4.2
+4 1.1.5.2
+5 1.1.6.2
+6 1.1.7.2
+7 1.1.8.2
+8 1.1.9.2
+9 1.1.10.2
+10 1.1.11.2
+11 1.1.12.2
+12 1.1.13.2
+13 1.1.14.2
+14 1.1.15.2
+15 1.1.16.2
+16 1.1.17.2
+--- rightleaf_ifc ---
+0 100.1.1.1
+1 100.1.2.1
+2 100.1.3.1
+3 100.1.4.1
+4 100.1.5.1
+5 100.1.6.1
+6 100.1.7.1
+7 100.1.8.1
+8 100.1.9.1
+9 100.1.10.1
+10 100.1.11.1
+11 100.1.12.1
+12 100.1.13.1
+13 100.1.14.1
+14 100.1.15.1
+15 100.1.16.1
+16 100.1.17.1
+--- rightrouter_ifc ---
+0 100.1.1.2
+1 100.1.2.2
+2 100.1.3.2
+3 100.1.4.2
+4 100.1.5.2
+5 100.1.6.2
+6 100.1.7.2
+7 100.1.8.2
+8 100.1.9.2
+9 100.1.10.2
+10 100.1.11.2
+11 100.1.12.2
+12 100.1.13.2
+13 100.1.14.2
+14 100.1.15.2
+15 100.1.16.2
+16 100.1.17.2
+--- router_ifc ---
+0 200.1.1.1
+1 200.1.1.2
+=== avg_tpt_bottleneck[*] ===
+0 2281021.091
+1 3785524.364
+2 3783713.455
+3 2232126.545
+4 2230194.909
+5 3770795.636
+6 3758481.455
+7 3758240.000
+8 3758119.273
+9 3757998.545
+10 4291975.273
+11 4291975.273
+12 4291975.273
+13 4291975.273
+14 4291975.273
+15 4291975.273
+16 40111032.727
+Avg. Throughput [bps]: 98979099.636
+avg_jfi_bottleneck [computed]: 0.314
+=== avg_tpt_app[*] ===
+0 2198341.818
+1 3648698.182
+2 3646603.636
+3 2151098.182
+4 2149236.364
+5 3634152.727
+6 3622283.636
+7 3622050.909
+8 3621934.545
+9 3621818.182
+10 4136610.909
+11 4136727.273
+12 4136727.273
+13 4136727.273
+14 4136727.273
+15 4136727.273
+16 38660770.909
+Avg. Goodput [bps]: 95397236.364
+avg_jfi_app [computed]: 0.314
+# of RTT samples for source 0: 17727
+Avg. RTT for source 0: 22244130.524ns
+# of RTT samples for source 1: 31424
+Avg. RTT for source 1: 22165839.915ns
+# of RTT samples for source 2: 31439
+Avg. RTT for source 2: 22166153.628ns
+# of RTT samples for source 3: 17805
+Avg. RTT for source 3: 22198412.439ns
+# of RTT samples for source 4: 17797
+Avg. RTT for source 4: 22182129.925ns
+# of RTT samples for source 5: 31452
+Avg. RTT for source 5: 22145842.789ns
+# of RTT samples for source 6: 31428
+Avg. RTT for source 6: 22097046.008ns
+# of RTT samples for source 7: 31426
+Avg. RTT for source 7: 22098250.272ns
+# of RTT samples for source 8: 31425
+Avg. RTT for source 8: 22099302.036ns
+# of RTT samples for source 9: 31424
+Avg. RTT for source 9: 22100428.529ns
+# of RTT samples for source 10: 35893
+Avg. RTT for source 10: 22097422.360ns
+# of RTT samples for source 11: 35894
+Avg. RTT for source 11: 22097115.185ns
+# of RTT samples for source 12: 35894
+Avg. RTT for source 12: 22097035.531ns
+# of RTT samples for source 13: 35894
+Avg. RTT for source 13: 22097008.258ns
+# of RTT samples for source 14: 35894
+Avg. RTT for source 14: 22097254.160ns
+# of RTT samples for source 15: 35894
+Avg. RTT for source 15: 22097524.610ns
+# of RTT samples for source 16: 332272
+Avg. RTT for source 16: 29586805.594ns
+====== Number of packets sent ======
+MySource 0:859375
+MySource 1:859375
+MySource 2:859375
+MySource 3:859375
+MySource 4:859375
+MySource 5:859375
+MySource 6:859375
+MySource 7:859375
+MySource 8:859375
+MySource 9:859375
+MySource 10:859375
+MySource 11:859375
+MySource 12:859375
+MySource 13:859375
+MySource 14:859375
+MySource 15:859375
+MySource 16:859375
+====== Number of packets at bottleneck link ======
+Source 10: 35912
+Source 16: 335692
+Source 15: 35912
+Source 14: 35912
+Source 13: 35912
+Source 12: 35912
+Source 4: 18654
+Source 3: 18669
+Source 2: 31658
+Source 0: 19074
+Source 11: 35912
+Source 1: 31672
+Source 5: 31551
+Source 6: 31448
+Source 7: 31446
+Source 8: 31445
+Source 9: 31443
+
+=== Completion time [s]: 101.502===
