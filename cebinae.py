@@ -292,6 +292,7 @@ def parse_bigtbl(data_path):
 
   bottleneck_bw = batch_config["bottleneck_bw"]
   num_cca = batch_config["num_cca"]
+  buf_size = batch_config["switch_total_bufsize"]
 
   ccas = []
   rtts = []
@@ -372,6 +373,7 @@ def parse_bigtbl(data_path):
         gpt_jfi_cebinae = line[1].strip("\n ")                       
 
   print_str = '''Bottleneck BW: {0}
+Buffer size: {16}
 RTTs: {1}
 CCAs: {2}
 # flows per group: {15}
@@ -406,7 +408,8 @@ CCAs: {2}
     gpt_jfi_fifo,
     gpt_jfi_fq,
     gpt_jfi_cebinae,
-    num_ccas
+    num_ccas,
+    buf_size
   )
   print(print_str)
 
