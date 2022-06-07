@@ -361,9 +361,13 @@ main (int argc, char *argv[])
   }
 
   std::string rm_dir_cmd = "rm -rf " + result_dir;
-  if (system (rm_dir_cmd.c_str ()) == -1) exit (1);
+  if (system (rm_dir_cmd.c_str ()) == -1) {
+    std::cout << "ERR: " << rm_dir_cmd << " failed, proceed anyway." << std::endl;
+  };
   std::string create_dir_cmd = "mkdir -p " + result_dir;
-  if (system (create_dir_cmd.c_str ()) == -1) exit (1);
+  if (system (create_dir_cmd.c_str ()) == -1) {
+    std::cout << "ERR: " << create_dir_cmd << " failed, proceed anyway." << std::endl;
+  }
   std::ifstream in_file {config_path};
   std::ofstream out_file {result_dir+"/config.json"};
   std::string line;
