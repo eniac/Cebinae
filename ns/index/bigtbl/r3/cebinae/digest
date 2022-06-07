@@ -2,7 +2,7 @@
 enable_debug: true
 enable_stdout: false
 printprogress: true
-config_path: /home/leoyu/Cebinae/ns/configs/bigtbl_test/r3.json
+config_path: /home/leoyu/Cebinae/ns/configs/bigtbl/r3.json
 result_dir: tmp_index/bigtbl/r3/cebinae/
 sack: true
 recovery: ns3::TcpClassicRecovery
@@ -67,10 +67,10 @@ num_cca8: 0
 num_leaf: 17
 ======
 --- Configured CebinaeQueueDisc ---
-dt: +1.5e+08ns
+dt: +2.68435e+08ns
 vdt: +1ns
 l: +100000ns
-p: 2
+p: 1
 tau: 0.01
 delta_port: 0
 delta_flow: 0.01
@@ -153,79 +153,79 @@ num_tracing_periods: 100
 0 200.1.1.1
 1 200.1.1.2
 === avg_tpt_bottleneck[*] ===
-0 4935089.455
-1 6155159.273
-2 6525429.818
-3 4219659.636
-4 4290405.818
-5 6561044.364
-6 6379591.273
-7 7475070.545
-8 4121025.455
-9 4455922.909
-10 4693514.182
-11 4529566.545
-12 5016459.636
-13 5887265.455
-14 6739720.727
-15 5097709.091
-16 10342222.545
-Avg. Throughput [bps]: 97424856.727
-avg_jfi_bottleneck [computed]: 0.933
+0 5493936.000
+1 7638052.364
+2 5818571.636
+3 5486692.364
+4 4740477.091
+5 5251757.091
+6 5235700.364
+7 4658503.273
+8 4963701.818
+9 4844302.545
+10 5251153.455
+11 5163384.727
+12 5040122.182
+13 5751568.000
+14 5442989.091
+15 5096984.727
+16 12235588.364
+Avg. Throughput [bps]: 98113485.091
+avg_jfi_bottleneck [computed]: 0.917
 === avg_tpt_app[*] ===
-0 4756712.727
-1 5927680.000
-2 6289570.909
-3 4058298.182
-4 4126487.273
-5 6316567.273
-6 6149003.636
-7 7204654.545
-8 3972072.727
-9 4294865.455
-10 4523869.091
-11 4357701.818
-12 4835141.818
-13 5674472.727
-14 6496116.364
-15 4913454.545
-16 9962938.182
-Avg. Goodput [bps]: 93859607.273
-avg_jfi_app [computed]: 0.933
-# of RTT samples for source 0: 39001
-Avg. RTT for source 0: 136148848.395ns
-# of RTT samples for source 1: 49599
-Avg. RTT for source 1: 137076886.981ns
-# of RTT samples for source 2: 52905
-Avg. RTT for source 2: 136533077.651ns
-# of RTT samples for source 3: 33996
-Avg. RTT for source 3: 137322563.591ns
-# of RTT samples for source 4: 34560
-Avg. RTT for source 4: 136841911.206ns
-# of RTT samples for source 5: 53535
-Avg. RTT for source 5: 136979371.370ns
-# of RTT samples for source 6: 51813
-Avg. RTT for source 6: 136446313.089ns
-# of RTT samples for source 7: 60609
-Avg. RTT for source 7: 136057448.014ns
-# of RTT samples for source 8: 33068
-Avg. RTT for source 8: 137880752.575ns
-# of RTT samples for source 9: 35827
-Avg. RTT for source 9: 137870733.070ns
-# of RTT samples for source 10: 37778
-Avg. RTT for source 10: 137584058.055ns
-# of RTT samples for source 11: 36712
-Avg. RTT for source 11: 137184380.005ns
-# of RTT samples for source 12: 40421
-Avg. RTT for source 12: 137355308.603ns
-# of RTT samples for source 13: 47873
-Avg. RTT for source 13: 136991846.154ns
-# of RTT samples for source 14: 54814
-Avg. RTT for source 14: 136836448.377ns
-# of RTT samples for source 15: 41111
-Avg. RTT for source 15: 136787664.460ns
-# of RTT samples for source 16: 83517
-Avg. RTT for source 16: 136634101.252ns
+0 5295360.000
+1 7360814.545
+2 5608261.818
+3 5288378.182
+4 4565061.818
+5 5061701.818
+6 5045992.727
+7 4486167.273
+8 4780450.909
+9 4668276.364
+10 5061120.000
+11 4972800.000
+12 4853992.727
+13 5540305.455
+14 5242298.182
+15 4912756.364
+16 11778676.364
+Avg. Goodput [bps]: 94522414.545
+avg_jfi_app [computed]: 0.917
+# of RTT samples for source 0: 43508
+Avg. RTT for source 0: 131677888.723ns
+# of RTT samples for source 1: 62064
+Avg. RTT for source 1: 131315578.907ns
+# of RTT samples for source 2: 47095
+Avg. RTT for source 2: 130080091.483ns
+# of RTT samples for source 3: 44287
+Avg. RTT for source 3: 129937954.860ns
+# of RTT samples for source 4: 37762
+Avg. RTT for source 4: 128142723.288ns
+# of RTT samples for source 5: 42470
+Avg. RTT for source 5: 129100950.074ns
+# of RTT samples for source 6: 42339
+Avg. RTT for source 6: 126367648.463ns
+# of RTT samples for source 7: 37391
+Avg. RTT for source 7: 128764376.277ns
+# of RTT samples for source 8: 39779
+Avg. RTT for source 8: 129805383.564ns
+# of RTT samples for source 9: 38974
+Avg. RTT for source 9: 129868833.979ns
+# of RTT samples for source 10: 42271
+Avg. RTT for source 10: 129256827.738ns
+# of RTT samples for source 11: 41504
+Avg. RTT for source 11: 128462696.050ns
+# of RTT samples for source 12: 40451
+Avg. RTT for source 12: 129838059.902ns
+# of RTT samples for source 13: 46495
+Avg. RTT for source 13: 129015710.335ns
+# of RTT samples for source 14: 44067
+Avg. RTT for source 14: 129384867.664ns
+# of RTT samples for source 15: 41236
+Avg. RTT for source 15: 129898281.565ns
+# of RTT samples for source 16: 97340
+Avg. RTT for source 16: 129496389.019ns
 ====== Number of packets sent ======
 MySource 0:859375
 MySource 1:859375
@@ -245,33 +245,33 @@ MySource 14:859375
 MySource 15:859375
 MySource 16:859375
 ====== Number of packets at bottleneck link ======
-Source 16: 86590
-Source 15: 42582
-Source 14: 56225
-Source 13: 49430
-Source 12: 41892
-Source 11: 38105
-Source 4: 36015
-Source 3: 35423
-Source 2: 54604
-Source 0: 41319
-Source 1: 51340
-Source 5: 55011
-Source 6: 53508
-Source 7: 62328
-Source 8: 34478
-Source 9: 37266
-Source 10: 39234
+Source 16: 102804
+Source 15: 42597
+Source 14: 45553
+Source 13: 48128
+Source 12: 42099
+Source 11: 43117
+Source 4: 39595
+Source 3: 45922
+Source 2: 48808
+Source 0: 45872
+Source 1: 63814
+Source 5: 44059
+Source 6: 43827
+Source 7: 38938
+Source 8: 41453
+Source 9: 40585
+Source 10: 43883
 ====== CebinaeQueueDisc digest ======
 --- Validate the effective CebinaeQueueDisc params ---
 m_debug: true
 m_maxSize: 850p
 GetInternalQueue(0)->GetMaxSize(): 425p
 GetInternalQueue(1)->GetMaxSize(): 425p
-dT: +1.5e+08ns
+dT: +2.68435e+08ns
 vdT: +1ns
 L: +100000ns
-P: 2
+P: 1
 tau: 0.01
 delta_port: 0
 delta_top: 0.01
@@ -279,33 +279,37 @@ m_bps: 100000000bps
 --- Validate CebinaeQueueDisc initial states ---
 m_headq: 0
 m_neg_headq: 1
-m_vb: 150000000
+m_vb: 268435456
 ------
-m_arrived_pkts: 819094
-m_lbf_past_head_pkts: 497162
-m_lbf_past_tail_pkts: 320124
-m_lbf_drop_pkts: 1808
-m_enqueue_drop_pkts[0]: 594
-m_enqueue_drop_pkts[1]: 840
-m_cebinae_dequeued_succeeded: 815485
-m_num_p: 333
-m_num_bottleneck_p: 17
-m_num_non_bottleneck_p: 316
-m_num_rotated: 666
+m_arrived_pkts: 825228
+m_lbf_past_head_pkts: 378559
+m_lbf_past_tail_pkts: 444280
+m_lbf_drop_pkts: 2389
+m_enqueue_drop_pkts[0]: 1212
+m_enqueue_drop_pkts[1]: 437
+m_cebinae_dequeued_succeeded: 821189
+m_num_p: 371
+m_num_bottleneck_p: 46
+m_num_non_bottleneck_p: 325
+m_num_rotated: 372
 --- FlowBottleneckDetector ---
-m_num_gettopflows: 17
+m_num_gettopflows: 46
 m_num_slot_pow2: 11
 m_num_slot: 2048
 m_hash2mysourceid.size(): 2048
 m_hash2bytecount.size(): 2048
 m_sourceidtag2toptimes:
-1: 1
-13: 1
-0: 2
-5: 2
-16: 9
-14: 1
+10: 2
+6: 1
 7: 1
+5: 2
+16: 28
+1: 6
+15: 2
+4: 3
+3: 1
+11: 2
+0: 1
 ------
 
-=== Completion time [s]: 90.758===
+=== Completion time [s]: 203.215===

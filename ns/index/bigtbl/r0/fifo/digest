@@ -142,6 +142,26 @@ avg_jfi_bottleneck [computed]: 0.664
 9 7054312.727
 Avg. Goodput [bps]: 95360581.818
 avg_jfi_app [computed]: 0.664
+# of RTT samples for source 0: 246671
+Avg. RTT for source 0: 56263025.365ns
+# of RTT samples for source 1: 112737
+Avg. RTT for source 1: 56028976.242ns
+# of RTT samples for source 2: 57067
+Avg. RTT for source 2: 63196346.559ns
+# of RTT samples for source 3: 54211
+Avg. RTT for source 3: 63024481.794ns
+# of RTT samples for source 4: 49057
+Avg. RTT for source 4: 63248742.699ns
+# of RTT samples for source 5: 60093
+Avg. RTT for source 5: 63121651.406ns
+# of RTT samples for source 6: 47715
+Avg. RTT for source 6: 63108322.933ns
+# of RTT samples for source 7: 59293
+Avg. RTT for source 7: 62959059.479ns
+# of RTT samples for source 8: 50820
+Avg. RTT for source 8: 62877280.860ns
+# of RTT samples for source 9: 57675
+Avg. RTT for source 9: 62909403.476ns
 ====== Number of packets sent ======
 MySource 0:859375
 MySource 1:859375
@@ -165,4 +185,4 @@ Source 2: 60345
 Source 3: 57447
 Source 4: 52135
 
-=== Completion time [s]: 79.098===
+=== Completion time [s]: 181.476===

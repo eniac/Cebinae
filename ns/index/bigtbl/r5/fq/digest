@@ -2,7 +2,7 @@
 enable_debug: true
 enable_stdout: false
 printprogress: true
-config_path: /home/leoyu/Cebinae/ns/configs/bigtbl_test/r5.json
+config_path: /home/leoyu/Cebinae/ns/configs/bigtbl/r5.json
 result_dir: tmp_index/bigtbl/r5/fq/
 sack: true
 recovery: ns3::TcpClassicRecovery
@@ -255,4 +255,4 @@ Source 7: 34059
 Source 8: 34152
 Source 9: 33762
 
-=== Completion time [s]: 107.036===
+=== Completion time [s]: 120.461===

@@ -2,7 +2,7 @@
 enable_debug: true
 enable_stdout: false
 printprogress: true
-config_path: /home/leoyu/Cebinae/ns/configs/bigtbl_test/r1.json
+config_path: /home/leoyu/Cebinae/ns/configs/bigtbl/r1.json
 result_dir: tmp_index/bigtbl/r1/fq/
 sack: true
 recovery: ns3::TcpClassicRecovery
@@ -142,6 +142,26 @@ avg_jfi_bottleneck [computed]: 1.000
 9 9180974.545
 Avg. Goodput [bps]: 95370472.727
 avg_jfi_app [computed]: 1.000
+# of RTT samples for source 0: 81811
+Avg. RTT for source 0: 34134623.760ns
+# of RTT samples for source 1: 81869
+Avg. RTT for source 1: 34169510.128ns
+# of RTT samples for source 2: 82084
+Avg. RTT for source 2: 34039412.707ns
+# of RTT samples for source 3: 81692
+Avg. RTT for source 3: 34048704.578ns
+# of RTT samples for source 4: 81497
+Avg. RTT for source 4: 33886415.725ns
+# of RTT samples for source 5: 82023
+Avg. RTT for source 5: 34093794.366ns
+# of RTT samples for source 6: 81514
+Avg. RTT for source 6: 33989791.882ns
+# of RTT samples for source 7: 80960
+Avg. RTT for source 7: 33966194.814ns
+# of RTT samples for source 8: 79179
+Avg. RTT for source 8: 53152316.945ns
+# of RTT samples for source 9: 78167
+Avg. RTT for source 9: 52963041.806ns
 ====== Number of packets sent ======
 MySource 0:859375
 MySource 1:859375
@@ -165,4 +185,4 @@ Source 2: 83751
 Source 3: 83378
 Source 4: 83055
 
-=== Completion time [s]: 79.021===
+=== Completion time [s]: 183.076===

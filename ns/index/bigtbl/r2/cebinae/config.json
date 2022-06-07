@@ -27,7 +27,7 @@
     "bottleneck_delay": "10ms",
     "switch_total_bufsize": "500p",
     "vdt": "1ns",
-    "dt": "120ms",
+    "dt": "67.108864ms",
     "l": "100000ns",
     "p": 1,
     "tau": 0.01,
