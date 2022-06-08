@@ -70,6 +70,16 @@ def ns_configure(profile):
     subprocess.call(cmd.split())
 
 @timeit
+def ns_build():
+  cwd = os.getcwd()
+  print("cwd: {}".format(cwd))
+
+  os.chdir(cwd+"/ns")
+  cmd = "./waf build"
+  print(cmd)
+  subprocess.call(cmd.split())  
+
+@timeit
 def ns_run_instance(config_path, enb_gdb):
   cwd = os.getcwd()
   if not os.path.isabs(config_path):
@@ -552,6 +562,8 @@ if __name__ == '__main__':
   ns_configure_prsr = ns_subsubprsr.add_parser("configure")
   ns_configure_prsr.add_argument("-p", "--profile", type=str, required=False, default="default", choices=["default", "debug", "optimized"], help="Build profile")
 
+  ns_build_prsr = ns_subsubprsr.add_parser("build")
+
   ns_validate_prsr = ns_subsubprsr.add_parser("validate")
   ns_validate_prsr.add_argument("-p", "--profile", type=str, required=False, default="default", choices=["default", "debug", "optimized"], help="Build profile")
 
@@ -592,6 +604,8 @@ if __name__ == '__main__':
       ns_validate(args.profile)
     if args.ns_cmd == "configure":
       ns_configure(args.profile)
+    if args.ns_cmd == "build":
+      ns_build()
     elif args.ns_cmd == "run_instance":
       ns_run_instance(args.config, args.gdb)
     elif args.ns_cmd == "run_batch":
