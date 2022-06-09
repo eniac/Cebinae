@@ -614,7 +614,7 @@ CebinaeQueueDisc::CheckConfig (void)
       // }      
 
       // CebinaeQueueDisc has two fixed DropTail queue, which is non-configurable for user
-      // User configured MaxSize is statically carved in halves for each InternalQueue
+      // Currently statically carved in halves for each InternalQueue, but one could change to shared global buffer as well
       AddInternalQueue (CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> >
                           ("MaxSize", QueueSizeValue (
                             QueueSize(GetMaxSize().GetUnit(), GetMaxSize().GetValue()/2)

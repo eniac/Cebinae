@@ -217,6 +217,8 @@ main (int argc, char *argv[])
   uint32_t run = 1;  // Varry across replications
   sim_seconds = 10;
   uint32_t delackcount = 1;
+  std::string switch_netdev_size = "100p";
+  std::string server_netdev_size = "100p";  
   uint32_t app_packet_size = 1440;  
   // Configure 0 will give 1000
   std::string switch_total_bufsize = "100p";
@@ -334,6 +336,8 @@ main (int argc, char *argv[])
   cmd.AddValue ("app_bw6", "", app_bw6);  
   cmd.AddValue ("app_bw7", "", app_bw7);  
   cmd.AddValue ("app_bw8", "", app_bw8);                
+  cmd.AddValue ("switch_netdev_size", "Netdevice queue size (switch)", switch_netdev_size);  
+  cmd.AddValue ("server_netdev_size", "Netdevice queue size (server)", server_netdev_size);    
   cmd.AddValue ("switch_total_bufsize", "Switch buffer size", switch_total_bufsize);
   cmd.AddValue ("queuedisc_type", "Queue Disc type", queuedisc_type);
   cmd.AddValue ("num_cca0", "Number of flows/mysource for cca0", num_cca0);
@@ -483,6 +487,8 @@ main (int argc, char *argv[])
             << "app_bw7: " << app_bw7 << "\n"                                                                                    
             << "app_bw8: " << app_bw8 << "\n"            
             << "switch_total_bufsize: " << switch_total_bufsize << "\n"
+            << "switch_netdev_size: " << switch_netdev_size << "\n"
+            << "server_netdev_size: " << server_netdev_size << "\n"            
             << "queuedisc_type: " << queuedisc_type << "\n"
             << "num_cca0: " << num_cca0 << "\n"
             << "num_cca1: " << num_cca1 << "\n"
@@ -549,10 +555,17 @@ main (int argc, char *argv[])
   p2p_leaf8.SetDeviceAttribute ("Mtu", UintegerValue(1500));   
   p2p_leaf8.SetChannelAttribute ("Delay", StringValue (leaf_delay8));        
 
-  // Unclear of the right configuration, use default as it seems to match real world models more than using 1p
-  // PointToPointHelper default: m_queueFactory.SetTypeId ("ns3::DropTailQueue<Packet>"); ns3::DropTailQueue default MaxSize is 100p
-  // p2p_bottleneck.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
-  // p2p_leaf.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
+  // Default NS-3 DropTailQueue size for the NetDevice/NIC is 100p, make them configurable anyway
+  p2p_bottleneck.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (switch_netdev_size));
+  p2p_leaf0.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));
+  p2p_leaf1.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));
+  p2p_leaf2.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));
+  p2p_leaf3.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));
+  p2p_leaf4.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));
+  p2p_leaf5.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));
+  p2p_leaf6.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));
+  p2p_leaf7.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));
+  p2p_leaf8.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));                
 
   NetDeviceContainer leftleaf_devices;
   NetDeviceContainer rightleaf_devices;
