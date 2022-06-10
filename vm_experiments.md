@@ -146,6 +146,9 @@ Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 4.15.0-101-generic x86_64)
 This system is built by the Bento project by Chef Software
 More information can be found at https://github.com/chef/bento
 vagrant@cebinaevm:~$ cd /cebinae/tofino_prototype
+vagrant@cebinaevm:/cebinae/tofino_prototype$ ls
+debug.hpp   egress.dpt.p4       ingress.p4  main.cpp  main.py   p4math  pd_helpers_gen.py
+egress.dpt  ingress_objects.p4  libs        main.p4   makefile  pd      pd_helpers.hpp
 ```
 
 4. (optional) compile the Lucid egress function to P4

@@ -25,7 +25,6 @@ buildcontrol: main.cpp
 	g++ -I${BF_DRV_SRC}/include -I${SDE_INSTALL}/include ${TOFINO_CPP_FLAGS} -o main/bf_switchd main.cpp ${TOFINO_CPP_LIBS}
 
 
-
 # Run test case in tofino asic simulator.
 test:
 	./libs/p4tapp.sh test main.p4 test.json # $(RUN_ARGS)
