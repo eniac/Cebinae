@@ -271,6 +271,10 @@ void CebinaeQueueDisc::ReactionFSM() {
 
         // Now configure the rates for the physical queue pointed by headq, rather than neg_headq
         m_computed_bps_top = bottleneck_bytes/m_p/m_dt.GetSeconds()*8;
+        // m_computed_bps_top can't be greater than rate * (1-tau)
+        if (m_computed_bps_top > m_bps.GetBitRate()*(1-m_tau)) {
+          m_computed_bps_top = m_bps.GetBitRate()*(1-m_tau);
+        }
         m_computed_bps_bot = m_bps.GetBitRate()-m_computed_bps_top;
 
         if (m_debug) {
