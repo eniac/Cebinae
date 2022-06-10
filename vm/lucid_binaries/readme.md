@@ -1,0 +1,2 @@
+This directory contains lucid binaries compiled for ubuntu 18.04 on an x86_64 machine. 
+Compile from commit: https://github.com/PrincetonUniversity/lucid/commit/9b2f885c62cb7c10f1c20c68b01c8a7079af1b3e

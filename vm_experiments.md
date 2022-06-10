@@ -10,15 +10,18 @@ Contents:
 
 (optional) You can reproduce the results describe in this section in a VM with the lucid language and the Tofino SDE version 9.5.0 installed. 
 
-*Note for artifact reviewers: We provide the artifact reviewers a copy of this VM for convenience. However, we cannot publically share the VM as we are not allowed to redistribute the Tofino SDE. Below we provide instructions for building the vm from scratch, given a copy of the tofino sde tarball (bf-sde-9.5.0.tgz).*
+**Note for artifact reviewers:** We provide a copy of a pre-built vm for convenience. **TODO: usage instructions**
+
 
 To setup a vm ready to compile cebinae and reproduce the flow table accuracy experiment:
 
 1. install vagrant and virtualbox 
 
 2. place a copy of bf-sde-9.5.0.tgz in this directory **note: this has only been tested with 9.5.0!**
-3. build the vm with: ``vagrant up --provider=virtualbox``
+3. build the vm with: ``vagrant --sde=bf-sde-9.5.0.tgz up --provider=virtualbox``
    - **NOTE:** this will take several hours to complete, because it sets up both Lucid dependencies and the tofino sde.
+
+
 
 ##### Reproducing flow table performance results
 
@@ -69,7 +72,10 @@ vagrant@cebinaevm:/cebinae/flow_table$ ls
 allresults1024.pkl  caidapcap_to_json.py  egress.dpt  egress.py  measure_accuracy.py  pcaplibs.py
 ```
 
-4. (optional) run the experiments to re-generate the results file ``allresults1024.pkl``. This will take **around 4 hours**, so if you wish to skip this step, an already generated ``allresults1024.pkl`` is included in the repo. The experiment script is hard-coded to use the pcap file ``~/caidaSample.pcap`` -- a 1 minute sample trace of a 10 Gb/s core router link from CAIDA. You can modify `measure_accuracy.py` to use other pcaps as you wish. Results are qualitatively similar for all Caida workloads that we have tried.
+4. (optional) run the experiments to re-generate the results file ``allresults1024.pkl``. This will take **around 4 hours**, so if you wish to skip this step, an already generated ``allresults1024.pkl`` is included in the repo. 
+The experiment script is hard-coded to use the pcap file ``~/caidaSample.pcap`` -- a 1 minute sample trace of a 10 Gb/s core router link from CAIDA. 
+This pcap file is included in the pre-built VM, or can be downloaded here: **TODO: link**
+You can modify `measure_accuracy.py` to use other pcaps as you wish. Results are qualitatively similar for all Caida workloads that we have tried.
 
 ```
 vagrant@cebinaevm:/cebinae$ ./measure_accuracy.py 
@@ -106,15 +112,9 @@ interval: 50ms # trials: 100 mean fpr: 0.00012345049084140132 mean fnr: 0.251392
 
 ##### Compiling the Cebinae Tofino prototype and reporting resource utilization
 
-1. ssh into the vm and go to the ``tofino_prototype`` directory:
+1. ssh into the vm.
 
-   ```vagrant ssh```
-
-2. pull the cebinae repo 
-
-   **TODO**
-
-3. go to the ``cebinae_tofino`` directory
+2. go to the ``tofino_prototype`` directory:
 
 ```
 (base) jsonch@jsonchs-MBP vm % pwd        
@@ -167,6 +167,7 @@ egress.dpt  ingress_objects.p4  libs        main.p4   makefile  pd      pd_helpe
 
    print out Tofino resource utilization statistics
 
+
    ```
    ... cebinae_tofino$ sed -n 29,46p ./main/pipe/logs/mau.resources.log
    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -188,6 +189,7 @@ egress.dpt  ingress_objects.p4  libs        main.p4   makefile  pd      pd_helpe
    |   Average    |         9.44%          |          11.36%          |  10.82%  |     26.39%     |  9.38%  | 7.29%  |  5.21%  | 9.03%  |   24.22%   |   31.25%  |   0.00%   | 3.65%  |         7.81%          |         11.98%         |      15.10%     |         6.25%         |       0.00%        |        0.00%        |        0.00%        |      26.04%     |
    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
    ```
+**TODO: change to overall summary of total number of units, reflecting table 3.**
 
       
 
