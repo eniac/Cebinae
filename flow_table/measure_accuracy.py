@@ -7,11 +7,11 @@ import math
 from pcaplibs import *
 
 # configuration parameters
-infn = "caidaSample.pcap"
+infn = "~/caidaSample.pcap"
 outfn = "egress.json"
 
 prog = "egress.dpt"
-lucid_interp = "./dpt"
+lucid_interp = "/cebinae/vm/lucid_binaries/dpt"
 
 resultsfn_base = "allresults.pkl"
 def resultsfn(num_slots):

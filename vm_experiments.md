@@ -24,22 +24,55 @@ To setup a vm ready to compile cebinae and reproduce the flow table accuracy exp
 
 These section describes how to measure and report the false positive and negative rate of the flow table data structure used in Cebinae's egress, using a 700MB sample trace from CAIDA, of a 10 Gb/s core router link.
 
-1. ssh into the vm
+1. ssh into the vm and go to the cebinae directory. This directory is a shared pointer to the cebinae repo directory in the host machine.
 
-   ```vagrant ssh```
+```
+(base) jsonch@jsonchs-MBP vm % pwd        
+/Users/jsonch/Desktop/cebinae/vm
+(base) jsonch@jsonchs-MBP vm % vagrant ssh
+Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 4.15.0-101-generic x86_64)
 
-2. pull the cebinae repo 
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
 
-   **TODO**
+  System information as of Fri Jun 10 16:53:14 UTC 2022
 
-3. go to the ``detection_accuracy`` directory 
+  System load:  0.58              Processes:           93
+  Usage of /:   2.6% of 61.80GB   Users logged in:     0
+  Memory usage: 3%                IP address for eth0: 10.0.2.15
+  Swap usage:   0%
 
-   **TODO**
+ * Super-optimized for small spaces - read how we shrank the memory
+   footprint of MicroK8s to make it the smallest full K8s around.
 
-4. (optional) run the experiments to re-generate the results file ``allresults1024.pkl``. This will take **several hours**, so if you wish to skip this step, an already generated ``allresults1024.pkl`` is included in the repo.
+   https://ubuntu.com/blog/microk8s-memory-optimisation
+
+0 packages can be updated.
+0 updates are security updates.
+
+
+
+This system is built by the Bento project by Chef Software
+More information can be found at https://github.com/chef/bento
+vagrant@cebinaevm:~$ cd /cebinae/
+vagrant@cebinaevm:/cebinae$ ls
+cebinae.py  flow_table  ns  prototype_demonstration.md  README.md  tofino_prototype  vm  vm_experiments.md
+vagrant@cebinaevm:/cebinae$    
+```
+
+2. go to the ``flow_table`` directory 
+
+```
+vagrant@cebinaevm:/cebinae$ cd flow_table/
+vagrant@cebinaevm:/cebinae/flow_table$ ls
+allresults1024.pkl  caidapcap_to_json.py  egress.dpt  egress.py  measure_accuracy.py  pcaplibs.py
+```
+
+4. (optional) run the experiments to re-generate the results file ``allresults1024.pkl``. This will take **around 4 hours**, so if you wish to skip this step, an already generated ``allresults1024.pkl`` is included in the repo. The experiment script is hard-coded to use the pcap file ``~/caidaSample.pcap`` -- a 1 minute sample trace of a 10 Gb/s core router link from CAIDA. You can modify `measure_accuracy.py` to use other pcaps as you wish. Results are qualitatively similar for all Caida workloads that we have tried.
 
    ```
-   vagrant@cebinaevm:/cebinae/cebinae_vm/detection_accuracy$ ./measure_accuracy.py 
+   vagrant@cebinaevm:/cebinae$ ./measure_accuracy.py 
    trials starting. Results will be written to: allresults1024.pkl
    ------ starting trial 0 with interval 5 ------
    packets: 1733
@@ -68,10 +101,6 @@ These section describes how to measure and report the false positive and negativ
    interval: 45ms # trials: 100 mean fpr: 0.0001015941881574508 mean fnr: 0.2868333333333333
    interval: 50ms # trials: 100 mean fpr: 0.00012345049084140132 mean fnr: 0.2513928571428572
    ```
-
-   
-
-   LEFT OFF HERE. Finish running the experiment, then copy / paste the compilation instructions
 
    
 

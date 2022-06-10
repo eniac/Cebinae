@@ -24,7 +24,7 @@ Vagrant.configure(2) do |config|
   config.vm.box = "bento/ubuntu-18.04" # bionic 64 doesn't work with serial disconnected...
   config.vm.hostname = vmname
   config.ssh.insert_key = false
-  config.vm.synced_folder "./", shareddir
+  config.vm.synced_folder "../", shareddir
   config.vm.provider "virtualbox" do |vb|
     # disable the log for portability.
     vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
@@ -34,14 +34,18 @@ Vagrant.configure(2) do |config|
   end
 
   # setup lucid interpreter and compiler
-  config.vm.provision "file", source: "setup_lucid.sh", destination: "$HOME/setup_lucid.sh"
-  config.vm.provision "shell", privileged: false, inline: "$HOME/setup_lucid.sh"
-  # copy compiler setup file
-  config.vm.provision "file", source: "setup_tofino_sde.sh", destination: "$HOME/setup_tofino_sde.sh"
+  # --- just copy lucid compiler binaries --- 
+  config.vm.provision "file", source: "lucid_binaries/dpt", destination: "$HOME/dpt"
+  config.vm.provision "file", source: "lucid_binaries/dptc", destination: "$HOME/dptc"
+  # --- setup dependencies to rebuild lucid from source ---
+  # config.vm.provision "file", source: "setup_lucid.sh", destination: "$HOME/setup_lucid.sh"
+  # config.vm.provision "shell", privileged: false, inline: "$HOME/setup_lucid.sh"
   # optionally setup tofino compiler
-  if (sde != "")
-    config.vm.provision "file", source: sde, destination: "$HOME/#{File.basename(sde)}"
-    config.vm.provision "shell", privileged: false, inline: "$HOME/setup_tofino_sde.sh $HOME/#{File.basename(sde)}"
-  end
+  # if (sde != "")
+  #   # copy compiler setup file
+  #   config.vm.provision "file", source: "setup_tofino_sde.sh", destination: "$HOME/setup_tofino_sde.sh"
+  #   config.vm.provision "file", source: sde, destination: "$HOME/#{File.basename(sde)}"
+  #   config.vm.provision "shell", privileged: false, inline: "$HOME/setup_tofino_sde.sh $HOME/#{File.basename(sde)}"
+  # end
 end
 
