@@ -17,11 +17,13 @@ Contents:
 
 1. download the vm image: **TODO: url**
 
-2. place the vm image ``cebinae.box`` into the ``vm`` directory of this repo.
+2. place the vm image ``cebinae.box`` into the ``vm_prebuilt`` directory of this repo.
 
-3. run ``vagrant box add cebinae cebinae.box`` to install the vm image. This command may fail unless you have >50GB free of temporary space.
+3. install and start the vm with:
 
-4. run ``vagrant up`` to start the vm
+   ```
+   vagrant up --provider=virtualbox
+   ```
 
 
 To setup the VM from scratch:
@@ -37,12 +39,10 @@ To setup the VM from scratch:
 
 These section describes how to measure and report the false positive and negative rate of the flow table data structure used in Cebinae's egress, using a 700MB sample trace from CAIDA, of a 10 Gb/s core router link.
 
-1. ssh into the vm and go to the cebinae directory. This directory is a shared pointer to the cebinae repo directory in the host machine.
+1. ssh into the vm with ``vagrant ssh`` and go to the /cebinae directory. This directory is a shared pointer to the cebinae repo directory in the host machine.
 
 ```
-(base) jsonch@jsonchs-MBP vm % pwd        
-/Users/jsonch/Desktop/cebinae/vm
-(base) jsonch@jsonchs-MBP vm % vagrant ssh
+% vagrant ssh
 Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 4.15.0-101-generic x86_64)
 
  * Documentation:  https://help.ubuntu.com
