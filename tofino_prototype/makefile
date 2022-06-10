@@ -1,4 +1,4 @@
-dptf := ../../../dptf
+dptf := /cebinae/vm/lucid_binaries/dptf
 
 BF_DRV_SRC := ${SDE}/pkgsrc/bf-drivers
 
