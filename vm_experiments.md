@@ -8,18 +8,28 @@ Contents:
 
 ##### Setting up the VM
 
-(optional) You can reproduce the results describe in this section in a VM with the lucid language and the Tofino SDE version 9.5.0 installed. 
 
-**Note for artifact reviewers:** We provide a copy of a pre-built vm for convenience. **TODO: usage instructions**
+(optional) You can reproduce the results describe in this section in a VM with the lucid language and Tofino SDE version 9.5.0 installed. 
+
+**Note for artifact reviewers:** We provide a copy of a pre-built vm for convenience. To use the pre-built VM:
+
+0. Ensure that you have vagrant (https://www.vagrantup.com/downloads) and virtualbox (https://www.virtualbox.org) installed.
+
+1. download the vm image: **TODO: url**
+
+2. place the vm image ``cebinae.box`` into the ``vm`` directory of this repo.
+
+3. run ``vagrant box add cebinae cebinae.box`` to install the vm image. This command may fail unless you have >50GB free of temporary space.
+
+4. run ``vagrant up`` to start the vm
 
 
-To setup a vm ready to compile cebinae and reproduce the flow table accuracy experiment:
+To setup the VM from scratch:
 
 1. install vagrant and virtualbox 
-
 2. place a copy of bf-sde-9.5.0.tgz in this directory **note: this has only been tested with 9.5.0!**
 3. build the vm with: ``vagrant --sde=bf-sde-9.5.0.tgz up --provider=virtualbox``
-   - **NOTE:** this will take several hours to complete, because it sets up both Lucid dependencies and the tofino sde.
+   - **NOTE:** this will take an hour or so to complete, because it installs the tofino sde.
 
 
 
@@ -74,7 +84,7 @@ allresults1024.pkl  caidapcap_to_json.py  egress.dpt  egress.py  measure_accurac
 
 4. (optional) run the experiments to re-generate the results file ``allresults1024.pkl``. This will take **around 4 hours**, so if you wish to skip this step, an already generated ``allresults1024.pkl`` is included in the repo. 
 The experiment script is hard-coded to use the pcap file ``~/caidaSample.pcap`` -- a 1 minute sample trace of a 10 Gb/s core router link from CAIDA. 
-This pcap file is included in the pre-built VM, or can be downloaded here: **TODO: link**
+This pcap file is included in the pre-built VM, or can be downloaded here: https://drive.google.com/file/d/1S8xmWM5TRDbeRu-AtdNK7yM2xKVYYylC/view?usp=sharing
 You can modify `measure_accuracy.py` to use other pcaps as you wish. Results are qualitatively similar for all Caida workloads that we have tried.
 
 ```
@@ -153,44 +163,79 @@ egress.dpt  ingress_objects.p4  libs        main.p4   makefile  pd      pd_helpe
 
 4. (optional) compile the Lucid egress function to P4
 
-   **TODO**
+```
+# this command compiles egress.dpt (lucid program) into egress.dpt.p4 (p4 control block)
+vagrant@cebinaevm:/cebinae/tofino_prototype$ make compile
+```
 
 5. compile the P4 program and control plane program
 
-   ```
-   ... cebinae_tofino$ make build
-   ./libs/p4tapp.sh build main.p4
-   **** compiling main.p4 to main ****
-   cmd: /home/vagrant/bf-sde-9.5.0/install/bin/bf-p4c --verbose 3 --std p4-16 --target tofino --arch tna -o /cebinae/cebinae_vm/cebinae_tofino/main --bf-rt-schema /cebinae/cebinae_vm/cebinae_tofino/main/bf-rt.json /cebinae/cebinae_vm/cebinae_tofino/main.p4 
-   ...
-   ```
+```
+# this command compiles the data and control plane binaries to tofino_prototype/main/
+vagrant@cebinaevm:/cebinae/tofino_prototype$ make build
+./libs/p4tapp.sh build main.p4
+**** compiling main.p4 to main ****
+cmd: /home/vagrant/bf-sde-9.5.0/install/bin/bf-p4c --verbose 3 --std p4-16 --target tofino --arch tna -o /cebinae/cebinae_vm/cebinae_tofino/main --bf-rt-schema /cebinae/cebinae_vm/cebinae_tofino/main/bf-rt.json /cebinae/cebinae_vm/cebinae_tofino/main.p4 
+...
+```
 
-   print out Tofino resource utilization statistics
+6. print out Tofino resource utilization statistics
 
+**Pipeline resources:**
+```
+vagrant@cebinaevm:/cebinae/tofino_prototype$ sed -n 10,26p ./main/pipe/logs/mau.resources.log
+| Stage Number | Exact Match Input xbar | Ternary Match Input xbar | Hash Bit | Hash Dist Unit | Gateway | SRAM | Map RAM | TCAM | VLIW Instr | Meter ALU | Stats ALU | Stash | Exact Match Search Bus | Exact Match Result Bus | Tind Result Bus | Action Data Bus Bytes | 8-bit Action Slots | 16-bit Action Slots | 32-bit Action Slots | Logical TableID |
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|      0       |           21           |            0             |   144    |       4        |    3    |  8   |    0    |  0   |     4      |     0     |     0     |   2   |           3            |           4            |        4        |           18          |         0          |          0          |          0          |        8        |
+|      1       |           22           |            0             |   142    |       2        |    6    |  17  |    8    |  0   |     6      |     4     |     0     |   3   |           5            |           9            |        6        |           16          |         0          |          0          |          0          |        11       |
+|      2       |           31           |            0             |   113    |       2        |    2    |  12  |    2    |  0   |     3      |     1     |     0     |   2   |           3            |           4            |        4        |           26          |         0          |          0          |          0          |        7        |
+|      3       |           21           |            16            |    33    |       2        |    2    |  7   |    2    |  4   |     3      |     1     |     0     |   0   |           1            |           1            |        1        |           8           |         0          |          0          |          0          |        5        |
+|      4       |           10           |            0             |    20    |       2        |    2    |  4   |    4    |  0   |     2      |     2     |     0     |   0   |           1            |           2            |        2        |           8           |         0          |          0          |          0          |        4        |
+|      5       |           0            |            1             |    0     |       0        |    0    |  1   |    0    |  1   |     32     |     0     |     0     |   0   |           0            |           0            |        2        |           4           |         0          |          0          |          0          |        2        |
+|      6       |           16           |            16            |    30    |       3        |    0    |  9   |    6    |  9   |     4      |     3     |     0     |   0   |           0            |           0            |        4        |           8           |         0          |          0          |          0          |        4        |
+|      7       |           0            |            17            |    0     |       0        |    0    |  2   |    0    |  4   |     32     |     0     |     0     |   0   |           0            |           0            |        2        |           4           |         0          |          0          |          0          |        2        |
+|      8       |           18           |            32            |    42    |       3        |    2    |  5   |    4    |  6   |     2      |     2     |     0     |   0   |           1            |           2            |        1        |           4           |         0          |          0          |          0          |        3        |
+|      9       |           6            |            0             |    16    |       1        |    1    |  2   |    2    |  0   |     1      |     1     |     0     |   0   |           1            |           1            |        1        |           0           |         0          |          0          |          0          |        2        |
+|      10      |           0            |            0             |    0     |       0        |    0    |  0   |    0    |  0   |     1      |     0     |     0     |   0   |           0            |           0            |        1        |           0           |         0          |          0          |          0          |        1        |
+|      11      |           0            |            8             |    0     |       0        |    0    |  3   |    2    |  2   |     3      |     1     |     0     |   0   |           0            |           0            |        1        |           0           |         0          |          0          |          0          |        1        |
+|              |                        |                          |          |                |         |      |         |      |            |           |           |       |                        |                        |                 |                       |                    |                     |                     |                 |
+|    Totals    |          145           |            90            |   540    |       19       |    18   |  70  |    30   |  26  |     93     |     15    |     0     |   7   |           15           |           23           |        29       |           96          |         0          |          0          |          0          |        50       |```
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   ```
-   ... cebinae_tofino$ sed -n 29,46p ./main/pipe/logs/mau.resources.log
-   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-   | Stage Number | Exact Match Input xbar | Ternary Match Input xbar | Hash Bit | Hash Dist Unit | Gateway |  SRAM  | Map RAM |  TCAM  | VLIW Instr | Meter ALU | Stats ALU | Stash  | Exact Match Search Bus | Exact Match Result Bus | Tind Result Bus | Action Data Bus Bytes | 8-bit Action Slots | 16-bit Action Slots | 32-bit Action Slots | Logical TableID |
-   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-   |      0       |         16.41%         |          0.00%           |  34.62%  |     66.67%     |  18.75% | 10.00% |  0.00%  | 0.00%  |   12.50%   |   0.00%   |   0.00%   | 12.50% |         18.75%         |         25.00%         |      25.00%     |         14.06%        |       0.00%        |        0.00%        |        0.00%        |      50.00%     |
-   |      1       |         17.19%         |          0.00%           |  34.13%  |     33.33%     |  37.50% | 21.25% |  16.67% | 0.00%  |   18.75%   |  100.00%  |   0.00%   | 18.75% |         31.25%         |         56.25%         |      37.50%     |         12.50%        |       0.00%        |        0.00%        |        0.00%        |      68.75%     |
-   |      2       |         24.22%         |          0.00%           |  27.16%  |     33.33%     |  12.50% | 15.00% |  4.17%  | 0.00%  |   9.38%    |   25.00%  |   0.00%   | 12.50% |         18.75%         |         25.00%         |      25.00%     |         20.31%        |       0.00%        |        0.00%        |        0.00%        |      43.75%     |
-   |      3       |         16.41%         |          24.24%          |  7.93%   |     33.33%     |  12.50% | 8.75%  |  4.17%  | 16.67% |   9.38%    |   25.00%  |   0.00%   | 0.00%  |         6.25%          |         6.25%          |      6.25%      |         6.25%         |       0.00%        |        0.00%        |        0.00%        |      31.25%     |
-   |      4       |         7.81%          |          0.00%           |  4.81%   |     33.33%     |  12.50% | 5.00%  |  8.33%  | 0.00%  |   6.25%    |   50.00%  |   0.00%   | 0.00%  |         6.25%          |         12.50%         |      12.50%     |         6.25%         |       0.00%        |        0.00%        |        0.00%        |      25.00%     |
-   |      5       |         0.00%          |          1.52%           |  0.00%   |     0.00%      |  0.00%  | 1.25%  |  0.00%  | 4.17%  |  100.00%   |   0.00%   |   0.00%   | 0.00%  |         0.00%          |         0.00%          |      12.50%     |         3.12%         |       0.00%        |        0.00%        |        0.00%        |      12.50%     |
-   |      6       |         12.50%         |          24.24%          |  7.21%   |     50.00%     |  0.00%  | 11.25% |  12.50% | 37.50% |   12.50%   |   75.00%  |   0.00%   | 0.00%  |         0.00%          |         0.00%          |      25.00%     |         6.25%         |       0.00%        |        0.00%        |        0.00%        |      25.00%     |
-   |      7       |         0.00%          |          25.76%          |  0.00%   |     0.00%      |  0.00%  | 2.50%  |  0.00%  | 16.67% |  100.00%   |   0.00%   |   0.00%   | 0.00%  |         0.00%          |         0.00%          |      12.50%     |         3.12%         |       0.00%        |        0.00%        |        0.00%        |      12.50%     |
-   |      8       |         14.06%         |          48.48%          |  10.10%  |     50.00%     |  12.50% | 6.25%  |  8.33%  | 25.00% |   6.25%    |   50.00%  |   0.00%   | 0.00%  |         6.25%          |         12.50%         |      6.25%      |         3.12%         |       0.00%        |        0.00%        |        0.00%        |      18.75%     |
-   |      9       |         4.69%          |          0.00%           |  3.85%   |     16.67%     |  6.25%  | 2.50%  |  4.17%  | 0.00%  |   3.12%    |   25.00%  |   0.00%   | 0.00%  |         6.25%          |         6.25%          |      6.25%      |         0.00%         |       0.00%        |        0.00%        |        0.00%        |      12.50%     |
-   |      10      |         0.00%          |          0.00%           |  0.00%   |     0.00%      |  0.00%  | 0.00%  |  0.00%  | 0.00%  |   3.12%    |   0.00%   |   0.00%   | 0.00%  |         0.00%          |         0.00%          |      6.25%      |         0.00%         |       0.00%        |        0.00%        |        0.00%        |      6.25%      |
-   |      11      |         0.00%          |          12.12%          |  0.00%   |     0.00%      |  0.00%  | 3.75%  |  4.17%  | 8.33%  |   9.38%    |   25.00%  |   0.00%   | 0.00%  |         0.00%          |         0.00%          |      6.25%      |         0.00%         |       0.00%        |        0.00%        |        0.00%        |      6.25%      |
-   |              |                        |                          |          |                |         |        |         |        |            |           |           |        |                        |                        |                 |                       |                    |                     |                     |                 |
-   |   Average    |         9.44%          |          11.36%          |  10.82%  |     26.39%     |  9.38%  | 7.29%  |  5.21%  | 9.03%  |   24.22%   |   31.25%  |   0.00%   | 3.65%  |         7.81%          |         11.98%         |      15.10%     |         6.25%         |       0.00%        |        0.00%        |        0.00%        |      26.04%     |
-   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-   ```
-**TODO: change to overall summary of total number of units, reflecting table 3.**
-
-      
+vagrant@cebinaevm:/cebinae/tofino_prototype$ sed -n 320,345p ./main/pipe/logs/phv_allocation_summary_3.log
++-------------------+-----------------+----------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
+|     MAU Group     | Containers Used |   Bits Used    | Bits Used on Ingress | Bits Used on Egress | Bits Allocated | Bits Allocated on Ingress | Bits Allocated on Egress | Available Bits |
++-------------------+-----------------+----------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
+|       B0-15       |   5 ( 31.2 %)   |  35 ( 27.3 %)  |     35 ( 27.3 %)     |     0 (   0  %)     |  83 ( 64.8 %)  |       83 ( 64.8 %)        |       0 (   0  %)        |      128       |
+|      B16-31       |   2 ( 12.5 %)   |  12 ( 9.38 %)  |     0 (   0  %)      |    12 ( 9.38 %)     |  12 ( 9.38 %)  |        0 (   0  %)        |       12 ( 9.38 %)       |      128       |
+|      B32-47       |   0 (   0  %)   |  0 (   0  %)   |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      128       |
+|      B48-63       |   0 (   0  %)   |  0 (   0  %)   |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      128       |
++-------------------+-----------------+----------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
+|       H0-15       |   7 ( 43.8 %)   | 105 (  41  %)  |    105 (  41  %)     |     0 (   0  %)     | 105 (  41  %)  |       105 (  41  %)       |       0 (   0  %)        |      256       |
+|      H16-31       |   5 ( 31.2 %)   |  66 ( 25.8 %)  |     0 (   0  %)      |    66 ( 25.8 %)     |  66 ( 25.8 %)  |        0 (   0  %)        |       66 ( 25.8 %)       |      256       |
+|      H32-47       |   0 (   0  %)   |  0 (   0  %)   |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      256       |
+|      H48-63       |   0 (   0  %)   |  0 (   0  %)   |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      256       |
+|      H64-79       |   0 (   0  %)   |  0 (   0  %)   |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      256       |
+|      H80-95       |   0 (   0  %)   |  0 (   0  %)   |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      256       |
++-------------------+-----------------+----------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
+|       W0-15       |  16 (  100 %)   | 504 ( 98.4 %)  |    504 ( 98.4 %)     |     0 (   0  %)     | 632 (  123 %)  |       632 (  123 %)       |       0 (   0  %)        |      512       |
+|      W16-31       |  10 ( 62.5 %)   | 320 ( 62.5 %)  |     0 (   0  %)      |    320 ( 62.5 %)    | 353 ( 68.9 %)  |        0 (   0  %)        |      353 ( 68.9 %)       |      512       |
+|      W32-47       |   0 (   0  %)   |  0 (   0  %)   |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      512       |
+|      W48-63       |   0 (   0  %)   |  0 (   0  %)   |     0 (   0  %)      |     0 (   0  %)     |  0 (   0  %)   |        0 (   0  %)        |       0 (   0  %)        |      512       |
++-------------------+-----------------+----------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
+|   Usage for 8b    |   7 ( 10.9 %)   |  47 ( 9.18 %)  |     35 ( 6.84 %)     |    12 ( 2.34 %)     |  95 ( 18.6 %)  |       83 ( 16.2 %)        |       12 ( 2.34 %)       |      512       |
+|   Usage for 16b   |  12 ( 12.5 %)   | 171 ( 11.1 %)  |    105 ( 6.84 %)     |    66 (  4.3 %)     | 171 ( 11.1 %)  |       105 ( 6.84 %)       |       66 (  4.3 %)       |      1536      |
+|   Usage for 32b   |  26 ( 40.6 %)   | 824 ( 40.2 %)  |    504 ( 24.6 %)     |    320 ( 15.6 %)    | 985 ( 48.1 %)  |       632 ( 30.9 %)       |      353 ( 17.2 %)       |      2048      |
++-------------------+-----------------+----------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
+| Overall PHV Usage |  45 ( 20.1 %)   | 1042 ( 25.4 %) |    644 ( 15.7 %)     |    398 ( 9.72 %)    | 1251 ( 30.5 %) |       820 (  20  %)       |      431 ( 10.5 %)       |      4096      |
++-------------------+-----------------+----------------+----------------------+---------------------+----------------+---------------------------+--------------------------+----------------+
+```
+These statistics were used to create Table 3 as follows:
+- Stages: (from mau.resources.log) The program uses resources in all stages 0 - 11
+- PHV:    (from phv_allocation_summary_3.log) The cell (overall PHV usage, Bits Used) is 1042
+- SRAM: (from mau.resources.log) The program uses 70 SRAM blocks. Each block is 16KB each, for a total of 1120KB.
+- TCAM: (from mau.resources.log) The program uses 26 TCAM blocks. Each block is 1.28KB, for a total of <34KB.
+- VLIWs: (from mau.resources.log) The program uses 93 VLIW instructions.
+- Queues: Not shown here. The program configures 2 physical queues per port, on a 32-port switch this is 64 queues.
 
    

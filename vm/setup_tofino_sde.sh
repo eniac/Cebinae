@@ -42,9 +42,9 @@ echo "vm_sde_profile:
 
 # create the set_sde helper
 echo "function set_sde() {
-    export SDE=$SDE_DIR
-    export SDE_INSTALL=$SDE/install
-    export PATH=$SDE_INSTALL/bin:$PATH
+    export SDE=\$SDE_DIR
+    export SDE_INSTALL=\$SDE_DIR/install
+    export PATH=\$SDE_INSTALL/bin:$PATH
 }
 set_sde" > "$SET_SCRIPT"
 # do install

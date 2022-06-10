@@ -81,7 +81,7 @@ control Cebinae_egress(inout bit<32> port,inout bit<32> src,inout bit<32> dst,in
         
     }
     
-    @ignore_table_dependency("Egress.t_egr.dpt_2_merged_tbl")
+    @ignore_table_dependency("Ingress.dpt_2_merged_tbl")
     table dpt_1_merged_tbl {
         actions = {
             dpt_1559_merged_acn_1_acn_0_opstmt_1560_acn_0_opstmt;
@@ -102,7 +102,7 @@ control Cebinae_egress(inout bit<32> port,inout bit<32> src,inout bit<32> dst,in
         
     }
     
-    @ignore_table_dependency("Egress.t_egr.dpt_1_merged_tbl")
+    @ignore_table_dependency("Ingress.dpt_1_merged_tbl")
     table dpt_2_merged_tbl {
         actions = {
             dpt_1562_merged_acn_2_acn_0_opstmt;
@@ -133,7 +133,7 @@ control Cebinae_egress(inout bit<32> port,inout bit<32> src,inout bit<32> dst,in
         
     }
     
-    @ignore_table_dependency("Egress.t_egr.dpt_4_merged_tbl")
+    @ignore_table_dependency("Ingress.dpt_4_merged_tbl")
     table dpt_3_merged_tbl {
         actions = {
             dpt_1566_merged_acn_3_acn_0_opstmt;
@@ -164,7 +164,7 @@ control Cebinae_egress(inout bit<32> port,inout bit<32> src,inout bit<32> dst,in
         
     }
     
-    @ignore_table_dependency("Egress.t_egr.dpt_3_merged_tbl")
+    @ignore_table_dependency("Ingress.dpt_3_merged_tbl")
     table dpt_4_merged_tbl {
         actions = {
             dpt_1564_merged_acn_4_acn_0_opstmt;
@@ -225,8 +225,8 @@ control Cebinae_egress(inout bit<32> port,inout bit<32> src,inout bit<32> dst,in
         
     }
     
-    @ignore_table_dependency("Egress.t_egr.dpt_8_merged_tbl")
-    @ignore_table_dependency("Egress.t_egr.dpt_7_merged_tbl")
+    @ignore_table_dependency("Ingress.dpt_8_merged_tbl")
+    @ignore_table_dependency("Ingress.dpt_7_merged_tbl")
     table dpt_6_merged_tbl {
         key = {
             if_precomp1550 : ternary;
@@ -268,8 +268,8 @@ control Cebinae_egress(inout bit<32> port,inout bit<32> src,inout bit<32> dst,in
         
     }
     
-    @ignore_table_dependency("Egress.t_egr.dpt_8_merged_tbl")
-    @ignore_table_dependency("Egress.t_egr.dpt_6_merged_tbl")
+    @ignore_table_dependency("Ingress.dpt_8_merged_tbl")
+    @ignore_table_dependency("Ingress.dpt_6_merged_tbl")
     table dpt_7_merged_tbl {
         key = {
             if_precomp1550 : ternary;
@@ -305,8 +305,8 @@ control Cebinae_egress(inout bit<32> port,inout bit<32> src,inout bit<32> dst,in
         
     }
     
-    @ignore_table_dependency("Egress.t_egr.dpt_7_merged_tbl")
-    @ignore_table_dependency("Egress.t_egr.dpt_6_merged_tbl")
+    @ignore_table_dependency("Ingress.dpt_7_merged_tbl")
+    @ignore_table_dependency("Ingress.dpt_6_merged_tbl")
     table dpt_8_merged_tbl {
         key = {
             if_precomp1550 : ternary;
