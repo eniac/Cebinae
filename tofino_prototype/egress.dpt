@@ -1,0 +1,92 @@
+/*
+collision resolution scheme: 
+    don't replace on collision and use two stages. 
+    This version has ~97% accuracy on caida at 10ms intervals 
+    with 2048 total slots per key, or >99% accuracy at 5ms.
+*/
+
+const int nports = 32;
+const int nflows = 1024;
+size log_nflows = 10;
+
+const int NULL = 0;
+
+global Array.t<<32>> port_cts = Array.create(nports);
+
+// first stage.
+global Array.t<<32>> flow_src1 = Array.create(nflows);
+global Array.t<<32>> flow_dst1 = Array.create(nflows);
+global Array.t<<32>> flow_ct1 = Array.create(nflows);
+// second stage.
+global Array.t<<32>> flow_src2 = Array.create(nflows);
+global Array.t<<32>> flow_dst2 = Array.create(nflows);
+global Array.t<<32>> flow_ct2 = Array.create(nflows);
+
+memop add(int v, int ct){
+    return v + ct;
+}
+memop fst(int a, int b) {
+    return a;
+}
+memop write(int a, int b) {
+    return b;
+}
+
+
+memop eq(int stored_value, int new_value){
+    if (stored_value == new_value){
+        return 1;
+    } else {
+        return 0;
+    }
+}
+memop write_if_null(int memval, int pktval) {
+    if (memval == NULL) {
+        return pktval;
+    }
+    else {
+        return memval;
+    }
+}
+memop check_if_null(int memval, int newval) {
+    if (memval == NULL) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+event Cebinae_egress(int port, int src, int dst, int pkt_len) {
+    Array.setm(port_cts, port, add, pkt_len);
+    int<<log_nflows>> h1 = hash<<log_nflows>>(101, src, dst);
+    int<<log_nflows>> h2 = hash<<log_nflows>>(107, src, dst);
+
+    int stored_src = Array.update(flow_src1, h1, 
+        fst, NULL, write_if_null, src);
+
+    int stored_dst = Array.update(flow_dst1, h1, 
+        fst, NULL, write_if_null, dst);
+    // if the key slot was empty or stored this packet's flow, 
+    // update the counter.
+    if ((stored_src == NULL && stored_dst == NULL) || 
+        (stored_src == src && stored_dst == dst)) {
+        Array.setm(flow_ct1, h1, add, pkt_len);
+        // int flowlen = Array.update(flow_ct, h1, add, pkt_len, add, pkt_len); // increment.        
+    }
+    // Else, try the second stage.  
+    else {
+        int stored_src2 = Array.update(flow_src2, h2, 
+            fst, NULL, write_if_null, src);
+
+        int stored_dst2 = Array.update(flow_dst2, h2, 
+            fst, NULL, write_if_null, dst);
+        // if the key slot was empty or stored this packet's flow, 
+        // update the counter. Else, don't update.
+        if ((stored_src2 == NULL && stored_dst2 == NULL) || 
+            (stored_src2 == src && stored_dst2 == dst)) {
+            Array.setm(flow_ct2, h2, add, pkt_len); // flow_ct2[h2] = flow_ct[h2] + pkt_len;
+            // int flowlen = Array.update(flow_ct2, h2, add, pkt_len, add, pkt_len); // increment.        
+        }
+    }
+}
