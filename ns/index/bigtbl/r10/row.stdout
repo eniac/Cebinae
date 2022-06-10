@@ -19,4 +19,4 @@ CCAs: [u'TcpNewReno', u'TcpBbr']
 --- JFI (gpt) ---
   FIFO: 0.974
   FQ: 0.974
-  Cebinae: 0.982  
+  Cebinae: 0.982 

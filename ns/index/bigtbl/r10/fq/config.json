@@ -25,6 +25,7 @@
     "app_packet_size": 1440,    
     "bottleneck_bw": "1000Mbps",
     "bottleneck_delay": "20ms",
+    "switch_netdev_size": "10p",
     "switch_total_bufsize": "4200p",
     "vdt": "1ns",
     "dt": "67.108864ms",
