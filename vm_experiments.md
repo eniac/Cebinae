@@ -13,9 +13,9 @@ Contents:
 
 **Note for artifact reviewers:** We provide a copy of a pre-built vm for convenience. To use the pre-built VM:
 
-0. Ensure that you have vagrant (https://www.vagrantup.com/downloads) and virtualbox (https://www.virtualbox.org) installed.
+0. Ensure that you have [vagrant](https://www.vagrantup.com/downloads) and [virtualbox](https://www.virtualbox.org) installed.
 
-1. download the vm image: **TODO: url**
+1. download the vm image: [google drive link](https://drive.google.com/file/d/1N7WauXIl2SsmGvJ8RixlagqzlqZtAd9w/view?usp=sharing)
 
 2. place the vm image ``cebinae.box`` into the ``vm_prebuilt`` directory of this repo.
 
@@ -84,7 +84,7 @@ allresults1024.pkl  caidapcap_to_json.py  egress.dpt  egress.py  measure_accurac
 
 4. (optional) run the experiments to re-generate the results file ``allresults1024.pkl``. This will take **around 4 hours**, so if you wish to skip this step, an already generated ``allresults1024.pkl`` is included in the repo. 
 The experiment script is hard-coded to use the pcap file ``~/caidaSample.pcap`` -- a 1 minute sample trace of a 10 Gb/s core router link from CAIDA. 
-This pcap file is included in the pre-built VM, or can be downloaded here: https://drive.google.com/file/d/1S8xmWM5TRDbeRu-AtdNK7yM2xKVYYylC/view?usp=sharing
+This pcap file is included in the pre-built VM, or can be downloaded here: [google drive link](https://drive.google.com/file/d/1S8xmWM5TRDbeRu-AtdNK7yM2xKVYYylC/view?usp=sharing)
 You can modify `measure_accuracy.py` to use other pcaps as you wish. Results are qualitatively similar for all Caida workloads that we have tried.
 
 ```
