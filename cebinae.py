@@ -515,6 +515,7 @@ mypink = '#f89588'
 myblue = '#63b2ee'
 mygreen = '#76da91'
 mypurple = '#9987ce'
+myyellow = '#F4B400'
 '''
 
   curves = []
@@ -523,15 +524,15 @@ mypurple = '#9987ce'
     num_flows = len(lines[0].split())-1
   
     # Define enough line styles
-    colors = ['myred', 'mypink', 'myblue', 'mygreen', 'mypurple']
+    colors = ['myred', 'mypink', 'myblue', 'mygreen', 'mypurple', 'myyellow']
     point_types = [2, 4, 6, 8, 10, 12, 14, 5, 7, 9, 11, 13, 15]
     num_ls = 0
-    point_type = 0
+    color_type = 0
     while num_ls <= num_flows:
-      for color in colors:
+      for point_type in point_types:
         num_ls += 1
-        gp_str += ("set style line {0} lc rgb {1} dt 1 lw 3 pt {2}\n".format(num_ls, color, point_types[point_type]))
-      point_type += 1
+        gp_str += ("set style line {0} lc rgb {1} dt 1 lw 3 pt {2}\n".format(num_ls, colors[color_type], point_type))
+      color_type += 1
 
     gp_str += "plot "
     for i in range(num_flows):
