@@ -25,16 +25,18 @@ For the ease of running the evaluation process, `cebinae.py` is created as the m
 
 * Clone/fetch the latest version of the repository: `git clone https://github.com/eniac/Cebinae`.
 
-* For the reproduction of the majority of results, only a canonical Linux machine (e.g., Ubuntu 16.04 or 18.04 LTS) is required. Other Linux distributions and OS are also expected to work, preferably Ubuntu 16.04 LTS or Ubuntu 18.04 LTS.
+* For the reproduction of the majority of results, only a canonical Linux machine (e.g., Ubuntu 16.04 or 18.04 LTS) is required. Other Linux distributions and OS are also expected to work, preferably Ubuntu 18.04 LTS or Ubuntu 16.04 LTS.
 
 * Validate environment set up.
     * `python cebinae.py ns validate -p optimized` to validate if the environment is well set up, which typically takes around 15 min. Upon failure of compilation or tests, check if the [prerequisite packages](https://www.nsnam.org/wiki/Installation#Ubuntu.2FDebian.2FMint) are installed for the corresponding platform, for instance, gcc >= 7.0.0. For Ubuntu 18.04, `python cebinae.py ns prerequisite` auto-installs the set of packages needed.
     * Confirm that [gnuplot](http://www.gnuplot.info/) is installed by typing `gnuplot` in the linux prompt and type `q` to quit its terminal.
 
-* (Optional) A physical Tofino switch (tested end-to-end with `bf-sde-9.5.0`) connecting to a testbed of 6 servers (TODO: Describe the wiring setup, NIC speed).
-    * This is not strictly required as most results in the paper are executed in ns-3.35 (that allows interating various environment conditions, and prevent randomness for fair comparative studies versus the alternatives with the same exact background condition). Meanwhile, we provide the VM instance (see next bullet point) to allow reproducing results on resource usage and top flow detection accuracy without the need to install the corresponding tofino SDE.
+* (Optional) A physical Tofino switch (tested end-to-end with `bf-sde-9.5.0`) connecting to a testbed of 6 servers with Mellanox Technologies MT27710 Family [ConnectX-4 Lx].
+    * This is not required for artifact evaluation as the majority results in the paper are executed in ns-3.35 (that allows interating various environment conditions, and prevent randomness for fair comparative studies versus the alternatives with the same exact background condition).
+    * For the results conducted on Tofino switch (e.g., data plane resource, top flow detection, one could reproduce the equivalent result with Tofino hardware model VM. We have provided the scripts under `vm` directory to set up the environment.
+    * **TLDR**: We understand that setting up the env (e.g., installing the exact version `bf-sde-9.5.0`, downloading CAIDA traces) may be time consumin, hence, we've provided a prebuilt VM instance (see next bullet point) for the ease of .
 
-* We provided a pre-built VM instance with `bf-sde-9.5.0` for artifact evaluation process to validate the HW results in the accepted paper manuscript without the need of physical testbed set up. See `vm_experiments.md` for more the detailed instructions.
+* We provided a pre-built VM instance with `bf-sde-9.5.0` for artifact evaluation process to validate the HW results in the accepted paper manuscript without the need of physical testbed set up. See [detailed instructions](https://github.com/eniac/Cebinae/blob/main/vm_experiments.md).
 
 Feel free to reach out if any question arises!
 
@@ -54,6 +56,13 @@ Feel free to reach out if any question arises!
 * Alternatively, one could also run `python cebinae.py ns run_instances -c bigtbl --parallel` in single command that will run all experiment configs under the specified directory `ns/configs/bigtbl/` and exploits the underlying multi-core architecture if any via multiprocessing pool. However, due to the number of experiment batches/instances and that a single experiment instance may take more than hours (for Gbps experiments in particular), one may further want to split the configuration files into sub-dirs and run separately on different machines. Meanwhile, if any experiment instance fails (due to occasional file reads/writes failure with multi-processing), one could always return to the previous `run_batch` command for re-executing the specific batch.
 * We understand that re-running all experiments may be computationally expensive. Therefore, all reference results and the parsed row print are stored under the corresponding row subdirectory of `ns/index/bigtbl/`, the digest file contains the expected completion time (on Intel(R) Xeon(R) Silver 4110 CPU @ 2.10GHz) for the corresponding experiment instance.
 
+**Reproduce Table 3 Hardware Resource Usage**
+
+See [instructions](https://github.com/eniac/Cebinae/blob/main/vm_experiments.md).
+
+**Reproduce Figure 9**
+
+See [instructions](https://github.com/eniac/Cebinae/blob/main/vm_experiments.md).
 
 ### Further Questions
 
