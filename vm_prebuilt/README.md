@@ -1,0 +1,1 @@
+Put cebinae.box in this directory, then run `vagrant up` to set up the pre-built VM.
