@@ -38,7 +38,7 @@ TypeId CebinaeQueueDisc::GetTypeId (void)
                    "m_l",
                    TimeValue (NanoSeconds(65536)),
                    MakeTimeAccessor (&CebinaeQueueDisc::m_l),
-                   MakeTimeChecker())                   
+                   MakeTimeChecker())                                      
     .AddAttribute ("P",
                    "P",
                    UintegerValue (1),
@@ -64,6 +64,11 @@ TypeId CebinaeQueueDisc::GetTypeId (void)
                    DataRateValue (DataRate ("32768b/s")),
                    MakeDataRateAccessor (&CebinaeQueueDisc::m_bps),
                    MakeDataRateChecker ()) 
+    .AddAttribute ("pool",
+                   "Buffer pool or static carving",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&CebinaeQueueDisc::m_pool),
+                   MakeBooleanChecker ())                    
     .AddAttribute ("debug", 
                    "Whether to log debug state",
                    BooleanValue (false),
@@ -136,6 +141,7 @@ void CebinaeQueueDisc::ReactionFSM() {
               << "tau: " << m_tau << "\n"
               << "delta_port: " << m_delta_p << "\n"
               << "delta_top: " << m_delta_f << "\n"
+              << "m_pool: " << std::boolalpha << m_pool << "\n"
               << "m_bps: " << m_bps << "\n";
 
     m_oss_summary << "--- Validate CebinaeQueueDisc initial states ---\n"
@@ -443,51 +449,104 @@ CebinaeQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   // TODO Optional ECN bits marking
   // Now execute the queueing decision
   bool retval = false;  // whether the packet succeeds enqueue
-  if (past_head == 0) {
-    m_lbf_past_head_pkts += 1;
-    // enqueue(headq)
-    if (GetInternalQueue (m_headq)->GetCurrentSize() + item > GetInternalQueue (m_headq)->GetMaxSize ()) {
-      // Drop because headq is full
-      DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
-      m_enqueue_drop_pkts[m_headq] += 1;
-      if (m_debug) {
-        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_DROP, total_qlen);
-      }
-    } else {
-      retval = GetInternalQueue (m_headq)->Enqueue (item);
-      NS_ASSERT(retval == true);
-      if (m_debug) {
-        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_ENQUEUE, total_qlen);
-      }      
-    }
-  } 
-  else if (past_tail == 0) {
-    m_lbf_past_tail_pkts += 1;
-    // enqueue(neg_headq)
-    if (GetInternalQueue (m_neg_headq)->GetCurrentSize() + item > GetInternalQueue (m_neg_headq)->GetMaxSize ()) {
-      // Drop because neg_headq is full
-      DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
-      m_enqueue_drop_pkts[m_neg_headq] += 1;
-      if (m_debug) {
-        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_DROP, total_qlen);
-      }      
-    } else {
-      retval = GetInternalQueue (m_neg_headq)->Enqueue (item);
-      NS_ASSERT(retval == true); 
-      if (m_debug) {
-        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_ENQUEUE, total_qlen);
-      }         
-    }
-  } 
-  else {
-    // Drop because of LBF policy
-    m_lbf_drop_pkts += 1;
-    DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
-    if (m_debug) {
-      m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::LBF_DROP, total_qlen);
-    }    
-  }
 
+  // Units must match per GetConfig()
+  // if (GetInternalQueue (m_headq)->GetCurrentSize().GetUnit() != GetInternalQueue (m_neg_headq)->GetCurrentSize().GetUnit()) {
+  //   std::cout << "Incompatible QueueSize" << std::endl;
+  // }
+
+  if (m_pool) {
+    if (past_head == 0) {
+      m_lbf_past_head_pkts += 1;
+      // enqueue(headq)
+      // Enqueue as long as total buffer is enough
+      if (QueueSize(GetMaxSize().GetUnit(), GetInternalQueue (m_headq)->GetCurrentSize().GetValue()+GetInternalQueue (m_neg_headq)->GetCurrentSize().GetValue()) + item > GetMaxSize ()) {
+        // Drop because total buffer is full
+        DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
+        m_enqueue_drop_pkts[m_headq] += 1;
+        if (m_debug) {
+          m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_DROP, total_qlen);
+        }
+      } else {
+        retval = GetInternalQueue (m_headq)->Enqueue (item);
+        NS_ASSERT(retval == true);
+        if (m_debug) {
+          m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_ENQUEUE, total_qlen);
+        }      
+      }
+    } 
+    else if (past_tail == 0) {
+      m_lbf_past_tail_pkts += 1;
+      // enqueue(neg_headq)
+      if (QueueSize(GetMaxSize().GetUnit(), GetInternalQueue (m_headq)->GetCurrentSize().GetValue()+GetInternalQueue (m_neg_headq)->GetCurrentSize().GetValue()) + item > GetMaxSize ()) {
+        // Drop because neg_headq is full
+        DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
+        m_enqueue_drop_pkts[m_neg_headq] += 1;
+        if (m_debug) {
+          m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_DROP, total_qlen);
+        }      
+      } else {
+        retval = GetInternalQueue (m_neg_headq)->Enqueue (item);
+        NS_ASSERT(retval == true); 
+        if (m_debug) {
+          m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_ENQUEUE, total_qlen);
+        }         
+      }
+    } 
+    else {
+      // Drop because of LBF policy
+      m_lbf_drop_pkts += 1;
+      DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
+      if (m_debug) {
+        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::LBF_DROP, total_qlen);
+      }    
+    }
+  } else { // Alternative
+    if (past_head == 0) {
+      m_lbf_past_head_pkts += 1;
+      // enqueue(headq)
+      if (GetInternalQueue (m_headq)->GetCurrentSize() + item > GetInternalQueue (m_headq)->GetMaxSize ()) {
+        // Drop because headq is full
+        DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
+        m_enqueue_drop_pkts[m_headq] += 1;
+        if (m_debug) {
+          m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_DROP, total_qlen);
+        }
+      } else {
+        retval = GetInternalQueue (m_headq)->Enqueue (item);
+        NS_ASSERT(retval == true);
+        if (m_debug) {
+          m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::HEADQ_ENQUEUE, total_qlen);
+        }      
+      }
+    } 
+    else if (past_tail == 0) {
+      m_lbf_past_tail_pkts += 1;
+      // enqueue(neg_headq)
+      if (GetInternalQueue (m_neg_headq)->GetCurrentSize() + item > GetInternalQueue (m_neg_headq)->GetMaxSize ()) {
+        // Drop because neg_headq is full
+        DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
+        m_enqueue_drop_pkts[m_neg_headq] += 1;
+        if (m_debug) {
+          m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_DROP, total_qlen);
+        }      
+      } else {
+        retval = GetInternalQueue (m_neg_headq)->Enqueue (item);
+        NS_ASSERT(retval == true); 
+        if (m_debug) {
+          m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::NEGHEADQ_ENQUEUE, total_qlen);
+        }         
+      }
+    } 
+    else {
+      // Drop because of LBF policy
+      m_lbf_drop_pkts += 1;
+      DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
+      if (m_debug) {
+        m_debugger.UpdateDebugStats(item->GetPacket(), CebinaeDebugger::LBF_DROP, total_qlen);
+      }    
+    }
+  }
   // Shouldn't reaccount dropped bytes to respect feed-forward hardware constraint
   // bytes_register --> decision stage (TM or LBF decision) [can't feedback a posteriori unless recirculation]
   // I.e., m_bytes_top account for arrival bytes (transmission rate) rather than egressing bytes per physical semantics
@@ -617,16 +676,28 @@ CebinaeQueueDisc::CheckConfig (void)
       //   AddQueueDiscClass (c);
       // }      
 
-      // CebinaeQueueDisc has two fixed DropTail queue, which is non-configurable for user
-      // Currently statically carved in halves for each InternalQueue, but one could change to shared global buffer as well
-      AddInternalQueue (CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> >
-                          ("MaxSize", QueueSizeValue (
-                            QueueSize(GetMaxSize().GetUnit(), GetMaxSize().GetValue()/2)
-                            )));
-      AddInternalQueue (CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> >
-                          ("MaxSize", QueueSizeValue (
-                            QueueSize(GetMaxSize().GetUnit(), GetMaxSize().GetValue()/2)
-                            )));                       
+      // CebinaeQueueDisc has two fixed DropTail queue
+      if (m_pool) {
+        // Shared global buffer
+        AddInternalQueue (CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> >
+                            ("MaxSize", QueueSizeValue (
+                              QueueSize(GetMaxSize().GetUnit(), GetMaxSize().GetValue())
+                              )));
+        AddInternalQueue (CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> >
+                            ("MaxSize", QueueSizeValue (
+                              QueueSize(GetMaxSize().GetUnit(), GetMaxSize().GetValue())
+                              ))); 
+      } else {
+        // Statically carved in halves for each InternalQueue
+        AddInternalQueue (CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> >
+                            ("MaxSize", QueueSizeValue (
+                              QueueSize(GetMaxSize().GetUnit(), GetMaxSize().GetValue()/2)
+                              )));
+        AddInternalQueue (CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> >
+                            ("MaxSize", QueueSizeValue (
+                              QueueSize(GetMaxSize().GetUnit(), GetMaxSize().GetValue()/2)
+                              )));         
+      }                      
     }
 
   if (GetNInternalQueues () != 2)

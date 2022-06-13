@@ -700,6 +700,8 @@ private:
   // TODO: use unordered_set
   std::vector<uint32_t> m_bottlenecked_flows_set {};
 
+  bool m_pool;
+
   // History of top flows
 
   // --- Debugging stats ---

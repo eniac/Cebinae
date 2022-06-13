@@ -278,12 +278,14 @@ main (int argc, char *argv[])
   double tau {0.05};
   double delta_port {0.05};
   double delta_flow {0.05};
+  bool pool = 0;
 
   cmd.AddValue("config_path", "Path to the json configuration file", config_path);
   cmd.AddValue("result_dir", "Optional path to the output dir", result_dir);  
   cmd.AddValue("seed", "Seed", seed);
   cmd.AddValue("run", "Run", run);
   cmd.AddValue ("enable_debug", "Enable logging", enable_debug);
+  cmd.AddValue ("pool", "Enable pool", pool);  
   cmd.AddValue ("logtcp", "Enable logging of TCP traces, such as RTT, RTO, cwnd (large file size)", logtcp);  
   cmd.AddValue ("enable_stdout", "Enable verbose rmterminal print", enable_stdout);  
   cmd.AddValue ("printprogress", "Enable verbose rmterminal print", printprogress);    
@@ -778,6 +780,7 @@ main (int argc, char *argv[])
     Config::SetDefault ("ns3::CebinaeQueueDisc::tau", DoubleValue (tau));
     Config::SetDefault ("ns3::CebinaeQueueDisc::delta_port", DoubleValue (delta_port));
     Config::SetDefault ("ns3::CebinaeQueueDisc::delta_flow", DoubleValue (delta_flow));
+    Config::SetDefault ("ns3::CebinaeQueueDisc::pool", BooleanValue (pool));
     Config::SetDefault ("ns3::CebinaeQueueDisc::DataRate", StringValue (bottleneck_bw));
 
     tch_switch.SetRootQueueDisc ("ns3::CebinaeQueueDisc", "MaxSize", StringValue (switch_total_bufsize));
