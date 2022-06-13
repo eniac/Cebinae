@@ -31,10 +31,10 @@ For the ease of running the evaluation process, `cebinae.py` is created as the m
     * `python cebinae.py ns validate -p optimized` to validate if the environment is well set up, which typically takes around 15 min. Upon failure of compilation or tests, check if the [prerequisite packages](https://www.nsnam.org/wiki/Installation#Ubuntu.2FDebian.2FMint) are installed for the corresponding platform, for instance, gcc >= 7.0.0. For Ubuntu 18.04, `python cebinae.py ns prerequisite` auto-installs the set of packages needed.
     * Confirm that [gnuplot](http://www.gnuplot.info/) is installed by typing `gnuplot` in the linux prompt and type `q` to quit its terminal.
 
-* (Optional) A physical Tofino switch (tested end-to-end with `bf-sde-9.5.0`) connecting to a testbed of 6 servers with Mellanox Technologies MT27710 Family [ConnectX-4 Lx].
+* (Optional) A physical Barefoot Tofino switch (tested end-to-end with `bf-sde-9.5.0`) connecting to a testbed of 6 servers with Mellanox Technologies MT27710 Family [ConnectX-4 Lx] 10G/25G NIC.
     * This is not required for artifact evaluation as the majority results in the paper are executed in ns-3.35 (that allows interating various environment conditions, and prevent randomness for fair comparative studies versus the alternatives with the same exact background condition).
-    * For the results conducted on Tofino switch (e.g., data plane resource, top flow detection, one could reproduce the equivalent result with Tofino hardware model VM. We have provided the scripts under `vm` directory to set up the environment.
-    * **TLDR**: We understand that setting up the env (e.g., installing the exact version `bf-sde-9.5.0`, downloading CAIDA traces) may be time consumin, hence, we've provided a prebuilt VM instance (see next bullet point) for the ease of .
+    * For the results conducted on Tofino switch (e.g., data plane resource, top flow detection), one could reproduce the same result with Tofino ASIC model VM. We provided the scripts under `vm` directory to set up the environment.
+    * **TLDR**: We understand that setting up the env (e.g., installing the exact version `bf-sde-9.5.0`, downloading CAIDA traces) may be time consuming, hence, we've provided a prebuilt VM instance for the ease of the evaluation process (see next bullet point).
 
 * We provided a pre-built VM instance with `bf-sde-9.5.0` for artifact evaluation process to validate the HW results in the accepted paper manuscript without the need of physical testbed set up. See [detailed instructions](https://github.com/eniac/Cebinae/blob/main/vm_experiments.md).
 

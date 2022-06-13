@@ -3,43 +3,39 @@
 Contents:
 
 1. Setting up the VM
-2. Reproducing flow table performance measurements
-3. Compiling the Cebinae Tofino Prototype and reporting resource utilization
+2. Reproducing flow table performance measurements (Figure 9)
+3. Compiling the Cebinae Tofino Prototype and reporting resource utilization (Table 3)
 
 ##### Setting up the VM
 
-
-(optional) You can reproduce the results describe in this section in a VM with the lucid language and Tofino SDE version 9.5.0 installed. 
+(Optional) You can reproduce the results describe in this section in a VM with the lucid language and Tofino SDE version 9.5.0 installed. 
 
 **Note for artifact reviewers:** We provide a copy of a pre-built vm for convenience. To use the pre-built VM:
 
 0. Ensure that you have [vagrant](https://www.vagrantup.com/downloads) and [virtualbox](https://www.virtualbox.org) installed.
 
-1. download the vm image: [google drive link](https://drive.google.com/file/d/1N7WauXIl2SsmGvJ8RixlagqzlqZtAd9w/view?usp=sharing)
+1. Download the vm image: [google drive link](https://drive.google.com/file/d/1N7WauXIl2SsmGvJ8RixlagqzlqZtAd9w/view?usp=sharing)
 
-2. place the vm image ``cebinae.box`` into the ``vm_prebuilt`` directory of this repo.
+2. Place the vm image ``cebinae.box`` into the ``vm_prebuilt`` directory of this repo.
 
-3. install and start the vm with:
+3. Install and start the vm with:
 
    ```
    vagrant up --provider=virtualbox
    ```
 
-
 To setup the VM from scratch:
 
-1. install vagrant and virtualbox 
-2. place a copy of bf-sde-9.5.0.tgz in this directory **note: this has only been tested with 9.5.0!**
-3. build the vm with: ``vagrant --sde=bf-sde-9.5.0.tgz up --provider=virtualbox``
+1. Install vagrant and virtualbox 
+2. Place a copy of bf-sde-9.5.0.tgz in this directory **note: this has only been tested with 9.5.0!**
+3. Build the vm with: ``vagrant --sde=bf-sde-9.5.0.tgz up --provider=virtualbox``
    - **NOTE:** this will take an hour or so to complete, because it installs the tofino sde.
-
-
 
 ##### Reproducing flow table performance results
 
 These section describes how to measure and report the false positive and negative rate of the flow table data structure used in Cebinae's egress, using a 700MB sample trace from CAIDA, of a 10 Gb/s core router link.
 
-1. ssh into the vm with ``vagrant ssh`` and go to the /cebinae directory. This directory is a shared pointer to the cebinae repo directory in the host machine.
+1. ssh into the vm with ``vagrant ssh`` and go to the /cebinae directory. This directory is a shared pointer to the cebinae repo directory in the host machine (`git pull` to sync to the latest cebaine repository).
 
 ```
 % vagrant ssh
@@ -71,10 +67,9 @@ More information can be found at https://github.com/chef/bento
 vagrant@cebinaevm:~$ cd /cebinae/
 vagrant@cebinaevm:/cebinae$ ls
 cebinae.py  flow_table  ns  prototype_demonstration.md  README.md  tofino_prototype  vm  vm_experiments.md
-vagrant@cebinaevm:/cebinae$    
 ```
 
-2. go to the ``flow_table`` directory 
+2. Go to the ``flow_table`` directory 
 
 ```
 vagrant@cebinaevm:/cebinae$ cd flow_table/
@@ -82,7 +77,7 @@ vagrant@cebinaevm:/cebinae/flow_table$ ls
 allresults1024.pkl  caidapcap_to_json.py  egress.dpt  egress.py  measure_accuracy.py  pcaplibs.py
 ```
 
-4. (optional) run the experiments to re-generate the results file ``allresults1024.pkl``. This will take **around 4 hours**, so if you wish to skip this step, an already generated ``allresults1024.pkl`` is included in the repo. 
+4. (Optional) Run the experiments to re-generate the results file ``allresults1024.pkl``. This will take **around 4 hours**, so if you wish to skip this step, an already generated ``allresults1024.pkl`` is included in the repo. 
 The experiment script is hard-coded to use the pcap file ``~/caidaSample.pcap`` -- a 1 minute sample trace of a 10 Gb/s core router link from CAIDA. 
 This pcap file is included in the pre-built VM, or can be downloaded here: [google drive link](https://drive.google.com/file/d/1S8xmWM5TRDbeRu-AtdNK7yM2xKVYYylC/view?usp=sharing)
 You can modify `measure_accuracy.py` to use other pcaps as you wish. Results are qualitatively similar for all Caida workloads that we have tried.
@@ -102,7 +97,7 @@ trial: 1 interval: 5 nflows: 536 perfect measurement? True fpr: 0.0 fnr: 0.0
 ...
 ```
 
-5. print out the experiment result to show false positive and false negative rates as interval length varies. 
+5. Print out the experiment result to show false positive and false negative rates as interval length varies. 
 
 ```
 vagrant@cebinaevm:/cebinae/flow_table$ ./measure_accuracy.py plot
@@ -124,7 +119,7 @@ interval: 50ms # trials: 100 mean fpr: 0.00012345049084140132 mean fnr: 0.251392
 
 1. ssh into the vm.
 
-2. go to the ``tofino_prototype`` directory:
+2. Go to the ``tofino_prototype`` directory:
 
 ```
 (base) jsonch@jsonchs-MBP vm % pwd        
@@ -161,14 +156,14 @@ debug.hpp   egress.dpt.p4       ingress.p4  main.cpp  main.py   p4math  pd_helpe
 egress.dpt  ingress_objects.p4  libs        main.p4   makefile  pd      pd_helpers.hpp
 ```
 
-4. (optional) compile the Lucid egress function to P4
+4. (Optional) Compile the Lucid egress function to P4
 
 ```
 # this command compiles egress.dpt (lucid program) into egress.dpt.p4 (p4 control block)
 vagrant@cebinaevm:/cebinae/tofino_prototype$ make compile
 ```
 
-5. compile the P4 program and control plane program
+5. Compile the P4 program and control plane program
 
 ```
 # this command compiles the data and control plane binaries to tofino_prototype/main/
@@ -179,7 +174,7 @@ cmd: /home/vagrant/bf-sde-9.5.0/install/bin/bf-p4c --verbose 3 --std p4-16 --tar
 ...
 ```
 
-6. print out Tofino resource utilization statistics
+6. Print out Tofino resource utilization statistics
 
 **Pipeline resources:**
 ```
