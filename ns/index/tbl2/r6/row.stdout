@@ -1,0 +1,22 @@
+data_path pointing to the root dir of the bigtbl row: /home/leoyu/Cebinae/ns/index/tbl2/r6
+Bottleneck BW: 100Mbps
+Buffer size: 85p
+RTTs: [u'10.0ms', u'10.0ms']
+CCAs: [u'TcpVegas', u'TcpCubic']
+# flows per group: [16, 1]
+--- Throughput ---
+  FIFO: 98979099.636
+  FQ: 98979099.636
+  Cebinae: 97769533.091
+--- Goodput ---
+  FIFO: 95397236.364
+  FQ: 95397236.364
+  Cebinae: 94231389.091
+--- JFI (tpt) ---
+  FIFO: 0.158
+  FQ: 0.314
+  Cebinae: 0.935
+--- JFI (gpt) ---
+  FIFO: 0.158
+  FQ: 0.314
+  Cebinae: 0.935

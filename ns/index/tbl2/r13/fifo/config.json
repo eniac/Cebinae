@@ -1,0 +1,52 @@
+{
+    "instance_type": "dumbbell_long",
+    "batch_params": [
+        "queuedisc_type",
+        "result_dir"
+    ],
+    "result_dir": [
+        "tmp_index/bigtbl/r13/fifo/",
+        "tmp_index/bigtbl/r13/fq/",
+        "tmp_index/bigtbl/r13/cebinae/"
+    ],
+    "batch_size": 3,
+    "enable_debug": 1,
+    "logtcp": 0,
+    "enable_stdout": 0,
+    "printprogress": 1,    
+    "seed": 2022,
+    "run": 1205,
+    "sim_seconds": 100,
+    "app_seconds_start": 1,
+    "app_seconds_end": 100,
+    "tracing_period_us": 1000000,
+    "progress_interval_ms": 1000,
+    "delackcount": 1,
+    "app_packet_size": 1440,    
+    "bottleneck_bw": "1000Mbps",
+    "bottleneck_delay": "4.5ms",
+    "switch_total_bufsize": "850p",
+    "vdt": "1ns",
+    "dt": "16.777216ms",
+    "l": "100000ns",
+    "p": 1,
+    "tau": 0.01,
+    "delta_port": 0.0,
+    "delta_flow": 0.01,
+    "queuedisc_type": [
+        "FifoQueueDisc",
+        "FqCodelQueueDisc",
+        "CebinaeQueueDisc"
+    ],
+    "transport_prot0": "TcpVegas",
+    "transport_prot1": "TcpNewReno",    
+    "leaf_bw0": "100000Mbps",
+    "leaf_bw1": "100000Mbps",
+    "app_bw0": "1000Mbps", 
+    "app_bw1": "1000Mbps",            
+    "leaf_delay0": "0.25ms",
+    "leaf_delay1": "0.25ms",
+    "num_cca": 2,
+    "num_cca0": 64,
+    "num_cca1": 1
+}
