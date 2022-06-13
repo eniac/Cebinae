@@ -8,7 +8,7 @@ Contents:
 
 ##### Setting up the VM
 
-(Optional) You can reproduce the results describe in this section in a VM with the lucid language and Tofino SDE version 9.5.0 installed. 
+(Optional) You can reproduce the results describe in this section in a VM with the lucid language compiler (leveraged to translate the higher-level event-driven code to P4-16) and Tofino SDE version 9.5.0 installed. 
 
 **Note for artifact reviewers:** We provide a copy of a pre-built vm for convenience. To use the pre-built VM:
 
