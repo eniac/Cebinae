@@ -1,8 +1,3 @@
-/* 
-This is a simple wire program that uses lucid-generated control blocks. 
-*/
-
-
 #include <core.p4>
 #include <tna.p4>
 
@@ -11,8 +6,6 @@ This is a simple wire program that uses lucid-generated control blocks.
 
 // the port from 128 --> 136 is the bottleneck.
 #define BOTTLENECK_PORT 128
-
-
 
 /*=============================================
 =            Headers and metadata.            =

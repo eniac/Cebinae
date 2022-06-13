@@ -53,7 +53,8 @@ Feel free to reach out if any question arises!
 * Run the experiment batches for each row, for instance `r0.json`:
     * `python cebinae.py ns run_batch -c bigtbl/r0.json` (or `python cebinae.py ns run_batch -c bigtbl/r0.json --parallel` to decompose the batch instances for parallel execution), the results will appear under `ns/tmp_index/bigtbl/r0/`.
     * Run `python cebinae.py parse --target bigtbl --data_path ns/tmp_index/bigtbl0/r0` to print the corresponding parsed results from digest files of each experiment instance to the terminal.
-* Alternatively, one could also run `python cebinae.py ns run_instances -c bigtbl --parallel` in single command that will run all experiment configs under the specified directory `ns/configs/bigtbl/` and exploits the underlying multi-core architecture if any via multiprocessing pool. However, due to the number of experiment batches/instances and that a single experiment instance may take more than hours (for Gbps experiments in particular), one may further want to split the configuration files into sub-dirs and run separately on different machines. Meanwhile, if any experiment instance fails (due to occasional file reads/writes failure with multi-processing), one could always return to the previous `run_batch` command for re-executing the specific batch.
+* Alternatively, one could also run `python cebinae.py ns run_instances -c bigtbl --parallel` in single command that will run all experiment configs under the specified directory `ns/configs/bigtbl/` and exploits the underlying multi-core architecture if any via multiprocessing pool.
+    * If any experiment instance fails (due to occasional file reads/writes failure with multi-processing), one could always return to the previous `run_batch` command for re-executing the specific batch.
 * We understand that re-running all experiments may be computationally expensive. Therefore, all reference results and the parsed row print are stored under the corresponding row subdirectory of `ns/index/bigtbl/`, the digest file contains the expected completion time (on Intel(R) Xeon(R) Silver 4110 CPU @ 2.10GHz) for the corresponding experiment instance.
 
 **Reproduce Table 3 Hardware Resource Usage**
@@ -63,6 +64,13 @@ See [instructions](https://github.com/eniac/Cebinae/blob/main/vm_experiments.md)
 **Reproduce Figure 9**
 
 See [instructions](https://github.com/eniac/Cebinae/blob/main/vm_experiments.md).
+
+**Pseudocode in Figure 4 & 5 & 6**
+
+Pointer to files related to the instantiation of the data plane & control plane operations:
+
+* [cebinae-queue-disc](https://github.com/eniac/Cebinae/blob/main/ns/src/traffic-control/model/cebinae-queue-disc.cc) faithfully encoding the data plane (Figure 5) and control plane operations (Figure 4) in ns-3.35, see [example log](https://github.com/eniac/Cebinae/blob/main/ns/index/fig1/cebinae/cebinae_debug) that reflects the Figure 6 timeline.
+* [P4 main](https://github.com/eniac/Cebinae/blob/main/tofino_prototype/main.p4) and [C++ control plane main](https://github.com/eniac/Cebinae/blob/main/tofino_prototype/main.cpp).
 
 ### Further Questions
 
