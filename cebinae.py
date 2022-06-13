@@ -114,6 +114,7 @@ def waf_cmd_wrapper(cmd):
   print("PID {0}: {1}".format(os.getppid(), cmd))
   os.system(cmd)
 
+# Perhaps use MPI
 def ns_run_batch(config_path, parallel):
   t1 = time.time()
   print("=== ns_run_batch({0}), PID {1} ===".format(config_path, os.getppid()))
@@ -516,6 +517,10 @@ myblue = '#63b2ee'
 mygreen = '#76da91'
 mypurple = '#9987ce'
 myyellow = '#F4B400'
+myblack = '#000000'
+myviolet = '#8F00FF'
+myorange = '#FFA500'
+mydarkgreen = '#065535'
 '''
 
   curves = []
@@ -523,8 +528,8 @@ myyellow = '#F4B400'
     lines = f.readlines()
     num_flows = len(lines[0].split())-1
   
-    # Define enough line styles
-    colors = ['myred', 'mypink', 'myblue', 'mygreen', 'mypurple', 'myyellow']
+    # Define enough styles
+    colors = ['myred', 'mypink', 'myblue', 'mygreen', 'mypurple', 'myyellow', 'myblack', 'myviolet', 'myorange', 'mydarkgreen']
     point_types = [2, 4, 6, 8, 10, 12, 14, 5, 7, 9, 11, 13, 15]
     num_ls = 0
     color_type = 0

@@ -52,7 +52,7 @@ Feel free to reach out if any question arises!
 * `ns/configurs/bigtbl/` stores the configuration of experiments for the batch (3 instances) of experiments for each row, for instance, `ns/configurs/bigtbl/r0.json` corresponds to row 0 in the table.
 * Run the experiment batches for each row, for instance `r0.json`:
     * `python cebinae.py ns run_batch -c bigtbl/r0.json` (or `python cebinae.py ns run_batch -c bigtbl/r0.json --parallel` to decompose the batch instances for parallel execution), the results will appear under `ns/tmp_index/bigtbl/r0/`.
-    * Run `python cebinae.py parse --target bigtbl --data_path ns/tmp_index/bigtbl0/r0` to print the corresponding parsed results from digest files of each experiment instance to the terminal.
+    * Run `python cebinae.py parse --target bigtbl --data_path ns/tmp_index/bigtbl/r0` to print the corresponding parsed results from digest files of each experiment instance to the terminal.
 * Alternatively, one could also run `python cebinae.py ns run_instances -c bigtbl --parallel` in single command that will run all experiment configs under the specified directory `ns/configs/bigtbl/` and exploits the underlying multi-core architecture if any via multiprocessing pool.
     * If any experiment instance fails (due to occasional file reads/writes failure with multi-processing), one could always return to the previous `run_batch` command for re-executing the specific batch.
 * We understand that re-running all experiments may be computationally expensive. Therefore, all reference results and the parsed row print are stored under the corresponding row subdirectory of `ns/index/bigtbl/`, the digest file contains the expected completion time (on Intel(R) Xeon(R) Silver 4110 CPU @ 2.10GHz) for the corresponding experiment instance.
@@ -65,11 +65,11 @@ See [instructions](https://github.com/eniac/Cebinae/blob/main/vm_experiments.md)
 
 See [instructions](https://github.com/eniac/Cebinae/blob/main/vm_experiments.md).
 
-**Pseudocode in Figure 4 & 5 & 6**
+**Sanity check of pseudocode in Figure 4 & 5 & 6**
 
-Pointer to files related to the instantiation of the data plane & control plane operations:
+Major pointer to files related to the instantiation of the data plane & control plane operations:
 
-* [cebinae-queue-disc](https://github.com/eniac/Cebinae/blob/main/ns/src/traffic-control/model/cebinae-queue-disc.cc) faithfully encoding the data plane (Figure 5) and control plane operations (Figure 4) in ns-3.35, see [example log](https://github.com/eniac/Cebinae/blob/main/ns/index/fig1/cebinae/cebinae_debug) that reflects the Figure 6 timeline.
+* [Cebinae QueueDisc](https://github.com/eniac/Cebinae/blob/main/ns/src/traffic-control/model/cebinae-queue-disc.cc) encoding the data plane (Figure 5) and control plane operations (Figure 4) in ns-3.35; [example log](https://github.com/eniac/Cebinae/blob/main/ns/index/fig1/cebinae/cebinae_debug) that reflects the Figure 6 timeline for an illustrative 2-flow scenario.
 * [P4 main](https://github.com/eniac/Cebinae/blob/main/tofino_prototype/main.p4) and [C++ control plane main](https://github.com/eniac/Cebinae/blob/main/tofino_prototype/main.cpp).
 
 ### Further Questions
