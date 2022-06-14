@@ -482,6 +482,82 @@ plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT=20.4ms)" wit
   subprocess.call(cmd.split())
 
 @timeit
+def plot_fig7(data_dir):
+  cwd = os.getcwd()
+  if not os.path.isabs(data_dir):
+    data_dir = (cwd+"/"+data_dir)
+  print("data_dir: {}".format(data_dir))
+  if not os.path.isdir(data_dir):
+    print("ERR: not dir!")
+    exit()
+
+  gpt_str = ""
+
+  # Parse gpt data
+  with open(data_dir+"/fifo/digest", "r") as f:
+    lines = f.readlines()
+    for i, line in enumerate(lines):
+      if "=== avg_tpt_app[*] ===" in line:
+        i += 1
+        while "Avg. Goodput [bps]" not in lines[i]:
+          line = lines[i].strip()
+          gpt_str += (line+"\n")
+          i += 1
+        break
+  gpt_str += "\n\n"
+  with open(data_dir+"/cebinae/digest", "r") as f:
+    lines = f.readlines()
+    for i, line in enumerate(lines):
+      if "=== avg_tpt_app[*] ===" in line:
+        i += 1
+        while "Avg. Goodput [bps]" not in lines[i]:
+          line = lines[i].strip()
+          gpt_str += (line+"\n")
+          i += 1
+        break    
+  with open(data_dir+"/gpt.dat", "w") as f:
+    f.write(gpt_str)
+
+  gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "fig7.eps"
+
+myred = '#A90533'
+myblue = '#004785'
+
+set size 1,0.618
+
+set style fill pattern
+set style histogram clustered
+
+set xlabel "Flow index"
+set ylabel "Goodput [Mbps]"
+set logscale y
+
+set key at graph 0.8,0.95
+set key maxrows 1
+set key samplen 3
+set key width -5
+
+set boxwidth 1.0
+
+set tics out nomirror
+set grid ytics
+
+plot "gpt.dat" i 0 u ($2/1000000):xtic(1) t "FIFO+TailDrop" w histograms lc rgb myblue fs pattern 4,\\
+     "" i 1 u ($2/1000000):xtic(1) t "Cebinae" w histograms lc rgb myred fs pattern 2
+'''
+
+  with open(data_dir+"/plot.gp", "w") as gp_file:
+    gp_file.write(gp_str)
+
+  os.chdir(data_dir)
+  cmd = "gnuplot plot.gp"
+  print(cmd)
+  subprocess.call(cmd.split())
+
+@timeit
 def plot_time_tpt(data_path, w_total):
   cwd = os.getcwd()
   if not os.path.isabs(data_path):
@@ -605,7 +681,7 @@ if __name__ == '__main__':
   parse_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of data file or directory")  
 
   plot_subprsr = subprsr.add_parser("plot")
-  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "time_tpt"], help="Plot target")
+  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig7", "time_tpt"], help="Plot target")
   plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of plotting data file or directory")
   plot_subprsr.add_argument("--w_total", action="store_true", help="Whether to plot total line used by time_tpt target")
 
@@ -639,6 +715,8 @@ if __name__ == '__main__':
   elif args.cmd == "plot":
     if args.plot_target == "fig1":
       plot_fig1(args.data_path)
+    if args.plot_target == "fig7":
+      plot_fig7(args.data_path)      
     if args.plot_target == "time_tpt":
       plot_time_tpt(args.data_path, args.w_total)
   elif args.cmd == "tofino":

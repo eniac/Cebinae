@@ -23,7 +23,7 @@ For the ease of running the evaluation process, `cebinae.py` is created as the m
 
 **Environment Setup**
 
-* Clone/fetch the latest version of the repository: `git clone https://github.com/eniac/Cebinae`.
+* Clone/fetch the **latest version** of the repository: `git clone https://github.com/eniac/Cebinae`.
 
 * For the reproduction of the majority of results, only a canonical Linux machine (e.g., Ubuntu 16.04 or 18.04 LTS) is required. Other Linux distributions and OS are also expected to work, preferably Ubuntu 18.04 LTS or Ubuntu 16.04 LTS.
 
@@ -45,7 +45,7 @@ Feel free to reach out if any question arises!
 * Before launching any experiments, run `python cebinae.py ns configure -p optimized` and `python cebinae.py ns build` to configure and build with optimized build profile for faster execution.
 * Run the experiment batch: `python cebinae.py ns run_batch -c fig1.json` (takes ~2 min, or ~1min if with `--parallel` flag). The tracing outputs of the experiments will appear under temporary created direcotry `ns/tmp_index/fig1/` by default.
 * Plot Figure 1: `python cebinae.py plot --plot_target fig1 --data_path ns/tmp_index/fig1/`. The output plot `figure1.eps` will show up under `ns/tmp_index/fig1/`.
-* Expected outputs and plots are also stored under `ns/index/fig1/` for reference. The `*.eps` plot can be displayed by any EPS Viewer (e.g., Mac's built-in reader).
+* Expected outputs and plots are also stored under `ns/index/fig1/` for reference. The `*.eps` plot can be displayed by any EPS Viewer (e.g., Mac's built-in reader) via `open *.eps`.
 
 **Reproduce Table 2**
 
@@ -56,6 +56,12 @@ Feel free to reach out if any question arises!
 * Alternatively, one could also run `python cebinae.py ns run_instances -c tbl2 --parallel` in single command that will run all experiment configs under the specified directory `ns/configs/tbl2/` and exploits the underlying multi-core architecture if any via multiprocessing pool.
     * If any experiment instance fails (due to occasional file reads/writes failure with multi-processing), one could always return to the previous `run_batch` command for re-executing the specific batch.
 * We understand that re-running all experiments may be computationally expensive. Therefore, all reference results and the parsed row print are stored under the corresponding row subdirectory of `ns/index/tbl2/`, the digest file contains the expected completion time (on Intel(R) Xeon(R) Silver 4110 CPU @ 2.10GHz) for the corresponding experiment instance.
+
+**Reproduce Figure 7**
+
+* Run `python cebinae.py ns run_batch -c fig7.json --parallel`, results will appear under `ns/tmp_index/fig7/`.
+* Parse the result and plot figure 7: `python cebinae.py plot --plot_target fig7 --data_path ns/tmp_index/fig7/`. The resulting `fig7.eps` will appear under `ns/tmp_index/fig7/`.
+* `ns/index/fig7/` alsp stores the reference output and graph.
 
 **Reproduce Table 3 Hardware Resource Usage**
 
