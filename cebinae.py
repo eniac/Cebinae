@@ -270,6 +270,11 @@ def ns_clear():
     subprocess.call(cmd.split())
 
 @timeit
+def ns_kill():
+  cmd = "sudo killall dumbbell_long"
+  subprocess.call(cmd.split())
+
+@timeit
 def ns_prerequisite():
   # Install packages on a clean Ubuntu 18.04 LTS machine for NS-3 dependencies: https://www.nsnam.org/wiki/Installation
   install_cmds = [
@@ -573,6 +578,8 @@ if __name__ == '__main__':
   ns_validate_prsr = ns_subsubprsr.add_parser("validate")
   ns_validate_prsr.add_argument("-p", "--profile", type=str, required=False, default="default", choices=["default", "debug", "optimized"], help="Build profile")
 
+  ns_subsubprsr.add_parser("kill")
+
   ns_run_instance_prsr = ns_subsubprsr.add_parser("run_instance")
   ns_run_instance_prsr.add_argument("-c", "--config", type=str, required=True, help="Absolute or relative path (w.r.t. ns/configs) of Json config file")
   ns_run_instance_prsr.add_argument("--gdb", action="store_true", help="Whether to enable gdb")
@@ -622,6 +629,8 @@ if __name__ == '__main__':
       ns_run_instances(args.config_dir, args.parallel)            
     elif args.ns_cmd == "clear":
       ns_clear()
+    elif args.ns_cmd == "kill":
+      ns_kill()
     elif args.ns_cmd == "prerequisite":
       ns_prerequisite()      
   elif args.cmd == "parse":
