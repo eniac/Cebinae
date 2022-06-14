@@ -6,7 +6,7 @@ After it is built, you can run  ``make hw_cebinae`` to start the data plane, con
 
 ##### Hardware testbed demonstration
 
-As a simple demonstration of the prototype, connect 4 servers to ports on pipeline #1 of the tofino, and a cable from port 128 to 136. We call the 4 servers *(1) plum*, *(2) peacock*, *(3) green*, *(4) mustard*. We will run a simple experiment where an aggressive flow from green to mustard uses more bandwidth than a parallel flow from plum to peacock that uses the same bottleneck link. Then we will enable cebinae and see that it increases fairness.
+As a simple demonstration of the prototype, connect 4 servers to ports on pipeline #1 of the tofino, and a cable from port 128 to 136 (loopback to virtualize 1 physical switch to 2 switch dumbbell setting). We call the 4 servers *(1) plum*, *(2) peacock*, *(3) green*, *(4) mustard*. We will run a simple experiment where an aggressive flow from green to mustard uses more bandwidth than a parallel flow from plum to peacock that uses the same bottleneck link. Then we will enable cebinae and see that it increases fairness.
 
 Run the following commands on the tofino and the servers to carry out the experiment. Note: before running the experiment, make sure that the arp tables of all servers are configured appropriately -- this data plane does not forward arp packets. Also, adjust ``main.py`` to bring up the ports on the tofino connected to your servers and install forwarding rules to implement the following routes: 
 ```

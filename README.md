@@ -28,11 +28,12 @@ For the ease of running the evaluation process, `cebinae.py` is created as the m
 * For the reproduction of the majority of results, only a canonical Linux machine (e.g., Ubuntu 16.04 or 18.04 LTS) is required. Other Linux distributions and OS are also expected to work, preferably Ubuntu 18.04 LTS or Ubuntu 16.04 LTS.
 
 * Validate environment set up.
+    * `which python` points to `python3` or change the commands below to python3.
     * `python cebinae.py ns validate -p optimized` to validate if the environment is well set up, which typically takes around 15 min. Upon failure of compilation or tests, check if the [prerequisite packages](https://www.nsnam.org/wiki/Installation#Ubuntu.2FDebian.2FMint) are installed for the corresponding platform, for instance, gcc >= 7.0.0. For Ubuntu 18.04, `python cebinae.py ns prerequisite` auto-installs the set of packages needed.
     * Confirm that [gnuplot](http://www.gnuplot.info/) is installed by typing `gnuplot` in the linux prompt and type `q` to quit its terminal.
 
 * (Optional) A physical Barefoot Tofino switch (tested end-to-end with `bf-sde-9.5.0`) connecting to a testbed of 6 servers with Mellanox Technologies MT27710 Family [ConnectX-4 Lx] 10G/25G NIC.
-    * This is not required for artifact evaluation as the majority results in the paper are executed in ns-3.35 (that allows interating various environment conditions, and prevent randomness for fair comparative studies versus the alternatives with the same exact background condition).
+    * Feel free to skip for artifact evaluation, as the majority of results in the paper are executed in ns-3.35 (that allows interating various environment conditions, and prevent randomness for fair comparative studies versus the alternatives with the same exact background condition) or Tofino VMs.
     * For the results conducted on Tofino switch (e.g., data plane resource, top flow detection), one could reproduce the same result with Tofino ASIC model VM. We provided the scripts under `vm` directory to set up the environment.
     * **TLDR**: We understand that setting up the env (e.g., installing the exact version `bf-sde-9.5.0`, downloading CAIDA traces) may be time consuming, hence, we've provided a prebuilt VM instance for the ease of the evaluation process (see next bullet point).
 
@@ -87,3 +88,4 @@ Major pointer to files related to the instantiation of the data plane & control 
 ### Further Questions
 
 Feel free to post issues or contact `leoyu@seas.upenn.edu` if any question arises!
+
