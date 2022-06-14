@@ -53,7 +53,7 @@ Feel free to reach out if any question arises!
 * Run the experiment batches for each row, for instance `r0.json`:
     * Run `python cebinae.py ns run_batch -c tbl2/r0.json --parallel` to decompose the batch instances for parallel execution, the results will appear under `ns/tmp_index/tbl2/r0/`.
     * Run `python cebinae.py parse --target bigtbl --data_path ns/tmp_index/tbl2/r0` to print the corresponding parsed results from digest files of each experiment instance to the terminal.
-* Alternatively, one could also run `python cebinae.py ns run_instances -c tbl2 --parallel` in single command that will run all experiment configs under the specified directory `ns/configs/tbl2/` and exploits the underlying multi-core architecture if any via multiprocessing pool.
+* Alternatively, one could also run `python cebinae.py ns run_instances -c tbl2 --parallel` (takes ~3 hours) in single command that will run all experiment configs under the specified directory `ns/configs/tbl2/` and exploits the underlying multi-core architecture if any via multiprocessing pool.
     * If any experiment instance fails (due to occasional file reads/writes failure with multi-processing), one could always return to the previous `run_batch` command for re-executing the specific batch.
 * We understand that re-running all experiments may be computationally expensive. Therefore, all reference results and the parsed row print are stored under the corresponding row subdirectory of `ns/index/tbl2/`, the digest file contains the expected completion time (on Intel(R) Xeon(R) Silver 4110 CPU @ 2.10GHz) for the corresponding experiment instance.
 
@@ -61,7 +61,13 @@ Feel free to reach out if any question arises!
 
 * Run `python cebinae.py ns run_batch -c fig7.json --parallel`, results will appear under `ns/tmp_index/fig7/`.
 * Parse the result and plot figure 7: `python cebinae.py plot --plot_target fig7 --data_path ns/tmp_index/fig7/`. The resulting `fig7.eps` will appear under `ns/tmp_index/fig7/`.
-* `ns/index/fig7/` alsp stores the reference output and graph.
+* `ns/index/fig7/` also stores the reference output and graph.
+
+**Reproduce Figure 8**
+
+* Run `python cebinae.py ns run_batch -c fig8.json --parallel`, results will appear under `ns/tmp_index/fig8/`.
+* Parse the result and plot figure 8: `python cebinae.py plot --plot_target fig8 --data_path ns/tmp_index/fig8/`. The resulting `*.eps` will appear under `ns/tmp_index/fig8/`.
+* `ns/index/fig8/` also stores the reference output and graph.
 
 **Reproduce Table 3 Hardware Resource Usage**
 

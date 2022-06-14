@@ -1,0 +1,324 @@
+=== CMD varas ===
+enable_debug: true
+enable_stdout: false
+printprogress: true
+config_path: /home/leoyu/Cebinae/ns/configs/fig8.json
+result_dir: tmp_index/fig8/cebinae-001/
+sack: true
+recovery: ns3::TcpClassicRecovery
+app_packet_size: 1440
+delackcount: 1
+seed: 2022
+run: 1205
+tracing_period_us: 1000000
+progress_interval_ms: 1000
+sim_seconds: 100
+app_seconds_start: 1
+app_seconds_end: 100
+transport_prot0: ns3::TcpNewReno
+transport_prot1: ns3::TcpCubic
+transport_prot2: ns3::TcpCubic
+transport_prot3: ns3::TcpCubic
+transport_prot4: ns3::TcpCubic
+transport_prot5: ns3::TcpCubic
+transport_prot6: ns3::TcpCubic
+transport_prot7: ns3::TcpCubic
+transport_prot8: ns3::TcpCubic
+bottleneck_bw: 100Mbps
+bottleneck_delay: 20ms
+leaf_bw0: 10000Mbps
+leaf_bw1: 10000Mbps
+leaf_bw2: 0Mbps
+leaf_bw3: 0Mbps
+leaf_bw4: 0Mbps
+leaf_bw5: 0Mbps
+leaf_bw6: 0Mbps
+leaf_bw7: 0Mbps
+leaf_bw8: 0Mbps
+leaf_delay0: 2.5ms
+leaf_delay1: 2.5ms
+leaf_delay2: 1ms
+leaf_delay3: 1ms
+leaf_delay4: 1ms
+leaf_delay5: 1ms
+leaf_delay6: 1ms
+leaf_delay7: 1ms
+leaf_delay8: 1ms
+app_bw0: 100Mbps
+app_bw1: 100Mbps
+app_bw2: 0Mbps
+app_bw3: 0Mbps
+app_bw4: 0Mbps
+app_bw5: 0Mbps
+app_bw6: 0Mbps
+app_bw7: 0Mbps
+app_bw8: 0Mbps
+switch_total_bufsize: 420p
+switch_netdev_size: 100p
+server_netdev_size: 100p
+queuedisc_type: CebinaeQueueDisc
+num_cca0: 16
+num_cca1: 1
+num_cca2: 0
+num_cca3: 0
+num_cca4: 0
+num_cca5: 0
+num_cca6: 0
+num_cca7: 0
+num_cca8: 0
+num_leaf: 17
+======
+--- Configured CebinaeQueueDisc ---
+dt: +1.34218e+08ns
+vdt: +1ns
+l: +100000ns
+p: 5
+tau: 0.01
+delta_port: 0.01
+delta_flow: 0.01
+------
+num_tracing_periods: 100
+=== Ipv4 addresses ===
+--- leftleaf_ifc ---
+0 1.1.1.1
+1 1.1.2.1
+2 1.1.3.1
+3 1.1.4.1
+4 1.1.5.1
+5 1.1.6.1
+6 1.1.7.1
+7 1.1.8.1
+8 1.1.9.1
+9 1.1.10.1
+10 1.1.11.1
+11 1.1.12.1
+12 1.1.13.1
+13 1.1.14.1
+14 1.1.15.1
+15 1.1.16.1
+16 1.1.17.1
+--- leftrouter_ifc ---
+0 1.1.1.2
+1 1.1.2.2
+2 1.1.3.2
+3 1.1.4.2
+4 1.1.5.2
+5 1.1.6.2
+6 1.1.7.2
+7 1.1.8.2
+8 1.1.9.2
+9 1.1.10.2
+10 1.1.11.2
+11 1.1.12.2
+12 1.1.13.2
+13 1.1.14.2
+14 1.1.15.2
+15 1.1.16.2
+16 1.1.17.2
+--- rightleaf_ifc ---
+0 100.1.1.1
+1 100.1.2.1
+2 100.1.3.1
+3 100.1.4.1
+4 100.1.5.1
+5 100.1.6.1
+6 100.1.7.1
+7 100.1.8.1
+8 100.1.9.1
+9 100.1.10.1
+10 100.1.11.1
+11 100.1.12.1
+12 100.1.13.1
+13 100.1.14.1
+14 100.1.15.1
+15 100.1.16.1
+16 100.1.17.1
+--- rightrouter_ifc ---
+0 100.1.1.2
+1 100.1.2.2
+2 100.1.3.2
+3 100.1.4.2
+4 100.1.5.2
+5 100.1.6.2
+6 100.1.7.2
+7 100.1.8.2
+8 100.1.9.2
+9 100.1.10.2
+10 100.1.11.2
+11 100.1.12.2
+12 100.1.13.2
+13 100.1.14.2
+14 100.1.15.2
+15 100.1.16.2
+16 100.1.17.2
+--- router_ifc ---
+0 200.1.1.1
+1 200.1.1.2
+=== avg_tpt_bottleneck[*] ===
+0 5851288.727
+1 5649191.273
+2 5669835.636
+3 6193671.273
+4 6242082.909
+5 5336266.182
+6 6268522.182
+7 5278196.364
+8 5515666.909
+9 5456872.727
+10 4989416.727
+11 6322004.364
+12 5139239.273
+13 5930606.545
+14 5363671.273
+15 5419930.182
+16 6868174.545
+Avg. Throughput [bps]: 97494637.091
+avg_jfi_bottleneck [computed]: 0.993
+=== avg_tpt_app[*] ===
+0 5639330.909
+1 5445003.636
+2 5464901.818
+3 5966894.545
+4 6016465.455
+5 5140596.364
+6 6041949.091
+7 5087418.182
+8 5315607.273
+9 5258821.818
+10 4806283.636
+11 6091170.909
+12 4950807.273
+13 5714850.909
+14 5169803.636
+15 5224029.091
+16 6616203.636
+Avg. Goodput [bps]: 93950138.182
+avg_jfi_app [computed]: 0.993
+# of RTT samples for source 0: 46341
+Avg. RTT for source 0: 68259050.383ns
+# of RTT samples for source 1: 44635
+Avg. RTT for source 1: 67883847.675ns
+# of RTT samples for source 2: 44839
+Avg. RTT for source 2: 66962083.855ns
+# of RTT samples for source 3: 49461
+Avg. RTT for source 3: 66952538.322ns
+# of RTT samples for source 4: 49752
+Avg. RTT for source 4: 67221396.420ns
+# of RTT samples for source 5: 42190
+Avg. RTT for source 5: 67870206.419ns
+# of RTT samples for source 6: 49800
+Avg. RTT for source 6: 66497265.840ns
+# of RTT samples for source 7: 41778
+Avg. RTT for source 7: 68511402.785ns
+# of RTT samples for source 8: 43646
+Avg. RTT for source 8: 67591853.993ns
+# of RTT samples for source 9: 43304
+Avg. RTT for source 9: 68273857.857ns
+# of RTT samples for source 10: 39197
+Avg. RTT for source 10: 68104959.221ns
+# of RTT samples for source 11: 50387
+Avg. RTT for source 11: 67439877.868ns
+# of RTT samples for source 12: 40454
+Avg. RTT for source 12: 67880376.452ns
+# of RTT samples for source 13: 46740
+Avg. RTT for source 13: 67899979.497ns
+# of RTT samples for source 14: 42515
+Avg. RTT for source 14: 68130003.582ns
+# of RTT samples for source 15: 42896
+Avg. RTT for source 15: 67693792.413ns
+# of RTT samples for source 16: 55293
+Avg. RTT for source 16: 65809727.986ns
+====== Number of packets sent ======
+MySource 0:859375
+MySource 1:859375
+MySource 2:859375
+MySource 3:859375
+MySource 4:859375
+MySource 5:859375
+MySource 6:859375
+MySource 7:859375
+MySource 8:859375
+MySource 9:859375
+MySource 10:859375
+MySource 11:859375
+MySource 12:859375
+MySource 13:859375
+MySource 14:859375
+MySource 15:859375
+MySource 16:859375
+====== Number of packets at bottleneck link ======
+Source 16: 57430
+Source 15: 45382
+Source 14: 44904
+Source 13: 49463
+Source 12: 43030
+Source 11: 52866
+Source 4: 52214
+Source 3: 52008
+Source 2: 47473
+Source 0: 48975
+Source 1: 47258
+Source 5: 44675
+Source 6: 52419
+Source 7: 44224
+Source 8: 46119
+Source 9: 45680
+Source 10: 41808
+====== CebinaeQueueDisc digest ======
+--- Validate the effective CebinaeQueueDisc params ---
+m_debug: true
+m_maxSize: 420p
+GetInternalQueue(0)->GetMaxSize(): 210p
+GetInternalQueue(1)->GetMaxSize(): 210p
+dT: +1.34218e+08ns
+vdT: +1ns
+L: +100000ns
+P: 5
+tau: 0.01
+delta_port: 0.01
+delta_top: 0.01
+m_pool: false
+m_bps: 100000000bps
+--- Validate CebinaeQueueDisc initial states ---
+m_headq: 0
+m_neg_headq: 1
+m_vb: 134217728
+------
+m_arrived_pkts: 821789
+m_lbf_past_head_pkts: 326892
+m_lbf_past_tail_pkts: 490782
+m_lbf_drop_pkts: 4115
+m_enqueue_drop_pkts[0]: 628
+m_enqueue_drop_pkts[1]: 840
+m_cebinae_dequeued_succeeded: 816063
+m_num_p: 149
+m_num_bottleneck_p: 99
+m_num_non_bottleneck_p: 50
+m_num_rotated: 745
+--- FlowBottleneckDetector ---
+m_num_gettopflows: 99
+m_num_slot_pow2: 11
+m_num_slot: 2048
+m_hash2mysourceid.size(): 2048
+m_hash2bytecount.size(): 2048
+m_sourceidtag2toptimes:
+8: 7
+12: 5
+9: 4
+14: 3
+15: 2
+3: 15
+2: 4
+13: 11
+10: 3
+0: 10
+11: 6
+1: 9
+16: 19
+7: 6
+6: 4
+4: 4
+sourceids_wo_slots (during some round(s) due to 5-tuple hash collision):
+------
+
+=== Completion time [s]: 104.742===
