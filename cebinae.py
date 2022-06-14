@@ -188,7 +188,7 @@ def ns_run_batches(config_path, parallel):
   if parallel:
     print("=== Parallel branch ===") 
     print("PPID: {0}, PGID: {1}".format(os.getppid(), os.getpgid(os.getpid())))
-    pool = multiprocessing.Pool() # Default to os.cpu_count() logical cores
+    pool = multiprocessing.Pool(int(os.cpu_count()/2)) # Default to os.cpu_count() logical cores
     try:
       processes = []
       for json_file in json_files:
@@ -250,7 +250,7 @@ def ns_run_instances(config_path, parallel):
   os.chdir(cwd+"/ns")
  
   if parallel:
-    pool = multiprocessing.Pool()    
+    pool = multiprocessing.Pool(int(os.cpu_count()/2))
     pool.map(waf_cmd_wrapper, cmds)
     print("=== Unblocked from pool map ===")
   else:
