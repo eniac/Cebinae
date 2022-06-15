@@ -226,7 +226,7 @@ public:
 private:
 
   int m_num_slot_pow2 = 11;
-  int m_num_slot = 2048;
+  int m_num_slot = 4096;
 
   uint32_t m_num_gettopflows {0}; // Counters for GetTopFlows invocations
   // Records of bottlenecked times for each tag for accounting and calculate the ratio
@@ -345,7 +345,7 @@ public:
 private:
 
   int m_num_slot_pow2 = 11;
-  int m_num_slot = 2048;
+  int m_num_slot = 4096;
 
   uint32_t m_num_gettopflows {0};
   std::unordered_map<uint32_t, uint32_t> m_sourceidtag2toptimes {};
@@ -494,7 +494,7 @@ public:
 private:
 
   int m_num_slot_pow2 = 11;
-  int m_num_slot = 2048;
+  int m_num_slot = 4096;
 
   uint32_t m_num_gettopflows {0};
   std::unordered_map<uint32_t, uint32_t> m_sourceidtag2toptimes {};
