@@ -2,8 +2,8 @@
 enable_debug: true
 enable_stdout: false
 printprogress: true
-config_path: /home/leoyu/Cebinae/ns/configs/bigtbl/r14.json
-result_dir: tmp_index/bigtbl/r14/fq/
+config_path: /home/leoyu/Cebinae/ns/configs/tbl2/r14.json
+result_dir: tmp_index/tbl2/r14/fq/
 sack: true
 recovery: ns3::TcpClassicRecovery
 app_packet_size: 1440
@@ -1377,4 +1377,4 @@ Source 93: 69240
 Source 94: 69240
 Source 95: 69240
 
-=== Completion time [s]: 4480.569===
+=== Completion time [s]: 2725.373===

@@ -2,8 +2,8 @@
 enable_debug: true
 enable_stdout: false
 printprogress: true
-config_path: /home/leoyu/Cebinae/ns/configs/bigtbl/r13.json
-result_dir: tmp_index/bigtbl/r13/cebinae/
+config_path: /home/leoyu/Cebinae/ns/configs/tbl2/r13.json
+result_dir: tmp_index/tbl2/r13/cebinae/
 sack: true
 recovery: ns3::TcpClassicRecovery
 app_packet_size: 1440
@@ -818,4 +818,4 @@ m_sourceidtag2toptimes:
 sourceids_wo_slots (during some round(s) due to 5-tuple hash collision):
 ------
 
-=== Completion time [s]: 3369.580===
+=== Completion time [s]: 1720.208===

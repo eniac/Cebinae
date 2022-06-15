@@ -5,9 +5,9 @@
         "result_dir"
     ],
     "result_dir": [
-        "tmp_index/bigtbl/r9/fifo/",
-        "tmp_index/bigtbl/r9/fq/",
-        "tmp_index/bigtbl/r9/cebinae/"
+        "tmp_index/tbl2/r9/fifo/",
+        "tmp_index/tbl2/r9/fq/",
+        "tmp_index/tbl2/r9/cebinae/"
     ],
     "batch_size": 3,
     "enable_debug": 1,
