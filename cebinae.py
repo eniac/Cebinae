@@ -780,11 +780,46 @@ mydarkgreen = '#065535'
   print(cmd)
   subprocess.call(cmd.split())
 
+def get_loc(target):
+
+  if target == "p4":
+    # find . -name *.p4 | xargs wc -l
+    cmd_files = "find . -name *.p4"
+    cmd_count = "xargs wc -l"
+
+    p1 = subprocess.Popen(cmd_files.split(), stdout=subprocess.PIPE)
+    p2 = subprocess.Popen(cmd_count.split(), stdin=p1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p1.stdout.close()  # Necessary for p1 to receive a SIGPIPE if p2 exits
+    stdout, stderr = p2.communicate()
+
+    total_loc = stdout.split()[-2]
+    print("{0} loc: {1}".format(target, total_loc))
+  elif target == "cp":
+    cmd_files = 'find tofino_prototype/ -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.c" -o -name "*.h" \)'
+    cmd_count = "xargs wc -l"
+
+    p1 = subprocess.Popen(cmd_files, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p2 = subprocess.Popen(cmd_count.split(), stdin=p1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p1.stdout.close()
+    stdout, stderr = p2.communicate()
+    print(stdout)
+  elif target == "ns":
+    files = ["ns/src/traffic-control/model/cebinae-queue-disc.cc", "ns/src/traffic-control/model/cebinae-queue-disc.h", ]
+    cmd_count = "wc -l"
+    for file in files:
+      cmd = cmd_count + " " + file
+      p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+      stdout, stderr = p.communicate()
+      print(stdout.strip())
+
 
 if __name__ == '__main__':
 
   parser = argparse.ArgumentParser()
   subprsr = parser.add_subparsers(dest="cmd")
+
+  loc_subprsr = subprsr.add_parser("loc")
+  loc_subprsr.add_argument("-t", "--target", required=True, choices=["p4", "cp", "ns"], type=str, help="Traget set of files")
 
   ns_subprsr = subprsr.add_parser("ns")
   ns_subsubprsr = ns_subprsr.add_subparsers(dest="ns_cmd")
@@ -852,6 +887,8 @@ if __name__ == '__main__':
       ns_kill()
     elif args.ns_cmd == "prerequisite":
       ns_prerequisite()      
+  elif args.cmd == "loc":
+    get_loc(args.target)
   elif args.cmd == "parse":
     if args.target == "bigtbl":
       parse_bigtbl(args.data_path)
