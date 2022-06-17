@@ -19,7 +19,7 @@ resultsfn = "results.pkl"
 
 lucid_interp = "/cebinae/vm/lucid_binaries/dpt"
 # REMOVE FOR USE IN VM
-lucid_interp = "./dpt"
+# lucid_interp = "./dpt"
 
 
 
@@ -43,7 +43,7 @@ def generate_symb(n_stages, log_slots_per_stage):
 # input event trace, for a trial
 def generate_config(delta, trial, start_ts_ms, interval):
     config = {
-      "python path":"/Users/jsonch/opt/anaconda3/lib/libpython3.9.dylib",
+      # "python path":"/Users/jsonch/opt/anaconda3/lib/libpython3.9.dylib",
       "python file": "egress.py",
       "switches": 1,
       "max time": 10000000,
