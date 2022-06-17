@@ -7,7 +7,7 @@ import os
 groundtruth_flow_table = {}
 
 # [[(src, dst, byte count)],[(src, dst, byte count)]]
-dataplane_flow_table = [[(0, 0, 0) for i in range(1024)] for k in range(2)]
+dataplane_flow_table = [[(0, 0, 0) for i in range(4096)] for k in range(4)]
 
 delta = None
 
