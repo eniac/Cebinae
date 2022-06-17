@@ -1,29 +1,29 @@
-/* Cebinae's egress flowtable data structure as standalone 
-   lucid program for microbenchmarking accuracy. 
-   Instrumented with extern measurement functions 
-   implemented in egress.py and used by the Lucid 
-   interpreter.
-   */
+/* 
+    Cebinae's egress flowtable data structure as standalone 
+    lucid program for microbenchmarking. 
+   - Extern measurement functions are implemented in egress.py
+   - Symbolic values defined in egress.symv
+*/
 
+
+// configuration parameters 
 const int nports = 32;
-const int nflows = 1024;
-size log_nflows = 10;
+
+// flow table config -- set by egress.symb
+symbolic size n_stages;
+symbolic size log_slots_per_stage;
+symbolic int slots_per_stage;
+
+/* 
+    want to eval with: 
+    1 stage     /   4096 slots
+    2 stages    /   2048 slots
+    4 stages    /   1024 slots
+*/
 
 const int NULL = 0;
 
-global Array.t<<32>> port_cts = Array.create(nports);
-
-// first stage.
-global Array.t<<32>> flow_src = Array.create(nflows);
-global Array.t<<32>> flow_dst = Array.create(nflows);
-global Array.t<<32>> flow_ct = Array.create(nflows);
-// second stage.
-global Array.t<<32>> flow_src2 = Array.create(nflows);
-global Array.t<<32>> flow_dst2 = Array.create(nflows);
-global Array.t<<32>> flow_ct2 = Array.create(nflows);
-
-
-
+// stateful alu operations
 memop add(int v, int ct){
     return v + ct;
 }
@@ -33,8 +33,6 @@ memop fst(int a, int b) {
 memop write(int a, int b) {
     return b;
 }
-
-
 memop eq(int stored_value, int new_value){
     if (stored_value == new_value){
         return 1;
@@ -59,53 +57,93 @@ memop check_if_null(int memval, int newval) {
     }
 }
 
+fun int<<log_slots_per_stage>> per_stage_hash(int stage, int src, int dst) {
+    match stage with 
+    | 0 -> {return hash<<log_slots_per_stage>>(101, src, dst);}
+    | 1 -> {return hash<<log_slots_per_stage>>(173, src, dst);}
+    | 2 -> {return hash<<log_slots_per_stage>>(233, src, dst);}
+    | 3 -> {return hash<<log_slots_per_stage>>(263, src, dst);}
+    | _ -> {return hash<<log_slots_per_stage>>(1, src, dst);}
+}
 
-// measurement functions: 
+// measurement function externs -- used by interpreter only
 extern log_groundtruth_flowtable_update(int src, int dst, int pkt_len);
 extern log_real_flowtable_update(int stage, int slot, int src, int dst, int count);
 extern calculate_accuracy(int interval, int trial, int d);
 
-// Just count port and flow bytes, replacing on collision.
-event Cebinae_egress(int port, int src, int dst, int pkt_len) {
-    // update the extern ground truth flow table
-    log_groundtruth_flowtable_update(src, dst, pkt_len); 
 
-    Array.setm(port_cts, port, add, pkt_len);
-    int<<log_nflows>> h1 = hash<<log_nflows>>(101, src, dst);
-    int<<log_nflows>> h2 = hash<<log_nflows>>(107, src, dst);
-
-    int stored_src = Array.update(flow_src, h1, 
-        fst, NULL, write_if_null, src);
-
-    int stored_dst = Array.update(flow_dst, h1, 
-        fst, NULL, write_if_null, dst);
-    // if the key slot was empty or stored this packet's flow, 
-    // update the counter.
-    if ((stored_src == NULL && stored_dst == NULL) || 
-        (stored_src == src && stored_dst == dst)) {
-        int flowlen = Array.update(flow_ct, h1, add, pkt_len, add, pkt_len); // increment.        
-        // update the extern copy of the dataplane flow table.
-        log_real_flowtable_update(0, (int<<32>>)h1, src, dst, flowlen); 
+// Module for a single stage of the flow table
+module HashStage : {
+    global type hashstage_t<<'log_slots>>;
+    constr hashstage_t<<'log_slots>> create(int slots, int stage_num);
+    fun bool try_insert(hashstage_t<<'log_slots>> hs, int src, int dst, int pkt_len) [start <= hs; end hs];
+} 
+{
+    type hashstage_t<<'log_slots>> = {
+        int stage_num;
+        Array.t<<32>> arr_src;
+        Array.t<<32>> arr_dst;
+        Array.t<<32>> arr_ct;
     }
-    // Else, try the second stage.  
-    else {
-        int stored_src2 = Array.update(flow_src2, h2, 
-            fst, NULL, write_if_null, src);
+    constr hashstage_t<<'log_slots>> create(int slots, int stage_num) = {
+        stage_num = stage_num;
+        arr_src = Array.create(slots);
+        arr_dst = Array.create(slots);
+        arr_ct = Array.create(slots);
+    };
+    // if (src, dst) is in hash table, increment and return true; 
+    // elif table[hash((src, dst))] is free, insert a new entry and return true;
+    // else do nothing and return false
+    fun bool try_insert(hashstage_t<<'log_slots>> hs, int src, int dst, int pkt_len) {
+        bool inserted = false;
 
-        int stored_dst2 = Array.update(flow_dst2, h2, 
+        int<<'log_slots>> h = per_stage_hash(hs#stage_num, src, dst);
+        printf ("log_slots: %d",size_to_int(log_slots_per_stage));
+        printf("h: %d", h);
+        int stored_src = Array.update(hs#arr_src, h, 
+            fst, NULL, write_if_null, src);
+        int stored_dst = Array.update(hs#arr_dst, h, 
             fst, NULL, write_if_null, dst);
-        // if the key slot was empty or stored this packet's flow, 
-        // update the counter. Else, don't update.
-        if ((stored_src2 == NULL && stored_dst2 == NULL) || 
-            (stored_src2 == src && stored_dst2 == dst)) {
-            int flowlen = Array.update(flow_ct2, h2, add, pkt_len, add, pkt_len); // increment.        
-            // update the extern copy of the dataplane flow table
-            log_real_flowtable_update(1, (int<<32>>)h2, src, dst, flowlen); 
+        if ((stored_src == NULL && stored_dst == NULL) || 
+            (stored_src == src && stored_dst == dst)) {
+            inserted = true;
+            int flowlen = Array.update(hs#arr_ct, h, add, pkt_len, add, pkt_len); // increment.        
+            // update the extern copy of the dataplane flow table.
+            log_real_flowtable_update(0, (int<<32>>)h, src, dst, flowlen); 
+        }
+        return inserted;
+    }
+}
+
+
+// port counter
+global Array.t<<32>> port_cts = Array.create(nports);
+
+
+
+
+// const int[n_stages] foo = seeds;
+
+
+// multi-stage flow counter
+global HashStage.hashstage_t<<log_slots_per_stage>>[n_stages] hashstages 
+    = [HashStage.create(slots_per_stage, ((size_to_int(i)))) for i < n_stages];
+
+
+
+
+event Cebinae_egress(int port, int src, int dst, int pkt_len) {
+    Array.setm(port_cts, port, add, pkt_len); // increment port counter
+
+    // update stages of flow table until you find a slot for this flow
+    bool inserted = false;
+    for (i < n_stages) {
+        if (!inserted) {
+            inserted = HashStage.try_insert(hashstages[i], src, dst, pkt_len);
         }
     }
-
-
-
+    // for measurement
+    log_groundtruth_flowtable_update(src, dst, pkt_len);
 }
 
 event finish_trial(int interval, int trial, int d) {
