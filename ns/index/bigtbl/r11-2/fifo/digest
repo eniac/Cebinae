@@ -1,0 +1,1390 @@
+=== CMD varas ===
+enable_debug: true
+enable_stdout: false
+printprogress: true
+config_path: /home/leoyu/Cebinae/ns/configs/case2-2.json
+result_dir: tmp_index/case2-2/fifo/
+sack: true
+recovery: ns3::TcpClassicRecovery
+app_packet_size: 1440
+delackcount: 1
+seed: 2022
+run: 1205
+tracing_period_us: 1000000
+progress_interval_ms: 1000
+sim_seconds: 100
+app_seconds_start: 1
+app_seconds_end: 100
+transport_prot0: ns3::TcpNewReno
+transport_prot1: ns3::TcpBbr
+transport_prot2: ns3::TcpCubic
+transport_prot3: ns3::TcpCubic
+transport_prot4: ns3::TcpCubic
+transport_prot5: ns3::TcpCubic
+transport_prot6: ns3::TcpCubic
+transport_prot7: ns3::TcpCubic
+transport_prot8: ns3::TcpCubic
+bottleneck_bw: 1000Mbps
+bottleneck_delay: 45ms
+leaf_bw0: 100000Mbps
+leaf_bw1: 100000Mbps
+leaf_bw2: 0Mbps
+leaf_bw3: 0Mbps
+leaf_bw4: 0Mbps
+leaf_bw5: 0Mbps
+leaf_bw6: 0Mbps
+leaf_bw7: 0Mbps
+leaf_bw8: 0Mbps
+leaf_delay0: 2.5ms
+leaf_delay1: 2.5ms
+leaf_delay2: 1ms
+leaf_delay3: 1ms
+leaf_delay4: 1ms
+leaf_delay5: 1ms
+leaf_delay6: 1ms
+leaf_delay7: 1ms
+leaf_delay8: 1ms
+app_bw0: 1000Mbps
+app_bw1: 1000Mbps
+app_bw2: 0Mbps
+app_bw3: 0Mbps
+app_bw4: 0Mbps
+app_bw5: 0Mbps
+app_bw6: 0Mbps
+app_bw7: 0Mbps
+app_bw8: 0Mbps
+switch_total_bufsize: 8350p
+switch_netdev_size: 1p
+server_netdev_size: 100p
+queuedisc_type: FifoQueueDisc
+num_cca0: 128
+num_cca1: 2
+num_cca2: 0
+num_cca3: 0
+num_cca4: 0
+num_cca5: 0
+num_cca6: 0
+num_cca7: 0
+num_cca8: 0
+num_leaf: 130
+======
+Configured FifoQueueDisc
+num_tracing_periods: 100
+=== Ipv4 addresses ===
+--- leftleaf_ifc ---
+0 1.1.1.1
+1 1.1.2.1
+2 1.1.3.1
+3 1.1.4.1
+4 1.1.5.1
+5 1.1.6.1
+6 1.1.7.1
+7 1.1.8.1
+8 1.1.9.1
+9 1.1.10.1
+10 1.1.11.1
+11 1.1.12.1
+12 1.1.13.1
+13 1.1.14.1
+14 1.1.15.1
+15 1.1.16.1
+16 1.1.17.1
+17 1.1.18.1
+18 1.1.19.1
+19 1.1.20.1
+20 1.1.21.1
+21 1.1.22.1
+22 1.1.23.1
+23 1.1.24.1
+24 1.1.25.1
+25 1.1.26.1
+26 1.1.27.1
+27 1.1.28.1
+28 1.1.29.1
+29 1.1.30.1
+30 1.1.31.1
+31 1.1.32.1
+32 1.1.33.1
+33 1.1.34.1
+34 1.1.35.1
+35 1.1.36.1
+36 1.1.37.1
+37 1.1.38.1
+38 1.1.39.1
+39 1.1.40.1
+40 1.1.41.1
+41 1.1.42.1
+42 1.1.43.1
+43 1.1.44.1
+44 1.1.45.1
+45 1.1.46.1
+46 1.1.47.1
+47 1.1.48.1
+48 1.1.49.1
+49 1.1.50.1
+50 1.1.51.1
+51 1.1.52.1
+52 1.1.53.1
+53 1.1.54.1
+54 1.1.55.1
+55 1.1.56.1
+56 1.1.57.1
+57 1.1.58.1
+58 1.1.59.1
+59 1.1.60.1
+60 1.1.61.1
+61 1.1.62.1
+62 1.1.63.1
+63 1.1.64.1
+64 1.1.65.1
+65 1.1.66.1
+66 1.1.67.1
+67 1.1.68.1
+68 1.1.69.1
+69 1.1.70.1
+70 1.1.71.1
+71 1.1.72.1
+72 1.1.73.1
+73 1.1.74.1
+74 1.1.75.1
+75 1.1.76.1
+76 1.1.77.1
+77 1.1.78.1
+78 1.1.79.1
+79 1.1.80.1
+80 1.1.81.1
+81 1.1.82.1
+82 1.1.83.1
+83 1.1.84.1
+84 1.1.85.1
+85 1.1.86.1
+86 1.1.87.1
+87 1.1.88.1
+88 1.1.89.1
+89 1.1.90.1
+90 1.1.91.1
+91 1.1.92.1
+92 1.1.93.1
+93 1.1.94.1
+94 1.1.95.1
+95 1.1.96.1
+96 1.1.97.1
+97 1.1.98.1
+98 1.1.99.1
+99 1.1.100.1
+100 1.1.101.1
+101 1.1.102.1
+102 1.1.103.1
+103 1.1.104.1
+104 1.1.105.1
+105 1.1.106.1
+106 1.1.107.1
+107 1.1.108.1
+108 1.1.109.1
+109 1.1.110.1
+110 1.1.111.1
+111 1.1.112.1
+112 1.1.113.1
+113 1.1.114.1
+114 1.1.115.1
+115 1.1.116.1
+116 1.1.117.1
+117 1.1.118.1
+118 1.1.119.1
+119 1.1.120.1
+120 1.1.121.1
+121 1.1.122.1
+122 1.1.123.1
+123 1.1.124.1
+124 1.1.125.1
+125 1.1.126.1
+126 1.1.127.1
+127 1.1.128.1
+128 1.1.129.1
+129 1.1.130.1
+--- leftrouter_ifc ---
+0 1.1.1.2
+1 1.1.2.2
+2 1.1.3.2
+3 1.1.4.2
+4 1.1.5.2
+5 1.1.6.2
+6 1.1.7.2
+7 1.1.8.2
+8 1.1.9.2
+9 1.1.10.2
+10 1.1.11.2
+11 1.1.12.2
+12 1.1.13.2
+13 1.1.14.2
+14 1.1.15.2
+15 1.1.16.2
+16 1.1.17.2
+17 1.1.18.2
+18 1.1.19.2
+19 1.1.20.2
+20 1.1.21.2
+21 1.1.22.2
+22 1.1.23.2
+23 1.1.24.2
+24 1.1.25.2
+25 1.1.26.2
+26 1.1.27.2
+27 1.1.28.2
+28 1.1.29.2
+29 1.1.30.2
+30 1.1.31.2
+31 1.1.32.2
+32 1.1.33.2
+33 1.1.34.2
+34 1.1.35.2
+35 1.1.36.2
+36 1.1.37.2
+37 1.1.38.2
+38 1.1.39.2
+39 1.1.40.2
+40 1.1.41.2
+41 1.1.42.2
+42 1.1.43.2
+43 1.1.44.2
+44 1.1.45.2
+45 1.1.46.2
+46 1.1.47.2
+47 1.1.48.2
+48 1.1.49.2
+49 1.1.50.2
+50 1.1.51.2
+51 1.1.52.2
+52 1.1.53.2
+53 1.1.54.2
+54 1.1.55.2
+55 1.1.56.2
+56 1.1.57.2
+57 1.1.58.2
+58 1.1.59.2
+59 1.1.60.2
+60 1.1.61.2
+61 1.1.62.2
+62 1.1.63.2
+63 1.1.64.2
+64 1.1.65.2
+65 1.1.66.2
+66 1.1.67.2
+67 1.1.68.2
+68 1.1.69.2
+69 1.1.70.2
+70 1.1.71.2
+71 1.1.72.2
+72 1.1.73.2
+73 1.1.74.2
+74 1.1.75.2
+75 1.1.76.2
+76 1.1.77.2
+77 1.1.78.2
+78 1.1.79.2
+79 1.1.80.2
+80 1.1.81.2
+81 1.1.82.2
+82 1.1.83.2
+83 1.1.84.2
+84 1.1.85.2
+85 1.1.86.2
+86 1.1.87.2
+87 1.1.88.2
+88 1.1.89.2
+89 1.1.90.2
+90 1.1.91.2
+91 1.1.92.2
+92 1.1.93.2
+93 1.1.94.2
+94 1.1.95.2
+95 1.1.96.2
+96 1.1.97.2
+97 1.1.98.2
+98 1.1.99.2
+99 1.1.100.2
+100 1.1.101.2
+101 1.1.102.2
+102 1.1.103.2
+103 1.1.104.2
+104 1.1.105.2
+105 1.1.106.2
+106 1.1.107.2
+107 1.1.108.2
+108 1.1.109.2
+109 1.1.110.2
+110 1.1.111.2
+111 1.1.112.2
+112 1.1.113.2
+113 1.1.114.2
+114 1.1.115.2
+115 1.1.116.2
+116 1.1.117.2
+117 1.1.118.2
+118 1.1.119.2
+119 1.1.120.2
+120 1.1.121.2
+121 1.1.122.2
+122 1.1.123.2
+123 1.1.124.2
+124 1.1.125.2
+125 1.1.126.2
+126 1.1.127.2
+127 1.1.128.2
+128 1.1.129.2
+129 1.1.130.2
+--- rightleaf_ifc ---
+0 100.1.1.1
+1 100.1.2.1
+2 100.1.3.1
+3 100.1.4.1
+4 100.1.5.1
+5 100.1.6.1
+6 100.1.7.1
+7 100.1.8.1
+8 100.1.9.1
+9 100.1.10.1
+10 100.1.11.1
+11 100.1.12.1
+12 100.1.13.1
+13 100.1.14.1
+14 100.1.15.1
+15 100.1.16.1
+16 100.1.17.1
+17 100.1.18.1
+18 100.1.19.1
+19 100.1.20.1
+20 100.1.21.1
+21 100.1.22.1
+22 100.1.23.1
+23 100.1.24.1
+24 100.1.25.1
+25 100.1.26.1
+26 100.1.27.1
+27 100.1.28.1
+28 100.1.29.1
+29 100.1.30.1
+30 100.1.31.1
+31 100.1.32.1
+32 100.1.33.1
+33 100.1.34.1
+34 100.1.35.1
+35 100.1.36.1
+36 100.1.37.1
+37 100.1.38.1
+38 100.1.39.1
+39 100.1.40.1
+40 100.1.41.1
+41 100.1.42.1
+42 100.1.43.1
+43 100.1.44.1
+44 100.1.45.1
+45 100.1.46.1
+46 100.1.47.1
+47 100.1.48.1
+48 100.1.49.1
+49 100.1.50.1
+50 100.1.51.1
+51 100.1.52.1
+52 100.1.53.1
+53 100.1.54.1
+54 100.1.55.1
+55 100.1.56.1
+56 100.1.57.1
+57 100.1.58.1
+58 100.1.59.1
+59 100.1.60.1
+60 100.1.61.1
+61 100.1.62.1
+62 100.1.63.1
+63 100.1.64.1
+64 100.1.65.1
+65 100.1.66.1
+66 100.1.67.1
+67 100.1.68.1
+68 100.1.69.1
+69 100.1.70.1
+70 100.1.71.1
+71 100.1.72.1
+72 100.1.73.1
+73 100.1.74.1
+74 100.1.75.1
+75 100.1.76.1
+76 100.1.77.1
+77 100.1.78.1
+78 100.1.79.1
+79 100.1.80.1
+80 100.1.81.1
+81 100.1.82.1
+82 100.1.83.1
+83 100.1.84.1
+84 100.1.85.1
+85 100.1.86.1
+86 100.1.87.1
+87 100.1.88.1
+88 100.1.89.1
+89 100.1.90.1
+90 100.1.91.1
+91 100.1.92.1
+92 100.1.93.1
+93 100.1.94.1
+94 100.1.95.1
+95 100.1.96.1
+96 100.1.97.1
+97 100.1.98.1
+98 100.1.99.1
+99 100.1.100.1
+100 100.1.101.1
+101 100.1.102.1
+102 100.1.103.1
+103 100.1.104.1
+104 100.1.105.1
+105 100.1.106.1
+106 100.1.107.1
+107 100.1.108.1
+108 100.1.109.1
+109 100.1.110.1
+110 100.1.111.1
+111 100.1.112.1
+112 100.1.113.1
+113 100.1.114.1
+114 100.1.115.1
+115 100.1.116.1
+116 100.1.117.1
+117 100.1.118.1
+118 100.1.119.1
+119 100.1.120.1
+120 100.1.121.1
+121 100.1.122.1
+122 100.1.123.1
+123 100.1.124.1
+124 100.1.125.1
+125 100.1.126.1
+126 100.1.127.1
+127 100.1.128.1
+128 100.1.129.1
+129 100.1.130.1
+--- rightrouter_ifc ---
+0 100.1.1.2
+1 100.1.2.2
+2 100.1.3.2
+3 100.1.4.2
+4 100.1.5.2
+5 100.1.6.2
+6 100.1.7.2
+7 100.1.8.2
+8 100.1.9.2
+9 100.1.10.2
+10 100.1.11.2
+11 100.1.12.2
+12 100.1.13.2
+13 100.1.14.2
+14 100.1.15.2
+15 100.1.16.2
+16 100.1.17.2
+17 100.1.18.2
+18 100.1.19.2
+19 100.1.20.2
+20 100.1.21.2
+21 100.1.22.2
+22 100.1.23.2
+23 100.1.24.2
+24 100.1.25.2
+25 100.1.26.2
+26 100.1.27.2
+27 100.1.28.2
+28 100.1.29.2
+29 100.1.30.2
+30 100.1.31.2
+31 100.1.32.2
+32 100.1.33.2
+33 100.1.34.2
+34 100.1.35.2
+35 100.1.36.2
+36 100.1.37.2
+37 100.1.38.2
+38 100.1.39.2
+39 100.1.40.2
+40 100.1.41.2
+41 100.1.42.2
+42 100.1.43.2
+43 100.1.44.2
+44 100.1.45.2
+45 100.1.46.2
+46 100.1.47.2
+47 100.1.48.2
+48 100.1.49.2
+49 100.1.50.2
+50 100.1.51.2
+51 100.1.52.2
+52 100.1.53.2
+53 100.1.54.2
+54 100.1.55.2
+55 100.1.56.2
+56 100.1.57.2
+57 100.1.58.2
+58 100.1.59.2
+59 100.1.60.2
+60 100.1.61.2
+61 100.1.62.2
+62 100.1.63.2
+63 100.1.64.2
+64 100.1.65.2
+65 100.1.66.2
+66 100.1.67.2
+67 100.1.68.2
+68 100.1.69.2
+69 100.1.70.2
+70 100.1.71.2
+71 100.1.72.2
+72 100.1.73.2
+73 100.1.74.2
+74 100.1.75.2
+75 100.1.76.2
+76 100.1.77.2
+77 100.1.78.2
+78 100.1.79.2
+79 100.1.80.2
+80 100.1.81.2
+81 100.1.82.2
+82 100.1.83.2
+83 100.1.84.2
+84 100.1.85.2
+85 100.1.86.2
+86 100.1.87.2
+87 100.1.88.2
+88 100.1.89.2
+89 100.1.90.2
+90 100.1.91.2
+91 100.1.92.2
+92 100.1.93.2
+93 100.1.94.2
+94 100.1.95.2
+95 100.1.96.2
+96 100.1.97.2
+97 100.1.98.2
+98 100.1.99.2
+99 100.1.100.2
+100 100.1.101.2
+101 100.1.102.2
+102 100.1.103.2
+103 100.1.104.2
+104 100.1.105.2
+105 100.1.106.2
+106 100.1.107.2
+107 100.1.108.2
+108 100.1.109.2
+109 100.1.110.2
+110 100.1.111.2
+111 100.1.112.2
+112 100.1.113.2
+113 100.1.114.2
+114 100.1.115.2
+115 100.1.116.2
+116 100.1.117.2
+117 100.1.118.2
+118 100.1.119.2
+119 100.1.120.2
+120 100.1.121.2
+121 100.1.122.2
+122 100.1.123.2
+123 100.1.124.2
+124 100.1.125.2
+125 100.1.126.2
+126 100.1.127.2
+127 100.1.128.2
+128 100.1.129.2
+129 100.1.130.2
+--- router_ifc ---
+0 200.1.1.1
+1 200.1.1.2
+=== avg_tpt_bottleneck[*] ===
+0 8865365.818
+1 9423125.818
+2 6900167.273
+3 8306036.364
+4 8001079.273
+5 8330302.545
+6 7283597.091
+7 7282752.000
+8 6928055.273
+9 7540625.455
+10 7223837.091
+11 7208987.636
+12 7961963.636
+13 7976933.818
+14 10239242.182
+15 7598091.636
+16 7515876.364
+17 7220698.182
+18 9707921.455
+19 6498386.909
+20 7295549.091
+21 7849928.727
+22 6082240.000
+23 10036420.364
+24 7778458.182
+25 7995646.545
+26 10795432.727
+27 8150177.455
+28 7984177.455
+29 9028226.909
+30 6301239.273
+31 7405652.364
+32 8584674.909
+33 7906308.364
+34 7183152.000
+35 7210074.182
+36 8320765.091
+37 6414602.182
+38 7162386.909
+39 7304965.818
+40 6547764.364
+41 7510322.909
+42 6485710.545
+43 8315815.273
+44 8187844.364
+45 7021981.091
+46 7496197.818
+47 6482692.364
+48 7124357.818
+49 7370400.000
+50 6669819.636
+51 7342874.182
+52 7335026.909
+53 7794032.000
+54 7363518.545
+55 6308724.364
+56 7062786.909
+57 7640225.455
+58 7856448.000
+59 6204295.273
+60 8524794.182
+61 8331509.818
+62 6480519.273
+63 8101162.182
+64 6539675.636
+65 7205728.000
+66 6414360.727
+67 6528568.727
+68 5961995.636
+69 6527965.091
+70 8548577.455
+71 7161300.364
+72 6483658.182
+73 7289392.000
+74 6421000.727
+75 7471810.909
+76 7069789.091
+77 6431745.455
+78 7731978.182
+79 6375486.545
+80 8176858.182
+81 6695534.545
+82 7197397.818
+83 9515482.182
+84 7541953.455
+85 6442369.455
+86 7557527.273
+87 10198194.909
+88 7551973.818
+89 8460929.455
+90 8088365.091
+91 6696621.091
+92 8809227.636
+93 6380919.273
+94 5832455.273
+95 6886162.909
+96 7698778.182
+97 6384541.091
+98 6522290.909
+99 5629754.182
+100 6258984.727
+101 6752517.818
+102 5635307.636
+103 6376814.545
+104 6067028.364
+105 6048315.636
+106 6763745.455
+107 5045917.091
+108 6058818.909
+109 6838113.455
+110 6286269.091
+111 6073064.727
+112 6129444.364
+113 6407841.455
+114 7317038.545
+115 6853325.091
+116 6859965.091
+117 5550194.909
+118 6824954.182
+119 7631895.273
+120 6844753.455
+121 5522910.545
+122 6900770.909
+123 8052871.273
+124 6128116.364
+125 6718714.182
+126 7982245.818
+127 6107954.909
+128 28924202.182
+129 27142871.273
+Avg. Throughput [bps]: 986897284.364
+avg_jfi_bottleneck [computed]: 0.884
+=== avg_tpt_app[*] ===
+0 8544930.909
+1 9082530.909
+2 6650763.636
+3 8005818.182
+4 7711883.636
+5 8029207.273
+6 7020334.545
+7 7019520.000
+8 6677643.636
+9 7268072.727
+10 6962734.545
+11 6948421.818
+12 7674181.818
+13 7688610.909
+14 9869149.091
+15 7323461.818
+16 7244218.182
+17 6959709.091
+18 9357032.727
+19 6263505.455
+20 7031854.545
+21 7566196.364
+22 5862400.000
+23 9673658.182
+24 7497309.091
+25 7706647.273
+26 10405236.364
+27 7855592.727
+28 7695592.727
+29 8701905.455
+30 6073483.636
+31 7137978.182
+32 8274385.455
+33 7620538.182
+34 6923520.000
+35 6949469.091
+36 8020014.545
+37 6182749.091
+38 6903505.455
+39 7040930.909
+40 6311098.182
+41 7238865.455
+42 6251287.273
+43 8015243.636
+44 7891898.182
+45 6768174.545
+46 7225250.909
+47 6248378.182
+48 6866850.909
+49 7104000.000
+50 6428741.818
+51 7077469.091
+52 7069905.455
+53 7503592.727
+54 7093760.000
+55 6068829.091
+56 6800407.273
+57 7354181.818
+58 7563752.727
+59 5973178.182
+60 8205730.909
+61 8016872.727
+62 6236625.455
+63 7794385.455
+64 6293527.273
+65 6938065.455
+66 6169716.364
+67 6282938.182
+68 5729280.000
+69 6282007.273
+70 8213178.182
+71 6888145.455
+72 6239767.273
+73 7015214.545
+74 6178560.000
+75 7175098.182
+76 6801454.545
+77 6188916.364
+78 7442385.455
+79 6126196.364
+80 7866414.545
+81 6439214.545
+82 6929570.909
+83 9143621.818
+84 7260043.636
+85 6202298.182
+86 7284363.636
+87 9829585.455
+88 7279010.909
+89 8155112.727
+90 7796014.545
+91 6454574.545
+92 8490821.818
+93 6150283.636
+94 5621643.636
+95 6637265.455
+96 7420509.091
+97 6153774.545
+98 6286545.455
+99 5426269.091
+100 6032756.364
+101 6508450.909
+102 5431621.818
+103 6146327.273
+104 5847738.182
+105 5829701.818
+106 6519272.727
+107 4863534.545
+108 5839825.455
+109 6590952.727
+110 6059054.545
+111 5853556.364
+112 5907898.182
+113 6176232.727
+114 7052567.273
+115 6605614.545
+116 6612014.545
+117 5349585.455
+118 6578269.091
+119 7356043.636
+120 6597352.727
+121 5323287.273
+122 6651345.455
+123 7761803.636
+124 5906618.182
+125 6475869.091
+126 7693730.909
+127 5887185.455
+128 27833483.636
+129 26130734.545
+Avg. Goodput [bps]: 950746996.364
+avg_jfi_app [computed]: 0.884
+# of RTT samples for source 0: 71453
+Avg. RTT for source 0: 165858854.667ns
+# of RTT samples for source 1: 76137
+Avg. RTT for source 1: 166576864.517ns
+# of RTT samples for source 2: 55599
+Avg. RTT for source 2: 166635212.206ns
+# of RTT samples for source 3: 67171
+Avg. RTT for source 3: 167146788.130ns
+# of RTT samples for source 4: 64666
+Avg. RTT for source 4: 167089740.215ns
+# of RTT samples for source 5: 67610
+Avg. RTT for source 5: 167196079.135ns
+# of RTT samples for source 6: 58917
+Avg. RTT for source 6: 166185546.788ns
+# of RTT samples for source 7: 58935
+Avg. RTT for source 7: 166685613.920ns
+# of RTT samples for source 8: 55774
+Avg. RTT for source 8: 166218911.622ns
+# of RTT samples for source 9: 60983
+Avg. RTT for source 9: 166697333.545ns
+# of RTT samples for source 10: 58534
+Avg. RTT for source 10: 165842129.214ns
+# of RTT samples for source 11: 58011
+Avg. RTT for source 11: 166502422.260ns
+# of RTT samples for source 12: 64139
+Avg. RTT for source 12: 166455943.653ns
+# of RTT samples for source 13: 64569
+Avg. RTT for source 13: 166540083.699ns
+# of RTT samples for source 14: 83221
+Avg. RTT for source 14: 166062116.404ns
+# of RTT samples for source 15: 61096
+Avg. RTT for source 15: 166589846.319ns
+# of RTT samples for source 16: 60463
+Avg. RTT for source 16: 166761600.088ns
+# of RTT samples for source 17: 58385
+Avg. RTT for source 17: 165671574.099ns
+# of RTT samples for source 18: 78452
+Avg. RTT for source 18: 165254675.281ns
+# of RTT samples for source 19: 52372
+Avg. RTT for source 19: 166392406.707ns
+# of RTT samples for source 20: 59037
+Avg. RTT for source 20: 166790281.568ns
+# of RTT samples for source 21: 64164
+Avg. RTT for source 21: 165457144.865ns
+# of RTT samples for source 22: 48856
+Avg. RTT for source 22: 165978936.759ns
+# of RTT samples for source 23: 81139
+Avg. RTT for source 23: 164386463.240ns
+# of RTT samples for source 24: 62506
+Avg. RTT for source 24: 166644731.653ns
+# of RTT samples for source 25: 64575
+Avg. RTT for source 25: 167175775.112ns
+# of RTT samples for source 26: 88173
+Avg. RTT for source 26: 164719435.419ns
+# of RTT samples for source 27: 65523
+Avg. RTT for source 27: 166346910.652ns
+# of RTT samples for source 28: 64542
+Avg. RTT for source 28: 166996040.032ns
+# of RTT samples for source 29: 72630
+Avg. RTT for source 29: 167495425.373ns
+# of RTT samples for source 30: 50610
+Avg. RTT for source 30: 167343742.828ns
+# of RTT samples for source 31: 59642
+Avg. RTT for source 31: 166418500.116ns
+# of RTT samples for source 32: 68971
+Avg. RTT for source 32: 165011710.737ns
+# of RTT samples for source 33: 63873
+Avg. RTT for source 33: 167559783.314ns
+# of RTT samples for source 34: 57730
+Avg. RTT for source 34: 166048441.798ns
+# of RTT samples for source 35: 58291
+Avg. RTT for source 35: 166874968.567ns
+# of RTT samples for source 36: 67224
+Avg. RTT for source 36: 166494864.376ns
+# of RTT samples for source 37: 51916
+Avg. RTT for source 37: 166979594.464ns
+# of RTT samples for source 38: 57080
+Avg. RTT for source 38: 165867182.460ns
+# of RTT samples for source 39: 58890
+Avg. RTT for source 39: 166709668.898ns
+# of RTT samples for source 40: 52828
+Avg. RTT for source 40: 167221145.166ns
+# of RTT samples for source 41: 60446
+Avg. RTT for source 41: 167534520.468ns
+# of RTT samples for source 42: 52146
+Avg. RTT for source 42: 167351057.426ns
+# of RTT samples for source 43: 67537
+Avg. RTT for source 43: 167492338.236ns
+# of RTT samples for source 44: 65700
+Avg. RTT for source 44: 166835857.847ns
+# of RTT samples for source 45: 56399
+Avg. RTT for source 45: 167751315.330ns
+# of RTT samples for source 46: 60579
+Avg. RTT for source 46: 166397710.392ns
+# of RTT samples for source 47: 52394
+Avg. RTT for source 47: 167511872.778ns
+# of RTT samples for source 48: 57798
+Avg. RTT for source 48: 167468240.105ns
+# of RTT samples for source 49: 59641
+Avg. RTT for source 49: 167082293.476ns
+# of RTT samples for source 50: 53731
+Avg. RTT for source 50: 167548285.904ns
+# of RTT samples for source 51: 59143
+Avg. RTT for source 51: 168075777.885ns
+# of RTT samples for source 52: 58692
+Avg. RTT for source 52: 168001697.449ns
+# of RTT samples for source 53: 63165
+Avg. RTT for source 53: 166430952.833ns
+# of RTT samples for source 54: 59081
+Avg. RTT for source 54: 168169755.139ns
+# of RTT samples for source 55: 51020
+Avg. RTT for source 55: 167328593.484ns
+# of RTT samples for source 56: 56995
+Avg. RTT for source 56: 167188469.302ns
+# of RTT samples for source 57: 61394
+Avg. RTT for source 57: 167935380.645ns
+# of RTT samples for source 58: 62943
+Avg. RTT for source 58: 168006716.869ns
+# of RTT samples for source 59: 49761
+Avg. RTT for source 59: 167875119.574ns
+# of RTT samples for source 60: 68724
+Avg. RTT for source 60: 167969745.025ns
+# of RTT samples for source 61: 67743
+Avg. RTT for source 61: 167881351.662ns
+# of RTT samples for source 62: 52409
+Avg. RTT for source 62: 167724613.798ns
+# of RTT samples for source 63: 65795
+Avg. RTT for source 63: 167085004.787ns
+# of RTT samples for source 64: 52769
+Avg. RTT for source 64: 167450353.894ns
+# of RTT samples for source 65: 58053
+Avg. RTT for source 65: 167074940.589ns
+# of RTT samples for source 66: 52034
+Avg. RTT for source 66: 167180868.282ns
+# of RTT samples for source 67: 52728
+Avg. RTT for source 67: 166437846.472ns
+# of RTT samples for source 68: 48443
+Avg. RTT for source 68: 166592990.465ns
+# of RTT samples for source 69: 52754
+Avg. RTT for source 69: 166847245.691ns
+# of RTT samples for source 70: 69976
+Avg. RTT for source 70: 166356501.110ns
+# of RTT samples for source 71: 57956
+Avg. RTT for source 71: 167171443.619ns
+# of RTT samples for source 72: 52194
+Avg. RTT for source 72: 165766319.645ns
+# of RTT samples for source 73: 59116
+Avg. RTT for source 73: 167630858.595ns
+# of RTT samples for source 74: 51951
+Avg. RTT for source 74: 167462701.781ns
+# of RTT samples for source 75: 61541
+Avg. RTT for source 75: 166472414.928ns
+# of RTT samples for source 76: 57148
+Avg. RTT for source 76: 167348948.874ns
+# of RTT samples for source 77: 51925
+Avg. RTT for source 77: 167473564.048ns
+# of RTT samples for source 78: 62698
+Avg. RTT for source 78: 167216027.184ns
+# of RTT samples for source 79: 52127
+Avg. RTT for source 79: 166925719.156ns
+# of RTT samples for source 80: 67026
+Avg. RTT for source 80: 167342790.764ns
+# of RTT samples for source 81: 54470
+Avg. RTT for source 81: 167514840.647ns
+# of RTT samples for source 82: 58401
+Avg. RTT for source 82: 166852202.694ns
+# of RTT samples for source 83: 78161
+Avg. RTT for source 83: 165334690.300ns
+# of RTT samples for source 84: 61250
+Avg. RTT for source 84: 166480241.953ns
+# of RTT samples for source 85: 52383
+Avg. RTT for source 85: 167017130.498ns
+# of RTT samples for source 86: 61649
+Avg. RTT for source 86: 166713649.753ns
+# of RTT samples for source 87: 84677
+Avg. RTT for source 87: 166184817.071ns
+# of RTT samples for source 88: 61507
+Avg. RTT for source 88: 166594318.718ns
+# of RTT samples for source 89: 69509
+Avg. RTT for source 89: 166737756.822ns
+# of RTT samples for source 90: 65789
+Avg. RTT for source 90: 166889475.879ns
+# of RTT samples for source 91: 54531
+Avg. RTT for source 91: 167398668.655ns
+# of RTT samples for source 92: 72131
+Avg. RTT for source 92: 166990042.744ns
+# of RTT samples for source 93: 51935
+Avg. RTT for source 93: 166763953.354ns
+# of RTT samples for source 94: 47416
+Avg. RTT for source 94: 166659286.150ns
+# of RTT samples for source 95: 55977
+Avg. RTT for source 95: 165122617.534ns
+# of RTT samples for source 96: 63278
+Avg. RTT for source 96: 165752302.222ns
+# of RTT samples for source 97: 52071
+Avg. RTT for source 97: 166811889.585ns
+# of RTT samples for source 98: 53324
+Avg. RTT for source 98: 166738501.944ns
+# of RTT samples for source 99: 45909
+Avg. RTT for source 99: 166316250.479ns
+# of RTT samples for source 100: 50743
+Avg. RTT for source 100: 166744617.912ns
+# of RTT samples for source 101: 55481
+Avg. RTT for source 101: 166579276.131ns
+# of RTT samples for source 102: 45855
+Avg. RTT for source 102: 166373239.007ns
+# of RTT samples for source 103: 51906
+Avg. RTT for source 103: 166876543.618ns
+# of RTT samples for source 104: 49053
+Avg. RTT for source 104: 166947810.246ns
+# of RTT samples for source 105: 49147
+Avg. RTT for source 105: 166952385.054ns
+# of RTT samples for source 106: 55631
+Avg. RTT for source 106: 165328931.842ns
+# of RTT samples for source 107: 40721
+Avg. RTT for source 107: 166846881.751ns
+# of RTT samples for source 108: 49152
+Avg. RTT for source 108: 166991451.627ns
+# of RTT samples for source 109: 55710
+Avg. RTT for source 109: 166034442.765ns
+# of RTT samples for source 110: 51097
+Avg. RTT for source 110: 167365517.033ns
+# of RTT samples for source 111: 49291
+Avg. RTT for source 111: 167210501.534ns
+# of RTT samples for source 112: 49897
+Avg. RTT for source 112: 167051362.322ns
+# of RTT samples for source 113: 52480
+Avg. RTT for source 113: 166774560.699ns
+# of RTT samples for source 114: 59734
+Avg. RTT for source 114: 166694627.294ns
+# of RTT samples for source 115: 55790
+Avg. RTT for source 115: 166232239.128ns
+# of RTT samples for source 116: 55308
+Avg. RTT for source 116: 166258754.901ns
+# of RTT samples for source 117: 44851
+Avg. RTT for source 117: 167091699.066ns
+# of RTT samples for source 118: 55631
+Avg. RTT for source 118: 166782209.045ns
+# of RTT samples for source 119: 61900
+Avg. RTT for source 119: 166025816.340ns
+# of RTT samples for source 120: 55526
+Avg. RTT for source 120: 166933954.154ns
+# of RTT samples for source 121: 44632
+Avg. RTT for source 121: 166956471.875ns
+# of RTT samples for source 122: 56780
+Avg. RTT for source 122: 166699767.193ns
+# of RTT samples for source 123: 66108
+Avg. RTT for source 123: 167206733.702ns
+# of RTT samples for source 124: 49576
+Avg. RTT for source 124: 167240563.224ns
+# of RTT samples for source 125: 54582
+Avg. RTT for source 125: 167174266.414ns
+# of RTT samples for source 126: 64794
+Avg. RTT for source 126: 166373910.393ns
+# of RTT samples for source 127: 49408
+Avg. RTT for source 127: 167300393.242ns
+# of RTT samples for source 128: 234838
+Avg. RTT for source 128: 168584926.046ns
+# of RTT samples for source 129: 218919
+Avg. RTT for source 129: 169544161.968ns
+====== Number of packets sent ======
+MySource 0:8593750
+MySource 1:8593750
+MySource 2:8593750
+MySource 3:8593750
+MySource 4:8593750
+MySource 5:8593750
+MySource 6:8593750
+MySource 7:8593750
+MySource 8:8593750
+MySource 9:8593750
+MySource 10:8593750
+MySource 11:8593750
+MySource 12:8593750
+MySource 13:8593750
+MySource 14:8593750
+MySource 15:8593750
+MySource 16:8593750
+MySource 17:8593750
+MySource 18:8593750
+MySource 19:8593750
+MySource 20:8593750
+MySource 21:8593750
+MySource 22:8593750
+MySource 23:8593750
+MySource 24:8593750
+MySource 25:8593750
+MySource 26:8593750
+MySource 27:8593750
+MySource 28:8593750
+MySource 29:8593750
+MySource 30:8593750
+MySource 31:8593750
+MySource 32:8593750
+MySource 33:8593750
+MySource 34:8593750
+MySource 35:8593750
+MySource 36:8593750
+MySource 37:8593750
+MySource 38:8593750
+MySource 39:8593750
+MySource 40:8593750
+MySource 41:8593750
+MySource 42:8593750
+MySource 43:8593750
+MySource 44:8593750
+MySource 45:8593750
+MySource 46:8593750
+MySource 47:8593750
+MySource 48:8593750
+MySource 49:8593750
+MySource 50:8593750
+MySource 51:8593750
+MySource 52:8593750
+MySource 53:8593750
+MySource 54:8593750
+MySource 55:8593750
+MySource 56:8593750
+MySource 57:8593750
+MySource 58:8593750
+MySource 59:8593750
+MySource 60:8593750
+MySource 61:8593750
+MySource 62:8593750
+MySource 63:8593750
+MySource 64:8593750
+MySource 65:8593750
+MySource 66:8593750
+MySource 67:8593750
+MySource 68:8593750
+MySource 69:8593750
+MySource 70:8593750
+MySource 71:8593750
+MySource 72:8593750
+MySource 73:8593750
+MySource 74:8593750
+MySource 75:8593750
+MySource 76:8593750
+MySource 77:8593750
+MySource 78:8593750
+MySource 79:8593750
+MySource 80:8593750
+MySource 81:8593750
+MySource 82:8593750
+MySource 83:8593750
+MySource 84:8593750
+MySource 85:8593750
+MySource 86:8593750
+MySource 87:8593750
+MySource 88:8593750
+MySource 89:8593750
+MySource 90:8593750
+MySource 91:8593750
+MySource 92:8593750
+MySource 93:8593750
+MySource 94:8593750
+MySource 95:8593750
+MySource 96:8593750
+MySource 97:8593750
+MySource 98:8593750
+MySource 99:8593750
+MySource 100:8593750
+MySource 101:8593750
+MySource 102:8593750
+MySource 103:8593750
+MySource 104:8593750
+MySource 105:8593750
+MySource 106:8593750
+MySource 107:8593750
+MySource 108:8593750
+MySource 109:8593750
+MySource 110:8593750
+MySource 111:8593750
+MySource 112:8593750
+MySource 113:8593750
+MySource 114:8593750
+MySource 115:8593750
+MySource 116:8593750
+MySource 117:8593750
+MySource 118:8593750
+MySource 119:8593750
+MySource 120:8593750
+MySource 121:8593750
+MySource 122:8593750
+MySource 123:8593750
+MySource 124:8593750
+MySource 125:8593750
+MySource 126:8593750
+MySource 127:8593750
+MySource 128:8593750
+MySource 129:8593750
+====== Number of packets at bottleneck link ======
+Source 129: 228696
+Source 128: 246947
+Source 127: 50986
+Source 126: 66721
+Source 125: 56159
+Source 124: 51164
+Source 123: 67474
+Source 122: 58057
+Source 121: 46140
+Source 120: 57113
+Source 119: 63753
+Source 118: 57063
+Source 117: 46366
+Source 116: 57323
+Source 115: 57274
+Source 114: 61193
+Source 113: 53813
+Source 112: 51272
+Source 111: 50703
+Source 110: 52493
+Source 109: 57090
+Source 108: 50658
+Source 107: 42153
+Source 106: 56990
+Source 105: 50570
+Source 104: 50635
+Source 103: 53363
+Source 102: 47323
+Source 101: 56775
+Source 100: 52237
+Source 99: 47276
+Source 98: 54748
+Source 97: 53427
+Source 46: 62551
+Source 45: 58508
+Source 44: 68172
+Source 43: 69527
+Source 42: 54241
+Source 41: 62572
+Source 40: 54725
+Source 39: 60883
+Source 38: 59684
+Source 37: 53730
+Source 36: 69452
+Source 35: 60343
+Source 34: 59856
+Source 33: 65930
+Source 32: 71471
+Source 31: 61831
+Source 30: 52550
+Source 29: 75205
+Source 28: 66725
+Source 27: 67878
+Source 26: 90029
+Source 25: 66628
+Source 24: 64907
+Source 23: 83610
+Source 10: 60703
+Source 9: 62962
+Source 8: 57785
+Source 7: 60885
+Source 6: 60904
+Source 5: 69532
+Source 1: 78656
+Source 0: 74006
+Source 2: 57554
+Source 3: 69330
+Source 4: 66861
+Source 11: 60106
+Source 12: 66547
+Source 13: 66671
+Source 14: 85878
+Source 15: 63346
+Source 16: 62756
+Source 17: 60680
+Source 18: 80949
+Source 19: 54214
+Source 20: 60996
+Source 21: 66418
+Source 22: 50725
+Source 47: 54214
+Source 48: 59694
+Source 49: 61599
+Source 50: 55701
+Source 51: 61203
+Source 52: 61132
+Source 53: 65264
+Source 54: 61373
+Source 55: 52884
+Source 56: 58889
+Source 57: 63816
+Source 58: 65547
+Source 59: 51765
+Source 60: 71197
+Source 61: 69723
+Source 62: 54198
+Source 63: 67844
+Source 64: 54694
+Source 65: 60078
+Source 66: 53812
+Source 67: 54596
+Source 68: 50293
+Source 69: 54609
+Source 70: 72191
+Source 71: 59948
+Source 72: 54130
+Source 73: 60853
+Source 74: 53646
+Source 75: 63050
+Source 76: 59123
+Source 77: 53735
+Source 78: 64494
+Source 79: 53634
+Source 80: 68385
+Source 81: 56085
+Source 82: 59959
+Source 83: 80051
+Source 84: 62886
+Source 85: 53856
+Source 86: 63197
+Source 87: 86174
+Source 88: 63049
+Source 89: 70932
+Source 90: 67396
+Source 91: 55958
+Source 92: 73595
+Source 93: 53397
+Source 94: 48848
+Source 95: 57516
+Source 96: 64629
+
+=== Completion time [s]: 3843.270===
