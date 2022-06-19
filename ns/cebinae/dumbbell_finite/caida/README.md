@@ -1,0 +1,2 @@
+* `flow_sizes.json`: a sorted list of all the tcp flow lengths (measured in bytes) each direction of a flow is counted separately
+* `flow_interarrivals.json`: a sorted list of tcp flow interarrival times (measured in seconds)
