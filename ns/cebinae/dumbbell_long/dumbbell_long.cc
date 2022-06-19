@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 #include <math.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <unordered_map>
@@ -211,6 +212,7 @@ main (int argc, char *argv[])
   tracing_period_us = 1000000;
   uint32_t progress_interval_ms = 1000;
   bool enable_debug = 0;  
+  bool skip_run = 0;    
   bool logtcp = 0;
   bool enable_stdout = 1; 
   uint32_t seed = 1;  // Fixed
@@ -288,7 +290,8 @@ main (int argc, char *argv[])
   cmd.AddValue ("pool", "Enable pool", pool);  
   cmd.AddValue ("logtcp", "Enable logging of TCP traces, such as RTT, RTO, cwnd (large file size)", logtcp);  
   cmd.AddValue ("enable_stdout", "Enable verbose rmterminal print", enable_stdout);  
-  cmd.AddValue ("printprogress", "Enable verbose rmterminal print", printprogress);    
+  cmd.AddValue ("printprogress", "Enable verbose rmterminal print", printprogress);
+  cmd.AddValue ("skip_run", "Skip running if result_dir/digest exists", skip_run);      
   cmd.AddValue ("sim_seconds", "Simulation time [s]", sim_seconds);
   cmd.AddValue ("app_seconds_start", "Application start time [s]", app_seconds_start);  
   cmd.AddValue ("app_seconds_end", "Application stop time [s]", app_seconds_end);
@@ -366,6 +369,20 @@ main (int argc, char *argv[])
     LogComponentEnable ("DumbbellLong", LOG_LEVEL_DEBUG);
   }
 
+  if (skip_run) {
+    std::ifstream digest_file;
+    digest_file.open(result_dir+"/digest");
+    if (digest_file) {
+      std::cout << "Skip run per existence of " << result_dir << "/digest" << std::endl;
+      return 0;
+    }
+    // struct stat stat_buffer;
+    // if (stat(result_dir.c_str(), &stat_buffer) == 0) {
+      // std::cout << "Skip run per existence of " << result_dir << std::endl;
+      // return 0;
+    // }
+  }
+
   std::string rm_dir_cmd = "rm -rf " + result_dir;
   if (system (rm_dir_cmd.c_str ()) == -1) {
     std::cout << "ERR: " << rm_dir_cmd << " failed, proceed anyway." << std::endl;
@@ -437,6 +454,7 @@ main (int argc, char *argv[])
             << "enable_debug: " << std::boolalpha << enable_debug << "\n" 
             << "enable_stdout: " << std::boolalpha << enable_stdout << "\n"      
             << "printprogress: " << std::boolalpha << printprogress << "\n"
+            << "skip_run: " << std::boolalpha << skip_run << "\n"            
             << "config_path: " << config_path << "\n"
             << "result_dir: " << result_dir << "\n"
             << "sack: " << sack << "\n"
@@ -557,7 +575,7 @@ main (int argc, char *argv[])
   p2p_leaf8.SetDeviceAttribute ("Mtu", UintegerValue(1500));   
   p2p_leaf8.SetChannelAttribute ("Delay", StringValue (leaf_delay8));        
 
-  // Default NS-3 DropTailQueue size for the NetDevice/NIC is 100p, make them configurable anyway
+  // Default NS-3 DropTailQueue size for the NetDevice/NIC is 100p, make them configurable anyway (e.g., 1p where FQ has more predictable perf)
   p2p_bottleneck.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (switch_netdev_size));
   p2p_leaf0.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));
   p2p_leaf1.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (server_netdev_size));
