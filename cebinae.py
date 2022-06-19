@@ -780,6 +780,100 @@ mydarkgreen = '#065535'
   print(cmd)
   subprocess.call(cmd.split())
 
+@timeit
+def plot_gpt_cdf(data_path, w_fq=False):
+  cwd = os.getcwd()
+  if not os.path.isabs(data_path):
+    data_path = (cwd+"/"+data_path)
+  print("data_path: {0}".format(data_path))
+  if not os.path.isdir(data_path):
+    print("ERR: not dir!")
+    exit()
+
+  fifo_gpts = []
+  with open(data_path+"/fifo/digest", "r") as f:
+    lines = f.readlines()
+    for i, line in enumerate(lines):
+      if "=== avg_tpt_app[*] ===" in line:
+        i += 1
+        while "Avg. Goodput [bps]" not in lines[i]:
+          gpt = lines[i].split()[1].strip()
+          fifo_gpts.append(float(gpt))
+          i += 1
+        break
+  fifo_gpts = sorted(fifo_gpts)
+  num_flows = len(fifo_gpts)
+  fifo_cdf_str = (str(fifo_gpts[0])+" 0.0\n")
+  for num_flow in range(num_flows):
+    fifo_cdf_str += (str(fifo_gpts[num_flow])+" "+str((num_flow+1)/num_flows)+"\n")
+
+  cebinae_gpts = []
+  with open(data_path+"/cebinae/digest", "r") as f:
+    lines = f.readlines()
+    for i, line in enumerate(lines):
+      if "=== avg_tpt_app[*] ===" in line:
+        i += 1
+        while "Avg. Goodput [bps]" not in lines[i]:
+          gpt = lines[i].split()[1].strip()
+          cebinae_gpts.append(float(gpt))
+          i += 1
+        break
+  cebinae_gpts = sorted(cebinae_gpts)
+  num_flows = len(cebinae_gpts)
+  cebinae_cdf_str = (str(cebinae_gpts[0])+" 0.0\n")
+  for num_flow in range(num_flows):
+    cebinae_cdf_str += (str(cebinae_gpts[num_flow])+" "+str((num_flow+1)/num_flows)+"\n")
+
+  with open(data_path+"/cdf.dat", "w") as f:
+    f.write(fifo_cdf_str)
+    f.write("\n\n")
+    f.write(cebinae_cdf_str)
+
+  gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "graph.eps"
+
+set xlabel "Goodput [Mbps]"
+set ylabel "CDF" offset 1
+set size 1,0.618 
+set tics nomirror
+
+set logscale x 2
+unset logscale x
+set nologscale x
+set nologscale y
+
+set size 0.5,0.5
+
+set yrange [0:1]
+
+set key samplen 2
+set border 3
+set key font ",16"
+set key at graph 1.0,0.45
+
+myred = '#A90533'
+myblue = '#004785'
+mygray = 'grey70'
+mygreen = '#0F9D58'
+myyellow = '#F4B400'
+set format y '%.1f'
+
+set grid
+
+plot "cdf.dat" i 0 u ($1/1000000):2 title "FIFO" with l dt 1 lw 8 lc rgb myblue,\
+     "" i 1 u ($1/1000000):2 title "Cebinae" with l dt 1 lw 8 lc rgb myred
+'''
+
+  with open(data_path+"/plot.gp", "w") as f:
+    f.write(gp_str)
+  
+  os.chdir(data_path)
+  cmd = "gnuplot plot.gp"
+  print(cmd)
+  subprocess.call(cmd.split())
+
 def get_loc(target):
 
   if target == "p4":
@@ -859,9 +953,10 @@ if __name__ == '__main__':
   parse_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of data file or directory")  
 
   plot_subprsr = subprsr.add_parser("plot")
-  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig7", "fig8", "time_tpt"], help="Plot target")
+  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig7", "fig8", "time_tpt", "gpt_cdf"], help="Plot target")
   plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of plotting data file or directory")
   plot_subprsr.add_argument("--w_total", action="store_true", help="Whether to plot total line used by time_tpt target")
+  plot_subprsr.add_argument("--w_fq", action="store_true", help="Whether to plot fq line used by gpt_cdf target")  
 
   tofino_subprsr = subprsr.add_parser("tofino")
 
@@ -901,6 +996,8 @@ if __name__ == '__main__':
       plot_fig8(args.data_path)            
     if args.plot_target == "time_tpt":
       plot_time_tpt(args.data_path, args.w_total)
+    if args.plot_target == "gpt_cdf":
+      plot_gpt_cdf(args.data_path, args.w_fq)
   elif args.cmd == "tofino":
     pass
 
