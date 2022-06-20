@@ -17,6 +17,9 @@ def timeit(func):
     return result
   return wrap_func 
 
+def print_cmd(cmd):
+  print("$ {}".format(cmd))
+
 @timeit
 def ns_validate(profile):
   cwd = os.getcwd()
@@ -41,7 +44,7 @@ def ns_validate(profile):
     "./test.py"
   ]
   for cmd in cmds:
-    print(cmd)
+    print_cmd(cmd)
     subprocess.call(cmd.split())
 
 @timeit
@@ -66,7 +69,7 @@ def ns_configure(profile):
     configure_cmd,
   ]
   for cmd in cmds:
-    print(cmd)
+    print_cmd(cmd)
     subprocess.call(cmd.split())
 
 @timeit
@@ -76,7 +79,7 @@ def ns_build():
 
   os.chdir(cwd+"/ns")
   cmd = "./waf build"
-  print(cmd)
+  print_cmd(cmd)
   subprocess.call(cmd.split())  
 
 @timeit
@@ -266,7 +269,7 @@ def ns_clear():
   ]
   for tmp_dir in tmp_dirs:
     cmd = ("rm -rf "+cwd+tmp_dir)
-    print(cmd)
+    print_cmd(cmd)
     subprocess.call(cmd.split())
 
 @timeit
@@ -289,7 +292,7 @@ def ns_prerequisite():
     "sudo apt install libgtk-3-dev libxml2 libxml2-dev libboost-all-dev"
   ]
   for cmd in install_cmds:
-    print(cmd)
+    print_cmd(cmd)
     subprocess.call(cmd.split())
 
 @timeit
@@ -478,7 +481,7 @@ plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT=20.4ms)" wit
 
   os.chdir(data_dir)
   cmd = "gnuplot plot.gp"
-  print(cmd)
+  print_cmd(cmd)
   subprocess.call(cmd.split())
 
 @timeit
@@ -554,7 +557,7 @@ plot "gpt.dat" i 0 u ($2/1000000):xtic(1) t "FIFO+TailDrop" w histograms lc rgb 
 
   os.chdir(data_dir)
   cmd = "gnuplot plot.gp"
-  print(cmd)
+  print_cmd(cmd)
   subprocess.call(cmd.split())
 
 @timeit
@@ -777,7 +780,7 @@ mydarkgreen = '#065535'
 
   os.chdir(data_dir)
   cmd = "gnuplot plot.gp"
-  print(cmd)
+  print_cmd(cmd)
   subprocess.call(cmd.split())
 
 @timeit
@@ -871,8 +874,129 @@ plot "cdf.dat" i 0 u ($1/1000000):2 title "FIFO" with l dt 1 lw 8 lc rgb myblue,
   
   os.chdir(data_path)
   cmd = "gnuplot plot.gp"
-  print(cmd)
+  print_cmd(cmd)
   subprocess.call(cmd.split())
+
+@timeit
+def plot_rtts(data_path, w_fq):
+  cwd = os.getcwd()
+  if not os.path.isabs(data_path):
+    data_path = (cwd+"/"+data_path)
+  print("data_path: {0}".format(data_path))
+  if not os.path.isdir(data_path):
+    print("ERR: not dir!")
+    exit()
+  
+  num_pairs = None
+  batch_config = None
+  with open(data_path+"/fifo-0/config.json", "r") as f:
+    batch_config=json.loads(f.read())
+  if w_fq:
+    num_pairs = int(batch_config['batch_size']/3)
+  else:
+    num_pairs = int(batch_config['batch_size']/2)
+
+  rtts_base = []
+  rtts_vary = []
+  jfis_fifo = []
+  jfis_cb = []
+  jfis_fq = []  
+  gpts_fifo = []
+  gpts_cb = []  
+  gpts_fq = []    
+  for i in range(num_pairs):
+    gpt_fifo = None
+    gpt_cb = None
+    jfi_fifo = None
+    jfi_cb = None
+    x_rtt = None
+
+    with open(data_path+"/fifo-"+str(i)+"/digest", "r") as f:
+      lines = f.readlines()
+      for line in lines:
+        if line.startswith("Avg. Goodput [bps]"):
+          line = line.split(":")
+          gpt_fifo = line[1].strip("\n ")
+        elif line.startswith("avg_jfi_app [computed]:"):
+          line = line.split(":")
+          jfi_fifo = line[1].strip("\n ")   
+    with open(data_path+"/cebinae-"+str(i)+"/digest", "r") as f:
+      lines = f.readlines()
+      for line in lines:
+        if line.startswith("Avg. Goodput [bps]"):
+          line = line.split(":")
+          gpt_cb = line[1].strip("\n ")
+        elif line.startswith("avg_jfi_app [computed]:"):
+          line = line.split(":")
+          jfi_cb = line[1].strip("\n ")   
+    with open(data_path+"/fq-"+str(i)+"/digest", "r") as f:
+      lines = f.readlines()
+      for line in lines:
+        if line.startswith("Avg. Goodput [bps]"):
+          line = line.split(":")
+          gpt_fq = line[1].strip("\n ")
+        elif line.startswith("avg_jfi_app [computed]:"):
+          line = line.split(":")
+          jfi_fq = line[1].strip("\n ")   
+
+    re_num_unit = re.compile("([0-9\.]+)([a-zA-Z]+)")
+    m = re_num_unit.match(batch_config["bottleneck_delay"])
+    rtt_unit = m.group(2)
+    bottleneck_delay = float(m.group(1))   
+    num_cca = batch_config["num_cca"]
+    if num_cca != 2:
+      print("num_cca != 2")
+      exit()
+
+    # 0 is always the base
+    m = re_num_unit.match(batch_config["leaf_delay0"])
+    if m.group(2) != rtt_unit:
+      print("ERR: unit mismatch")
+      exit()
+    rtt = 2*(bottleneck_delay+2*float(m.group(1)))
+    rtts_base.append(str(rtt)+rtt_unit)
+    m = re_num_unit.match(batch_config["leaf_delay1"][i])
+    if m.group(2) != rtt_unit:
+      print("ERR: unit mismatch")
+      exit()
+    rtt = 2*(bottleneck_delay+2*float(m.group(1)))
+    rtts_vary.append(str(rtt)+rtt_unit)
+
+    jfis_fifo.append(jfi_fifo)
+    jfis_cb.append(jfi_cb)
+    jfis_fq.append(jfi_fq)
+    gpts_fifo.append(gpt_fifo)
+    gpts_cb.append(gpt_cb)
+    gpts_fq.append(gpt_fq)
+
+  print(rtts_base)
+  print(rtts_vary)
+  print(jfis_fifo)
+  print(jfis_cb)
+  print(jfis_fq)
+  print(gpts_fifo)
+  print(gpts_cb)
+  print(gpts_fq)
+
+  with open(data_path+"/jfi.dat", "w") as f:
+    for i in range(len(jfis_fifo)):
+      if w_fq:
+        f.write(rtts_vary[i]+" "+str(jfis_fifo[i])+" "+str(jfis_fq[i])+" "+str(jfis_cb[i])+"\n")
+      else:
+        f.write(rtts_vary[i]+" "+str(jfis_fifo[i])+" "+str(jfis_cb[i])+"\n")
+  with open(data_path+"/gpt.dat", "w") as f:
+    for i in range(len(jfis_fifo)):
+      if w_fq:
+        f.write(rtts_vary[i]+" "+str(gpts_fifo[i])+" "+str(gpts_fq[i])+" "+str(gpts_cb[i])+"\n")
+      else:
+        f.write(rtts_vary[i]+" "+str(gpts_fifo[i])+" "+str(gpts_cb[i])+"\n")
+
+  cmd = "cat "+data_path+"/jfi.dat"
+  print_cmd(cmd)
+  subprocess.call(cmd.split())
+  cmd = "cat "+data_path+"/gpt.dat"
+  print_cmd(cmd)
+  subprocess.call(cmd.split())  
 
 def get_loc(target):
 
@@ -953,7 +1077,7 @@ if __name__ == '__main__':
   parse_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of data file or directory")  
 
   plot_subprsr = subprsr.add_parser("plot")
-  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig7", "fig8", "time_tpt", "gpt_cdf"], help="Plot target")
+  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig7", "fig8", "time_tpt", "gpt_cdf", "rtts"], help="Plot target")
   plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of plotting data file or directory")
   plot_subprsr.add_argument("--w_total", action="store_true", help="Whether to plot total line used by time_tpt target")
   plot_subprsr.add_argument("--w_fq", action="store_true", help="Whether to plot fq line used by gpt_cdf target")  
@@ -998,6 +1122,8 @@ if __name__ == '__main__':
       plot_time_tpt(args.data_path, args.w_total)
     if args.plot_target == "gpt_cdf":
       plot_gpt_cdf(args.data_path, args.w_fq)
+    if args.plot_target == "rtts":
+      plot_rtts(args.data_path, args.w_fq)   
   elif args.cmd == "tofino":
     pass
 
