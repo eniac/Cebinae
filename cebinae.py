@@ -1112,7 +1112,9 @@ def get_loc(target):
 import statistics
 import numpy as np
 import scipy.stats
-def mean_confidence_interval(data, confidence=0.9):
+# seaborn default confidence interval (ci) 0.95
+# https://seaborn.pydata.org/generated/seaborn.lineplot.html
+def mean_confidence_interval(data, confidence=0.95):
     a = 1.0 * np.array(data)
     n = len(a)
     m, se = np.mean(a), scipy.stats.sem(a)
