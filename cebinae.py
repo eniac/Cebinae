@@ -1109,6 +1109,240 @@ def get_loc(target):
       stdout, stderr = p.communicate()
       print(stdout.strip())
 
+import statistics
+import numpy as np
+import scipy.stats
+# seaborn default confidence interval (ci) 0.95 for error bands
+# https://seaborn.pydata.org/generated/seaborn.lineplot.html
+def mean_confidence_interval(data, confidence=0.95):
+    a = 1.0 * np.array(data)
+    n = len(a)
+    m, se = np.mean(a), scipy.stats.sem(a)
+    h = se * scipy.stats.t.ppf((1 + confidence) / 2., n-1)
+    return m, m-h, m+h
+def plot_top_detection(data_path="flow_table/camera_ready_plot"):
+
+  stage2interval2fnrfpr_slot2048_dict = None
+  stage2slotnum2fnrfpr_interval100ms_dict = None
+
+  with open(data_path+'/slot2048.json', 'r') as f:
+    stage2interval2fnrfpr_slot2048_dict = json.loads(f.read())
+
+  with open(data_path+'/interval100ms.json', 'r') as f:
+    stage2slotnum2fnrfpr_interval100ms_dict = json.loads(f.read())
+
+  stages = [1, 2, 4]  
+  intervals = [str(i) for i in range(10,101,10)]
+  with open(data_path+"/fixed_slot_fpr.dat", "w") as f:
+    for stage in stages:
+      interval2fnrfpr = stage2interval2fnrfpr_slot2048_dict[str(stage)]
+      for interval in intervals:
+        mean_val, lo_val, hi_val = mean_confidence_interval(interval2fnrfpr[interval]["fpr"])
+        f.write(str(interval)+" "+str(mean_val)+" "+str(lo_val)+" "+str(hi_val)+"\n")
+      f.write("\n\n")
+
+  with open(data_path+"/fixed_slot_fnr.dat", "w") as f:
+    for stage in stages:
+      interval2fnrfpr = stage2interval2fnrfpr_slot2048_dict[str(stage)]
+      for interval in intervals:
+        mean_val, lo_val, hi_val = mean_confidence_interval(interval2fnrfpr[interval]["fnr"])
+        f.write(str(interval)+" "+str(mean_val)+" "+str(lo_val)+" "+str(hi_val)+"\n")
+      f.write("\n\n")
+
+  slots = [512, 1024, 2048, 4096]
+  with open(data_path+"/fixed_interval_fpr.dat", "w") as f:
+    for stage in stages:
+      slotnum2fnrfpr = stage2slotnum2fnrfpr_interval100ms_dict[str(stage)]
+      for slot in slots:
+        mean_val, lo_val, hi_val = mean_confidence_interval(slotnum2fnrfpr[str(slot)]["fpr"])
+        f.write(str(slot)+" "+str(mean_val)+" "+str(lo_val)+" "+str(hi_val)+"\n")
+      f.write("\n\n")        
+
+  with open(data_path+"/fixed_interval_fnr.dat", "w") as f:
+    for stage in stages:
+      slotnum2fnrfpr = stage2slotnum2fnrfpr_interval100ms_dict[str(stage)]
+      for slot in slots:
+        mean_val, lo_val, hi_val = mean_confidence_interval(slotnum2fnrfpr[str(slot)]["fnr"])
+        f.write(str(slot)+" "+str(mean_val)+" "+str(lo_val)+" "+str(hi_val)+"\n")
+      f.write("\n\n")
+  
+  fixed_slot_fpr_gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "fpr_fixed_slot.eps"
+
+set size 0.5,0.5
+
+set tics nomirror
+set key at graph 1.0,1.0
+set key font ",16"
+set border 3
+set key samplen 2
+
+set grid
+
+set xlabel "Round interval [ms]"
+set ylabel 'FPR [10^{-4}]' offset 1
+
+set xrange [0:101]
+set xtics 0,20,102
+set yrange [0:]
+
+myred = '#A90533'
+myblue = '#004785'
+mygreen = '#34a905'
+
+# Picked from https://mdigi.tools/color-shades/
+myblue_shades = '#e5f3ff'
+myred_shades = '#fee6ed'
+mygreen_shades = '#edfee6'
+
+plot "fixed_slot_fpr.dat" i 0 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb myblue_shades,\\
+     "fixed_slot_fpr.dat" i 0 using 1:($2*10000) w l lw 4 lc rgb myblue title "1 stage",\\
+     "fixed_slot_fpr.dat" i 1 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb myred_shades,\\
+     "fixed_slot_fpr.dat" i 1 using 1:($2*10000) w l lw 4 lc rgb myred title "2 stage",\\
+     "fixed_slot_fpr.dat" i 2 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb mygreen_shades,\\
+     "fixed_slot_fpr.dat" i 2 using 1:($2*10000) w l lw 4 lc rgb mygreen title "4 stage"
+'''
+
+  fixed_slot_fnr_gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "fnr_fixed_slot.eps"
+
+set size 0.5,0.5
+
+set tics nomirror
+set key at graph 1.0,1.0
+set key font ",16"
+set border 3
+set key samplen 2
+
+set grid
+
+set xlabel "Round interval [ms]"
+set ylabel 'FNR' offset 1
+
+set xrange [0:101]
+set xtics 0,20,102
+set yrange [0:]
+
+myred = '#A90533'
+myblue = '#004785'
+mygreen = '#34a905'
+
+# Picked from https://mdigi.tools/color-shades/
+myblue_shades = '#e5f3ff'
+myred_shades = '#fee6ed'
+mygreen_shades = '#edfee6'
+
+plot "fixed_slot_fnr.dat" i 0 using 1:3:4 with filledcurve notitle fc rgb myblue_shades,\\
+     "fixed_slot_fnr.dat" i 0 using 1:($2) w l lw 4 lc rgb myblue title "1 stage",\\
+     "fixed_slot_fnr.dat" i 1 using 1:3:4 with filledcurve notitle fc rgb myred_shades,\\
+     "fixed_slot_fnr.dat" i 1 using 1:($2) w l lw 4 lc rgb myred title "2 stage",\\
+     "fixed_slot_fnr.dat" i 2 using 1:3:4 with filledcurve notitle fc rgb mygreen_shades,\\
+     "fixed_slot_fnr.dat" i 2 using 1:($2) w l lw 4 lc rgb mygreen title "4 stage"
+'''
+
+  fixed_interval_fpr_gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "fpr_fixed_interval.eps"
+
+set size 0.5,0.5
+
+set tics nomirror
+set key at graph 1.0,1.0
+set key font ",16"
+set border 3
+set key samplen 2
+
+set grid
+
+set yrange [0:]
+
+set xlabel "Slot #"
+set ylabel 'FPR [10^{-4}]' offset 1
+
+set logscale x 2
+#set xrange [512:4097]
+#set xtics 500,500,4500
+
+myred = '#A90533'
+myblue = '#004785'
+mygreen = '#34a905'
+
+# Picked from https://mdigi.tools/color-shades/
+myblue_shades = '#e5f3ff'
+myred_shades = '#fee6ed'
+mygreen_shades = '#edfee6'
+
+plot "fixed_interval_fpr.dat" i 0 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb myblue_shades,\\
+     "fixed_interval_fpr.dat" i 0 using 1:($2*10000) w l lw 4 lc rgb myblue title "1 stage",\\
+     "fixed_interval_fpr.dat" i 1 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb myred_shades,\\
+     "fixed_interval_fpr.dat" i 1 using 1:($2*10000) w l lw 4 lc rgb myred title "2 stage",\\
+     "fixed_interval_fpr.dat" i 2 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb mygreen_shades,\\
+     "fixed_interval_fpr.dat" i 2 using 1:($2*10000) w l lw 4 lc rgb mygreen title "4 stage"
+'''
+  fixed_interval_fnr_gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "fnr_fixed_interval.eps"
+
+set size 0.5,0.5
+
+set tics nomirror
+set key at graph 1.0,1.0
+set key font ",16"
+set border 3
+set key samplen 2
+
+set grid
+
+set xlabel "Slot #"
+set ylabel 'FNR' offset 1
+
+set logscale x 2
+set yrange [0:]
+
+# set xtics ("512" 512, "1024" 1024, "2048" 2048, "4096" 4096)
+
+myred = '#A90533'
+myblue = '#004785'
+mygreen = '#34a905'
+
+# Picked from https://mdigi.tools/color-shades/
+myblue_shades = '#e5f3ff'
+myred_shades = '#fee6ed'
+mygreen_shades = '#edfee6'
+
+plot "fixed_interval_fnr.dat" i 0 using 1:3:4 with filledcurve notitle fc rgb myblue_shades,\\
+     "fixed_interval_fnr.dat" i 0 using 1:($2) w l lw 4 lc rgb myblue title "1 stage",\\
+     "fixed_interval_fnr.dat" i 1 using 1:3:4 with filledcurve notitle fc rgb myred_shades,\\
+     "fixed_interval_fnr.dat" i 1 using 1:($2) w l lw 4 lc rgb myred title "2 stage",\\
+     "fixed_interval_fnr.dat" i 2 using 1:3:4 with filledcurve notitle fc rgb mygreen_shades,\\
+     "fixed_interval_fnr.dat" i 2 using 1:($2) w l lw 4 lc rgb mygreen title "4 stage"
+'''
+
+  with open(data_path+"/plot_fixed_slot_fpr.gp", "w") as gp_file:
+    gp_file.write(fixed_slot_fpr_gp_str)  
+  with open(data_path+"/plot_fixed_slot_fnr.gp", "w") as gp_file:
+    gp_file.write(fixed_slot_fnr_gp_str)  
+  with open(data_path+"/plot_fixed_interval_fpr.gp", "w") as gp_file:
+    gp_file.write(fixed_interval_fpr_gp_str)  
+  with open(data_path+"/plot_fixed_interval_fnr.gp", "w") as gp_file:
+    gp_file.write(fixed_interval_fnr_gp_str)          
+
+
+  os.chdir(data_path)
+  cmds = [
+    "gnuplot plot_fixed_slot_fpr.gp",
+    "gnuplot plot_fixed_slot_fnr.gp",
+    "gnuplot plot_fixed_interval_fpr.gp",
+    "gnuplot plot_fixed_interval_fnr.gp",    
+  ]
+  for cmd in cmds:
+    subprocess.call(cmd.split())
 
 if __name__ == '__main__':
 
@@ -1156,7 +1390,7 @@ if __name__ == '__main__':
   parse_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of data file or directory")  
 
   plot_subprsr = subprsr.add_parser("plot")
-  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig7", "fig8", "time_tpt", "gpt_cdf", "rtts"], help="Plot target")
+  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig7", "fig8", "time_tpt", "gpt_cdf", "rtts", "top_detection"], help="Plot target")
   plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of plotting data file or directory")
   plot_subprsr.add_argument("--w_total", action="store_true", help="Whether to plot total line used by time_tpt target")
   plot_subprsr.add_argument("--w_fq", action="store_true", help="Whether to plot fq line used by gpt_cdf target")  
@@ -1203,6 +1437,8 @@ if __name__ == '__main__':
       plot_gpt_cdf(args.data_path, args.w_fq)
     if args.plot_target == "rtts":
       plot_rtts(args.data_path, args.w_fq)   
+    if args.plot_target == "top_detection":
+      plot_top_detection()        
   elif args.cmd == "tofino":
     pass
 
