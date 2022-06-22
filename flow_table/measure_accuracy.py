@@ -2,12 +2,14 @@
 
 # run trials to measure accuracy
 import sys, subprocess
+from os.path import expanduser
 import pickle as pkl
 import math
 from pcaplibs import *
 
 # configuration parameters
-infn = "~/caidaSample.pcap"
+home = expanduser("~")
+infn = home+"/caidaSample.pcap"
 outfn = "egress.json"
 
 prog = "egress.dpt"
