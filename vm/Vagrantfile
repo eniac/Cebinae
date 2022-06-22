@@ -38,9 +38,9 @@ Vagrant.configure(2) do |config|
   config.vm.provision "file", source: "lucid_binaries/dpt", destination: "$HOME/dpt"
   config.vm.provision "file", source: "lucid_binaries/dptc", destination: "$HOME/dptc"
   config.vm.provision "file", source: "lucid_binaries/dptf", destination: "$HOME/dptf"
-  # --- setup dependencies to rebuild lucid from source ---
-  # config.vm.provision "file", source: "setup_lucid.sh", destination: "$HOME/setup_lucid.sh"
-  # config.vm.provision "shell", privileged: false, inline: "$HOME/setup_lucid.sh"
+  # --- setup dependencies for lucid -- including dynamically linked z3 lib ---
+  config.vm.provision "file", source: "setup_lucid.sh", destination: "$HOME/setup_lucid.sh"
+  config.vm.provision "shell", privileged: false, inline: "$HOME/setup_lucid.sh"
   # optionally setup tofino compiler
   if (sde != "")
     # copy compiler setup file
