@@ -1112,7 +1112,7 @@ def get_loc(target):
 import statistics
 import numpy as np
 import scipy.stats
-# seaborn default confidence interval (ci) 0.95
+# seaborn default confidence interval (ci) 0.95 for error bands
 # https://seaborn.pydata.org/generated/seaborn.lineplot.html
 def mean_confidence_interval(data, confidence=0.95):
     a = 1.0 * np.array(data)
@@ -1137,8 +1137,6 @@ def plot_top_detection(data_path="flow_table/camera_ready_plot"):
     for stage in stages:
       interval2fnrfpr = stage2interval2fnrfpr_slot2048_dict[str(stage)]
       for interval in intervals:
-        # mean_val = statistics.mean(interval2fnrfpr[interval]["fpr"])
-        # std_val = statistics.stdev(interval2fnrfpr[interval]["fpr"])
         mean_val, lo_val, hi_val = mean_confidence_interval(interval2fnrfpr[interval]["fpr"])
         f.write(str(interval)+" "+str(mean_val)+" "+str(lo_val)+" "+str(hi_val)+"\n")
       f.write("\n\n")
@@ -1147,10 +1145,7 @@ def plot_top_detection(data_path="flow_table/camera_ready_plot"):
     for stage in stages:
       interval2fnrfpr = stage2interval2fnrfpr_slot2048_dict[str(stage)]
       for interval in intervals:
-        # mean_val = statistics.mean(interval2fnrfpr[interval]["fnr"])
-        # std_val = statistics.stdev(interval2fnrfpr[interval]["fnr"])
         mean_val, lo_val, hi_val = mean_confidence_interval(interval2fnrfpr[interval]["fnr"])
-        # f.write(str(interval)+" "+str(mean_val)+" "+str(std_val)+"\n")
         f.write(str(interval)+" "+str(mean_val)+" "+str(lo_val)+" "+str(hi_val)+"\n")
       f.write("\n\n")
 
