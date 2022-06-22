@@ -1154,18 +1154,16 @@ def plot_top_detection(data_path="flow_table/camera_ready_plot"):
     for stage in stages:
       slotnum2fnrfpr = stage2slotnum2fnrfpr_interval100ms_dict[str(stage)]
       for slot in slots:
-        mean_val = statistics.mean(slotnum2fnrfpr[str(slot)]["fpr"])
-        std_val = statistics.stdev(slotnum2fnrfpr[str(slot)]["fpr"])
-        f.write(str(slot)+" "+str(mean_val)+" "+str(std_val)+"\n")
+        mean_val, lo_val, hi_val = mean_confidence_interval(slotnum2fnrfpr[str(slot)]["fpr"])
+        f.write(str(slot)+" "+str(mean_val)+" "+str(lo_val)+" "+str(hi_val)+"\n")
       f.write("\n\n")        
 
   with open(data_path+"/fixed_interval_fnr.dat", "w") as f:
     for stage in stages:
       slotnum2fnrfpr = stage2slotnum2fnrfpr_interval100ms_dict[str(stage)]
       for slot in slots:
-        mean_val = statistics.mean(slotnum2fnrfpr[str(slot)]["fnr"])
-        std_val = statistics.stdev(slotnum2fnrfpr[str(slot)]["fnr"])
-        f.write(str(slot)+" "+str(mean_val)+" "+str(std_val)+"\n")
+        mean_val, lo_val, hi_val = mean_confidence_interval(slotnum2fnrfpr[str(slot)]["fnr"])
+        f.write(str(slot)+" "+str(mean_val)+" "+str(lo_val)+" "+str(hi_val)+"\n")
       f.write("\n\n")
   
   fixed_slot_fpr_gp_str = '''
@@ -1188,6 +1186,7 @@ set ylabel 'FPR [10^{-4}]' offset 1
 
 set xrange [0:101]
 set xtics 0,20,102
+set yrange [0:]
 
 myred = '#A90533'
 myblue = '#004785'
@@ -1198,12 +1197,12 @@ myblue_shades = '#e5f3ff'
 myred_shades = '#fee6ed'
 mygreen_shades = '#edfee6'
 
-plot "fixed_slot_fpr.dat" i 0 using 1:($2+$3)*10000:($2-$3)*10000 with filledcurve notitle fc rgb myblue_shades, \\
-     '' i 0 using 1:($2*10000) w l lw 4 lc rgb myblue title "1 stage",\\
-     "fixed_slot_fpr.dat" i 1 using 1:($2+$3)*10000:($2-$3)*10000 with filledcurve notitle fc rgb myred_shades, \\
-     '' i 1 using 1:($2*10000) w l lw 4 lc rgb myred title "2 stage",\\
-     "fixed_slot_fpr.dat" i 2 using 1:($2+$3)*10000:($2-$3)*10000 with filledcurve notitle fc rgb mygreen_shades, \\
-     '' i 2 using 1:($2*10000) w l lw 4 lc rgb mygreen title "4 stage",\\
+plot "fixed_slot_fpr.dat" i 0 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb myblue_shades,\\
+     "fixed_slot_fpr.dat" i 0 using 1:($2*10000) w l lw 4 lc rgb myblue title "1 stage",\\
+     "fixed_slot_fpr.dat" i 1 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb myred_shades,\\
+     "fixed_slot_fpr.dat" i 1 using 1:($2*10000) w l lw 4 lc rgb myred title "2 stage",\\
+     "fixed_slot_fpr.dat" i 2 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb mygreen_shades,\\
+     "fixed_slot_fpr.dat" i 2 using 1:($2*10000) w l lw 4 lc rgb mygreen title "4 stage"
 '''
 
   fixed_slot_fnr_gp_str = '''
@@ -1226,6 +1225,7 @@ set ylabel 'FNR' offset 1
 
 set xrange [0:101]
 set xtics 0,20,102
+set yrange [0:]
 
 myred = '#A90533'
 myblue = '#004785'
@@ -1236,12 +1236,12 @@ myblue_shades = '#e5f3ff'
 myred_shades = '#fee6ed'
 mygreen_shades = '#edfee6'
 
-plot "fixed_slot_fnr.dat" i 0 using 1:($2+$3):($2-$3) with filledcurve notitle fc rgb myblue_shades, \\
-     '' i 0 using 1:($2) w l lw 4 lc rgb myblue title "1 stage",\\
-     "fixed_slot_fpr.dat" i 1 using 1:($2+$3):($2-$3) with filledcurve notitle fc rgb myred_shades, \\
-     '' i 1 using 1:($2) w l lw 4 lc rgb myred title "2 stage",\\
-     "fixed_slot_fpr.dat" i 2 using 1:($2+$3):($2-$3) with filledcurve notitle fc rgb mygreen_shades, \\
-     '' i 2 using 1:($2) w l lw 4 lc rgb mygreen title "4 stage",\\
+plot "fixed_slot_fnr.dat" i 0 using 1:3:4 with filledcurve notitle fc rgb myblue_shades,\\
+     "fixed_slot_fnr.dat" i 0 using 1:($2) w l lw 4 lc rgb myblue title "1 stage",\\
+     "fixed_slot_fnr.dat" i 1 using 1:3:4 with filledcurve notitle fc rgb myred_shades,\\
+     "fixed_slot_fnr.dat" i 1 using 1:($2) w l lw 4 lc rgb myred title "2 stage",\\
+     "fixed_slot_fnr.dat" i 2 using 1:3:4 with filledcurve notitle fc rgb mygreen_shades,\\
+     "fixed_slot_fnr.dat" i 2 using 1:($2) w l lw 4 lc rgb mygreen title "4 stage"
 '''
 
   fixed_interval_fpr_gp_str = '''
@@ -1259,11 +1259,14 @@ set key samplen 2
 
 set grid
 
+set yrange [0:]
+
 set xlabel "Slot #"
 set ylabel 'FPR [10^{-4}]' offset 1
 
-set xrange [0:101]
-set xtics 0,20,102
+set logscale x 2
+#set xrange [512:4097]
+#set xtics 500,500,4500
 
 myred = '#A90533'
 myblue = '#004785'
@@ -1274,12 +1277,12 @@ myblue_shades = '#e5f3ff'
 myred_shades = '#fee6ed'
 mygreen_shades = '#edfee6'
 
-plot "fixed_interval_fpr.dat" i 0 using 1:($2+$3)*10000:($2-$3)*10000 with filledcurve notitle fc rgb myblue_shades, \\
-     '' i 0 using 1:($2*10000) w l lw 4 lc rgb myblue title "1 stage",\\
-     "fixed_slot_fpr.dat" i 1 using 1:($2+$3)*10000:($2-$3)*10000 with filledcurve notitle fc rgb myred_shades, \\
-     '' i 1 using 1:($2*10000) w l lw 4 lc rgb myred title "2 stage",\\
-     "fixed_slot_fpr.dat" i 2 using 1:($2+$3)*10000:($2-$3)*10000 with filledcurve notitle fc rgb mygreen_shades, \\
-     '' i 2 using 1:($2*10000) w l lw 4 lc rgb mygreen title "4 stage",\\
+plot "fixed_interval_fpr.dat" i 0 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb myblue_shades,\\
+     "fixed_interval_fpr.dat" i 0 using 1:($2*10000) w l lw 4 lc rgb myblue title "1 stage",\\
+     "fixed_interval_fpr.dat" i 1 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb myred_shades,\\
+     "fixed_interval_fpr.dat" i 1 using 1:($2*10000) w l lw 4 lc rgb myred title "2 stage",\\
+     "fixed_interval_fpr.dat" i 2 using 1:($3*10000):($4*10000) with filledcurve notitle fc rgb mygreen_shades,\\
+     "fixed_interval_fpr.dat" i 2 using 1:($2*10000) w l lw 4 lc rgb mygreen title "4 stage"
 '''
   fixed_interval_fnr_gp_str = '''
 reset
@@ -1299,8 +1302,10 @@ set grid
 set xlabel "Slot #"
 set ylabel 'FNR' offset 1
 
-set xrange [0:101]
-set xtics 0,20,102
+set logscale x 2
+set yrange [0:]
+
+# set xtics ("512" 512, "1024" 1024, "2048" 2048, "4096" 4096)
 
 myred = '#A90533'
 myblue = '#004785'
@@ -1311,12 +1316,12 @@ myblue_shades = '#e5f3ff'
 myred_shades = '#fee6ed'
 mygreen_shades = '#edfee6'
 
-plot "fixed_interval_fnr.dat" i 0 using 1:($2+$3):($2-$3) with filledcurve notitle fc rgb myblue_shades, \\
-     '' i 0 using 1:($2) w l lw 4 lc rgb myblue title "1 stage",\\
-     "fixed_slot_fpr.dat" i 1 using 1:($2+$3):($2-$3) with filledcurve notitle fc rgb myred_shades, \\
-     '' i 1 using 1:($2) w l lw 4 lc rgb myred title "2 stage",\\
-     "fixed_slot_fpr.dat" i 2 using 1:($2+$3):($2-$3) with filledcurve notitle fc rgb mygreen_shades, \\
-     '' i 2 using 1:($2) w l lw 4 lc rgb mygreen title "4 stage",\\
+plot "fixed_interval_fnr.dat" i 0 using 1:3:4 with filledcurve notitle fc rgb myblue_shades,\\
+     "fixed_interval_fnr.dat" i 0 using 1:($2) w l lw 4 lc rgb myblue title "1 stage",\\
+     "fixed_interval_fnr.dat" i 1 using 1:3:4 with filledcurve notitle fc rgb myred_shades,\\
+     "fixed_interval_fnr.dat" i 1 using 1:($2) w l lw 4 lc rgb myred title "2 stage",\\
+     "fixed_interval_fnr.dat" i 2 using 1:3:4 with filledcurve notitle fc rgb mygreen_shades,\\
+     "fixed_interval_fnr.dat" i 2 using 1:($2) w l lw 4 lc rgb mygreen title "4 stage"
 '''
 
   with open(data_path+"/plot_fixed_slot_fpr.gp", "w") as gp_file:
