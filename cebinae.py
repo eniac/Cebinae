@@ -960,7 +960,8 @@ def plot_rtts(data_path, w_fq):
       print("ERR: unit mismatch")
       exit()
     rtt = 2*(bottleneck_delay+2*float(m.group(1)))
-    rtts_vary.append(str(rtt)+rtt_unit)
+    rtts_vary.append(str(rtt))
+    # rtts_vary.append(str(rtt)+rtt_unit)
 
     jfis_fifo.append(jfi_fifo)
     jfis_cb.append(jfi_cb)
@@ -991,12 +992,90 @@ def plot_rtts(data_path, w_fq):
       else:
         f.write(rtts_vary[i]+" "+str(gpts_fifo[i])+" "+str(gpts_cb[i])+"\n")
 
+  gpt_gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "rtts-b.eps"
+
+set logscale x
+set size 0.5,0.5
+
+set tics nomirror
+set key at graph 1.0,0.5
+set key font ",16"
+set border 3
+
+set xlabel "RTT [ms]"
+set ylabel 'Goodput [MBps]'
+
+set logscale x 2
+set ytics 0,100,401
+set yrange [0:401]
+
+myred = '#A90533'
+myblue = '#004785'
+mygrey = 'grey70'
+
+set grid
+
+plot "gpt.dat" using ($1):($2/1000000) title "FIFO" with linespoints pt 2 ps 1.5 lw 5 lc rgb myblue,\\
+     "gpt.dat" using ($1):($3/1000000) title "FQ" with linespoints pt 4 ps 1.5 lw 5 lc rgb mygrey,\\
+     "gpt.dat" using ($1):($4/1000000) title "Cebinae" with linespoints pt 6 ps 1.5 lw 5 lc rgb myred
+'''
+
+  jfi_gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "rtts-a.eps"
+
+set logscale x
+set size 0.5,0.5
+
+set tics nomirror
+set key at graph 1.0,0.5
+set key font ",16"
+set border 3
+
+set grid
+
+set xlabel "RTT [ms]"
+set ylabel 'JFI'
+
+set logscale x 2
+#set xrange [1:100]
+set ytics 0,0.2,1.0
+set yrange [0:1]
+
+myred = '#A90533'
+myblue = '#004785'
+mygrey = 'grey70'
+
+#set format y '%.1f'
+
+plot "jfi.dat" using ($1):($2) title "FIFO" with linespoints pt 2 ps 1.5 lw 5 lc rgb myblue,\\
+     "jfi.dat" using ($1):($3) title "FQ"  with linespoints pt 4 ps 1.5 lw 5 lc rgb mygrey,\\
+     "jfi.dat" using ($1):($4) title "Cebinae" with linespoints pt 6 ps 1.5 lw 5 lc rgb myred
+'''
+
+  with open(data_path+"/plot_gpt.gp", "w") as gp_file:
+    gp_file.write(gpt_gp_str)
+  with open(data_path+"/plot_jfi.gp", "w") as gp_file:
+    gp_file.write(jfi_gp_str)
+
   cmd = "cat "+data_path+"/jfi.dat"
   print_cmd(cmd)
   subprocess.call(cmd.split())
   cmd = "cat "+data_path+"/gpt.dat"
   print_cmd(cmd)
   subprocess.call(cmd.split())  
+
+  os.chdir(data_path)
+  cmds = [
+    "gnuplot plot_gpt.gp",
+    "gnuplot plot_jfi.gp"
+  ]
+  for cmd in cmds:
+    subprocess.call(cmd.split())
 
 def get_loc(target):
 
