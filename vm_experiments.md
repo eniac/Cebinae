@@ -26,10 +26,19 @@ Contents:
 
 To setup the VM from scratch:
 
-1. Install vagrant and virtualbox 
-2. Place a copy of bf-sde-9.5.0.tgz in this directory **note: this has only been tested with 9.5.0!**
-3. Build the vm with: ``vagrant --sde=bf-sde-9.5.0.tgz up --provider=virtualbox``
-   - **NOTE:** this will take an hour or so to complete, because it installs the tofino sde.
+1. Install vagrant and virtualbox. 
+
+2. If you want to build a VM that can compile the P4 code using the makefile we have included, place a copy of bf-sde-9.5.0.tgz in the ``/vm`` directory and run 
+
+   ```vagrant --sde=bf-sde-9.5.0.tgz up --provider=virtualbox``` 
+
+    **note: this has only been tested with 9.5.0!**
+
+3. Alternately, if you don't have access to the bf-sde file (you must have an intel account), you can build the VM without the SDE. This will let you test the flow tables data structure in the Lucid interpreter and compile the Lucid code to P4, but not compile the P4 code to the Tofino. To build the VM without the SDE, run:
+
+   ```vagrant up --provider=virtualbox```
+
+   **NOTE:** building the vm takes 1 - 2 hours.
 
 ##### Reproducing flow table performance results
 
