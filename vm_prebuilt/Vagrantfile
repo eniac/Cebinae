@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
   config.vm.synced_folder "../", "/cebinae"
-  config.vm.box = "cebinae.box"
+  config.vm.box = "new_cebinae.box"
   config.vm.provider "virtualbox" do |vb|
     # disable the log for portability.
     vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
