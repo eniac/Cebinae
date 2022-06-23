@@ -285,7 +285,7 @@ def ns_prerequisite():
     "sudo apt install python python3 g++ cmake python3-dev pkg-config sqlite3 python3-setuptools git qt5-default gdb valgrind",
     "sudo apt install gir1.2-goocanvas-2.0 python3-gi python3-gi-cairo python3-pygraphviz gir1.2-gtk-3.0 ipython3",
     "sudo apt install openmpi-bin openmpi-common openmpi-doc libopenmpi-dev autoconf cvs bzr unrar",
-    "sudp apt install uncrustify doxygen graphviz imagemagick texlive texlive-extra-utils texlive-latex-extra texlive-font-utils dvipng latexmk",
+    "sudo apt install uncrustify doxygen graphviz imagemagick texlive texlive-extra-utils texlive-latex-extra texlive-font-utils dvipng latexmk",
     "sudo apt install python3-sphinx dia gsl-bin libgsl-dev libgslcblas0 sqlite sqlite3 libsqlite3-dev tcpdump",
     "sudo apt install libxml2 libxml2-dev cmake libc6-dev libc6-dev-i386 libclang-dev llvm-dev automake python3-pip",
     "python3 -m pip install --user cxxfilt",
