@@ -561,6 +561,234 @@ plot "gpt.dat" i 0 u ($2/1000000):xtic(1) t "FIFO+TailDrop" w histograms lc rgb 
   subprocess.call(cmd.split())
 
 @timeit
+def plot_pl2(data_dir):
+  cwd = os.getcwd()
+  if not os.path.isabs(data_dir):
+    data_dir = (cwd+"/"+data_dir)
+  print("data_dir: {}".format(data_dir))
+  if not os.path.isdir(data_dir):
+    print("ERR: not dir!")
+    exit()
+
+  batch_config = None
+  with open(data_dir+"/fifo/config.json", "r") as f:
+    batch_config=json.loads(f.read())
+
+  gpts_str = ""
+
+  num_cca = int(batch_config['num_cca'])
+  if num_cca != 3:
+    print("ERR: Presume 3 ccas for simplicity")
+    exit()
+  num_cca0 = int(batch_config['num_cca0'])
+  num_cca1 = int(batch_config['num_cca1'])
+  num_cca2 = int(batch_config['num_cca2'])
+  num_flows = num_cca0+num_cca1+num_cca2
+
+  re_num_unit = re.compile("([0-9\.]+)([a-zA-Z]+)")
+  m = re_num_unit.match(batch_config["bottleneck_bw"])
+  bw_unit = m.group(2)
+  bottleneck_bw = float(m.group(1))
+
+  max_conn = 0
+  max_conn_sum = 0
+  ideal_cca0_bw = 0
+  ideal_cca1_bw = 0
+  ideal_cca2_bw = 0    
+  if num_cca1 > num_cca2:
+    max_conn = num_cca1
+    max_conn_sum = max_conn + num_cca0
+    ideal_cca0_bw = 1.0*bottleneck_bw/max_conn_sum
+    ideal_cca1_bw = 1.0*bottleneck_bw/max_conn_sum
+    ideal_cca2_bw = (bottleneck_bw-num_cca0*ideal_cca0_bw)/num_cca2
+  else:
+    max_conn = num_cca2
+    max_conn_sum = max_conn + num_cca0
+    ideal_cca0_bw = 1.0*bottleneck_bw/max_conn_sum
+    ideal_cca2_bw = 1.0*bottleneck_bw/max_conn_sum   
+    ideal_cca1_bw = (bottleneck_bw-num_cca0*ideal_cca0_bw)/num_cca1
+  for i in range(num_flows):
+    if i < num_cca0:
+      gpts_str += (str(i)+" "+str(ideal_cca0_bw)+"\n")
+    elif i < num_cca0+num_cca1:
+      gpts_str += (str(i)+" "+str(ideal_cca1_bw)+"\n")   
+    elif i < num_cca0+num_cca1+num_cca2:
+      gpts_str += (str(i)+" "+str(ideal_cca2_bw)+"\n")
+  gpts_str += "\n\n"
+
+  fifo_gpts = []
+  with open(data_dir+"/fifo/digest", "r") as f:
+    lines = f.readlines()
+    for i, line in enumerate(lines):
+      if "=== avg_tpt_app[*] ===" in line:
+        i += 1
+        while "Avg. Goodput [bps]" not in lines[i]:
+          index = lines[i].split()[0].strip()
+          gpt = float(lines[i].split()[1].strip())
+          gpt = gpt/1000000 # Assume Mbps
+          gpts_str += (index+" "+str(gpt)+"\n")
+          fifo_gpts.append(gpt)
+          i += 1
+        break  
+  if len(fifo_gpts) != num_flows:
+    print("len(fifo_gpts) != num_flows")
+    exit()
+  fifo_gpts_norm = []
+  for i in range(num_flows):
+    if i < num_cca0:
+      fifo_gpts_norm.append(fifo_gpts[i]/ideal_cca0_bw)
+    elif i < num_cca0+num_cca1:
+      fifo_gpts_norm.append(fifo_gpts[i]/ideal_cca1_bw)      
+    elif i < num_cca0+num_cca1+num_cca2:
+      fifo_gpts_norm.append(fifo_gpts[i]/ideal_cca2_bw)        
+  # print(fifo_gpts)
+  # print(fifo_gpts_norm)
+  square_of_sums = 0
+  sum_of_squares = 0
+  for i in range(num_flows):
+    square_of_sums += fifo_gpts_norm[i]
+    sum_of_squares += (fifo_gpts_norm[i]**2)
+  square_of_sums = square_of_sums**2
+  fifo_jfi = square_of_sums/num_flows/sum_of_squares
+  gpts_str += "\n\n"
+
+  fq_gpts = []
+  with open(data_dir+"/fq/digest", "r") as f:
+    lines = f.readlines()
+    for i, line in enumerate(lines):
+      if "=== avg_tpt_app[*] ===" in line:
+        i += 1
+        while "Avg. Goodput [bps]" not in lines[i]:
+          gpt = float(lines[i].split()[1].strip())
+          gpt = gpt/1000000 # Assume Mbps
+          fq_gpts.append(gpt)
+          i += 1
+        break  
+  if len(fq_gpts) != num_flows:
+    print("len(fq_gpts) != num_flows")
+    exit()
+  fq_gpts_norm = []
+  for i in range(num_flows):
+    if i < num_cca0:
+      fq_gpts_norm.append(fq_gpts[i]/ideal_cca0_bw)
+    elif i < num_cca0+num_cca1:
+      fq_gpts_norm.append(fq_gpts[i]/ideal_cca1_bw)      
+    elif i < num_cca0+num_cca1+num_cca2:
+      fq_gpts_norm.append(fq_gpts[i]/ideal_cca2_bw)        
+  # print(fifo_gpts)
+  # print(fifo_gpts_norm)
+  square_of_sums = 0
+  sum_of_squares = 0
+  for i in range(num_flows):
+    square_of_sums += fq_gpts_norm[i]
+    sum_of_squares += (fq_gpts_norm[i]**2)
+  square_of_sums = square_of_sums**2
+  fq_jfi = square_of_sums/num_flows/sum_of_squares
+
+  cb_gpts = []
+  with open(data_dir+"/cebinae/digest", "r") as f:
+    lines = f.readlines()
+    for i, line in enumerate(lines):
+      if "=== avg_tpt_app[*] ===" in line:
+        i += 1
+        while "Avg. Goodput [bps]" not in lines[i]:
+          index = lines[i].split()[0].strip()
+          gpt = float(lines[i].split()[1].strip())
+          gpt = gpt/1000000 # Assume Mbps
+          gpts_str += (index+" "+str(gpt)+"\n")            
+          cb_gpts.append(gpt)
+          i += 1
+        break  
+  if len(cb_gpts) != num_flows:
+    print("len(cb_gpts) != num_flows")
+    exit()
+  cb_gpts_norm = []
+  for i in range(num_flows):
+    if i < num_cca0:
+      cb_gpts_norm.append(cb_gpts[i]/ideal_cca0_bw)
+    elif i < num_cca0+num_cca1:
+      cb_gpts_norm.append(cb_gpts[i]/ideal_cca1_bw)      
+    elif i < num_cca0+num_cca1+num_cca2:
+      cb_gpts_norm.append(cb_gpts[i]/ideal_cca2_bw)        
+  # print(fifo_gpts)
+  # print(fifo_gpts_norm)
+  square_of_sums = 0
+  sum_of_squares = 0
+  for i in range(num_flows):
+    square_of_sums += cb_gpts_norm[i]
+    sum_of_squares += (cb_gpts_norm[i]**2)
+  square_of_sums = square_of_sums**2
+  cb_jfi = square_of_sums/num_flows/sum_of_squares
+
+  print_str = '''
+num_cca: {0}
+num_cca0: {1}
+num_cca1: {2}
+num_cca2: {3}
+max_conn: {4}
+max_conn_sum: {5}
+bottleneck_bw: {6} {7}
+ideal_cca0_bw: {8}
+ideal_cca1_bw: {9}
+ideal_cca2_bw: {10} 
+--- fifo_jfi: {11} ---
+--- fq_jfi: {12} --- 
+--- cebinae_jfi: {13} ---    
+'''.format(num_cca, num_cca0, num_cca1, num_cca2, max_conn, max_conn_sum, bottleneck_bw, bw_unit, 
+          ideal_cca0_bw, ideal_cca1_bw, ideal_cca2_bw,
+          fifo_jfi, fq_jfi, cb_jfi)
+  print(print_str)
+
+  with open(data_dir+"/gpts.dat", "w") as f:
+    f.write(gpts_str)
+
+  gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "graph.eps"
+
+myred = '#A90533'
+myblue = '#004785'
+mygrey = 'grey70'
+mygreen = '#34a905'
+
+set size 1,0.618
+
+set style fill pattern
+set style histogram clustered
+
+set xlabel "Flow index"
+set ylabel "Goodput [Mbps]" offset 1
+# set logscale y 10
+
+set key at graph 0.95,0.95
+set key maxrows 1
+set key samplen 3
+
+set tics out nomirror
+set grid ytics
+
+#unset xtics
+
+plot "gpts.dat" i 0 u ($2):xtic(1) t "Ideal" w histograms lw 2 lc rgb mygreen fs pattern 4,\\
+     "" i 1 u ($2):xtic(1) t "FIFO" w histograms lw 2 lc rgb myblue fs pattern 5,\\
+     "" i 2 u ($2):xtic(1) t "Cebinae" w histograms lw 2 lc rgb myred fs pattern 2,\\
+'''
+
+  with open(data_dir+"/plot.gp", "w") as gp_file:
+    gp_file.write(gp_str)
+
+  cmds = [
+    "cat "+data_dir+"/gpts.dat"
+  ]
+  for cmd in cmds:
+    subprocess.call(cmd.split())
+
+  os.chdir(data_dir)
+  cmd = "gnuplot plot.gp"
+  subprocess.call(cmd.split())
+
+@timeit
 def plot_fig8(data_dir):
   cwd = os.getcwd()
   if not os.path.isabs(data_dir):
@@ -1390,7 +1618,7 @@ if __name__ == '__main__':
   parse_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of data file or directory")  
 
   plot_subprsr = subprsr.add_parser("plot")
-  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig7", "fig8", "time_tpt", "gpt_cdf", "rtts", "top_detection"], help="Plot target")
+  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig7", "fig8", "time_tpt", "gpt_cdf", "rtts", "top_detection", "pl2"], help="Plot target")
   plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of plotting data file or directory")
   plot_subprsr.add_argument("--w_total", action="store_true", help="Whether to plot total line used by time_tpt target")
   plot_subprsr.add_argument("--w_fq", action="store_true", help="Whether to plot fq line used by gpt_cdf target")  
@@ -1438,7 +1666,9 @@ if __name__ == '__main__':
     if args.plot_target == "rtts":
       plot_rtts(args.data_path, args.w_fq)   
     if args.plot_target == "top_detection":
-      plot_top_detection()        
+      plot_top_detection()   
+    if args.plot_target == "pl2":
+      plot_pl2(args.data_path)            
   elif args.cmd == "tofino":
     pass
 
