@@ -704,26 +704,8 @@ main (int argc, char *argv[])
       protor->SetAttribute ("SocketType", TypeIdValue (TypeId::LookupByName(transport_prot8)));        
     }                                    
   }
-  // if (transport_prot.compare ("ns3::TcpWestwoodPlus") == 0)
-  //   { 
-  //     // TcpWestwoodPlus is not an actual TypeId name; we need TcpWestwood here
-  //     Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpWestwood::GetTypeId ()));
-  //     // the default protocol type in ns3::TcpWestwood is WESTWOOD
-  //     Config::SetDefault ("ns3::TcpWestwood::ProtocolType", EnumValue (TcpWestwood::WESTWOODPLUS));
-  //   }
-  // Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TypeId::LookupByName (transport_prot)));    
-
-  // Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
-  // em->SetAttribute ("ErrorRate", DoubleValue (0.00001));
-  // devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 
   if (enable_debug) std::cout << "================== Configure TrafficControlLayer ==================" << std::endl;
-  // Manual: To install a queue disc other than the default one, it is necessary to install such queue disc before an IP address is
-  // assigned to the device, but after InternetStackHelper::Install(). Alternatively, the default queue disc can be removed from the device after assigning an IP
-  // address, by using the Uninstall method of the TrafficControlHelper C++ class, and then installing a different queue
-  // disc on the device. By uninstalling without adding a new queue disc, it is also possible to have no queue disc installed
-  // on a device.
-
   // We keep the tch default ns3::FqCoDelQueueDisc (for point-to-point) untouched for sources and sinks.
   // Such DRR fair queueing (https://www.nsnam.org/docs/models/html/fq-codel.html) is useful upon multiple apps on a single sender node.
 
@@ -768,12 +750,6 @@ main (int argc, char *argv[])
   } else {
     oss << "Configured NULL QueueDisc (which is the default FqCoDelQueueDisc and buffer size)\n";
   }
-  // q->TraceConnectWithoutContext ("PacketsInQueue", MakeCallback (&TcPacketsInQueueTrace));  
-  // SojournTime
-  // Ptr<NetDevice> nd = devices.Get (1);
-  // Ptr<PointToPointNetDevice> ptpnd = DynamicCast<PointToPointNetDevice> (nd);
-  // Ptr<Queue<Packet> > queue = ptpnd->GetQueue ();
-  // queue->TraceConnectWithoutContext ("PacketsInQueue", MakeCallback (&DevicePacketsInQueueTrace));
 
   if (enable_debug) std::cout << "================== Configure Ipv4AddressHelper ==================" << std::endl;
 
