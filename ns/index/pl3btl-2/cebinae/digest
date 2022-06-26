@@ -1,0 +1,378 @@
+=== CMD varas ===
+enable_debug: false
+enable_stdout: false
+printprogress: true
+skip_run: false
+config_path: /home/leoyu/Cebinae/ns/configs/pl3btl-2.json
+result_dir: tmp_index/pl3btl-2/cebinae/
+sack: true
+recovery: ns3::TcpClassicRecovery
+app_packet_size: 1440
+delackcount: 1
+seed: 2022
+run: 1205
+tracing_period_us: 1000000
+progress_interval_ms: 1000
+sim_seconds: 100
+app_seconds_start: 1
+app_seconds_end: 100
+transport_prot0: ns3::TcpNewReno
+transport_prot1: ns3::TcpBic
+transport_prot2: ns3::TcpVegas
+transport_prot3: ns3::TcpCubic
+transport_prot4: ns3::TcpCubic
+transport_prot5: ns3::TcpCubic
+transport_prot6: ns3::TcpCubic
+transport_prot7: ns3::TcpCubic
+transport_prot8: ns3::TcpCubic
+bottleneck_bw: 100Mbps
+bottleneck_delay: 12ms
+leaf_bw0: 10000Mbps
+leaf_bw1: 10000Mbps
+leaf_bw2: 10000Mbps
+leaf_bw3: 10000Mbps
+leaf_bw4: 0Mbps
+leaf_bw5: 0Mbps
+leaf_bw6: 0Mbps
+leaf_bw7: 0Mbps
+leaf_bw8: 0Mbps
+leaf_delay0: 8ms
+leaf_delay1: 8ms
+leaf_delay2: 8ms
+leaf_delay3: 8ms
+leaf_delay4: 1ms
+leaf_delay5: 1ms
+leaf_delay6: 1ms
+leaf_delay7: 1ms
+leaf_delay8: 1ms
+app_bw0: 100Mbps
+app_bw1: 100Mbps
+app_bw2: 100Mbps
+app_bw3: 100Mbps
+app_bw4: 0Mbps
+app_bw5: 0Mbps
+app_bw6: 0Mbps
+app_bw7: 0Mbps
+app_bw8: 0Mbps
+switch_total_bufsize: 840p
+switch_netdev_size: 10p
+server_netdev_size: 100p
+queuedisc_type: CebinaeQueueDisc
+num_cca: 4
+num_cca0: 8
+num_cca1: 2
+num_cca2: 8
+num_cca3: 4
+num_cca4: 0
+num_cca5: 0
+num_cca6: 0
+num_cca7: 0
+num_cca8: 0
+num_leaf: 22
+======
+--- Configured CebinaeQueueDisc ---
+dt: +1.34218e+08ns
+vdt: +1ns
+l: +100000ns
+p: 1
+tau: 0.05
+delta_port: 0.01
+delta_flow: 0.1
+------
+num_tracing_periods: 100
+=== Ipv4 addresses ===
+--- leftleaf_ifc ---
+0 1.1.1.1
+1 1.1.2.1
+2 1.1.3.1
+3 1.1.4.1
+4 1.1.5.1
+5 1.1.6.1
+6 1.1.7.1
+7 1.1.8.1
+8 1.1.9.1
+9 1.1.10.1
+10 1.1.11.1
+11 1.1.12.1
+12 1.1.13.1
+13 1.1.14.1
+14 1.1.15.1
+15 1.1.16.1
+16 1.1.17.1
+17 1.1.18.1
+18 1.1.19.1
+19 1.1.20.1
+20 1.1.21.1
+21 1.1.22.1
+--- leftrouter_ifc ---
+0 1.1.1.2
+1 1.1.2.2
+2 1.1.3.2
+3 1.1.4.2
+4 1.1.5.2
+5 1.1.6.2
+6 1.1.7.2
+7 1.1.8.2
+8 1.1.9.2
+9 1.1.10.2
+10 1.1.11.2
+11 1.1.12.2
+12 1.1.13.2
+13 1.1.14.2
+14 1.1.15.2
+15 1.1.16.2
+16 1.1.17.2
+17 1.1.18.2
+18 1.1.19.2
+19 1.1.20.2
+20 1.1.21.2
+21 1.1.22.2
+--- rightleaf_ifc ---
+0 100.1.1.1
+1 100.1.2.1
+2 100.1.3.1
+3 100.1.4.1
+4 100.1.5.1
+5 100.1.6.1
+6 100.1.7.1
+7 100.1.8.1
+8 100.1.9.1
+9 100.1.10.1
+10 100.1.11.1
+11 100.1.12.1
+12 100.1.13.1
+13 100.1.14.1
+14 100.1.15.1
+15 100.1.16.1
+16 100.1.17.1
+17 100.1.18.1
+18 100.1.19.1
+19 100.1.20.1
+20 100.1.21.1
+21 100.1.22.1
+--- rightrouter_ifc ---
+0 100.1.1.2
+1 100.1.2.2
+2 100.1.3.2
+3 100.1.4.2
+4 100.1.5.2
+5 100.1.6.2
+6 100.1.7.2
+7 100.1.8.2
+8 100.1.9.2
+9 100.1.10.2
+10 100.1.11.2
+11 100.1.12.2
+12 100.1.13.2
+13 100.1.14.2
+14 100.1.15.2
+15 100.1.16.2
+16 100.1.17.2
+17 100.1.18.2
+18 100.1.19.2
+19 100.1.20.2
+20 100.1.21.2
+21 100.1.22.2
+--- router_ifc ---
+0 200.1.1.1
+1 200.1.1.2
+2 200.1.1.3
+3 200.1.1.4
+4 200.1.1.5
+5 200.1.1.6
+=== avg_tpt_app[*] ===
+0 4744494.545
+1 4587985.455
+2 5211694.545
+3 5151301.818
+4 5574167.273
+5 4712960.000
+6 4872727.273
+7 4687709.091
+8 24479301.818
+9 24793134.545
+10 7627752.727
+11 6710923.636
+12 6945047.273
+13 6979374.545
+14 6757701.818
+15 6772480.000
+16 6600843.636
+17 6386734.545
+18 12238429.091
+19 14258036.364
+20 13298269.091
+21 12625221.818
+Avg. Goodput [bps]: 196016290.909
+====== Number of packets sent ======
+MySource 0:859375
+MySource 1:859375
+MySource 2:859375
+MySource 3:859375
+MySource 4:859375
+MySource 5:859375
+MySource 6:859375
+MySource 7:859375
+MySource 8:859375
+MySource 9:859375
+MySource 10:859375
+MySource 11:859375
+MySource 12:859375
+MySource 13:859375
+MySource 14:859375
+MySource 15:859375
+MySource 16:859375
+MySource 17:859375
+MySource 18:859375
+MySource 19:859375
+MySource 20:859375
+MySource 21:859375
+====== CebinaeQueueDisc digest ======
+====== Switch 0 ======
+--- Validate the effective CebinaeQueueDisc params ---
+m_debug: false
+m_maxSize: 840p
+GetInternalQueue(0)->GetMaxSize(): 840p
+GetInternalQueue(1)->GetMaxSize(): 840p
+dT: +1.34218e+08ns
+vdT: +1ns
+L: +100000ns
+P: 1
+tau: 0.05
+delta_port: 0.01
+delta_top: 0.1
+m_pool: true
+m_bps: 100000000bps
+--- Validate CebinaeQueueDisc initial states ---
+m_headq: 0
+m_neg_headq: 1
+m_vb: 134217728
+------
+m_arrived_pkts: 786858
+m_lbf_past_head_pkts: 384022
+m_lbf_past_tail_pkts: 388551
+m_lbf_drop_pkts: 14285
+m_enqueue_drop_pkts[0]: 587
+m_enqueue_drop_pkts[1]: 61
+m_cebinae_dequeued_succeeded: 771925
+m_num_p: 744
+m_num_bottleneck_p: 424
+m_num_non_bottleneck_p: 320
+m_num_rotated: 745
+--- FlowBottleneckDetector ---
+m_num_gettopflows: 424
+m_num_slot_pow2: 11
+m_num_slot: 2048
+m_hash2mysourceid.size(): 2048
+m_hash2bytecount.size(): 2048
+m_sourceidtag2toptimes:
+8: 271
+9: 263
+sourceids_wo_slots (during some round(s) due to 5-tuple hash collision):
+------
+====== Switch 1 ======
+--- Validate the effective CebinaeQueueDisc params ---
+m_debug: false
+m_maxSize: 840p
+GetInternalQueue(0)->GetMaxSize(): 840p
+GetInternalQueue(1)->GetMaxSize(): 840p
+dT: +1.34218e+08ns
+vdT: +1ns
+L: +100000ns
+P: 1
+tau: 0.05
+delta_port: 0.01
+delta_top: 0.1
+m_pool: true
+m_bps: 100000000bps
+--- Validate CebinaeQueueDisc initial states ---
+m_headq: 0
+m_neg_headq: 1
+m_vb: 134217728
+------
+m_arrived_pkts: 821289
+m_lbf_past_head_pkts: 279241
+m_lbf_past_tail_pkts: 540519
+m_lbf_drop_pkts: 1529
+m_enqueue_drop_pkts[0]: 0
+m_enqueue_drop_pkts[1]: 0
+m_cebinae_dequeued_succeeded: 819712
+m_num_p: 744
+m_num_bottleneck_p: 597
+m_num_non_bottleneck_p: 147
+m_num_rotated: 745
+--- FlowBottleneckDetector ---
+m_num_gettopflows: 597
+m_num_slot_pow2: 11
+m_num_slot: 2048
+m_hash2mysourceid.size(): 2048
+m_hash2bytecount.size(): 2048
+m_sourceidtag2toptimes:
+2: 110
+4: 124
+3: 102
+10: 142
+11: 58
+17: 52
+14: 77
+1: 41
+16: 86
+12: 89
+13: 119
+0: 69
+7: 45
+15: 80
+5: 71
+6: 73
+sourceids_wo_slots (during some round(s) due to 5-tuple hash collision):
+------
+====== Switch 2 ======
+--- Validate the effective CebinaeQueueDisc params ---
+m_debug: false
+m_maxSize: 840p
+GetInternalQueue(0)->GetMaxSize(): 840p
+GetInternalQueue(1)->GetMaxSize(): 840p
+dT: +1.34218e+08ns
+vdT: +1ns
+L: +100000ns
+P: 1
+tau: 0.05
+delta_port: 0.01
+delta_top: 0.1
+m_pool: true
+m_bps: 100000000bps
+--- Validate CebinaeQueueDisc initial states ---
+m_headq: 0
+m_neg_headq: 1
+m_vb: 134217728
+------
+m_arrived_pkts: 805033
+m_lbf_past_head_pkts: 412034
+m_lbf_past_tail_pkts: 388115
+m_lbf_drop_pkts: 4884
+m_enqueue_drop_pkts[0]: 196
+m_enqueue_drop_pkts[1]: 423
+m_cebinae_dequeued_succeeded: 799136
+m_num_p: 744
+m_num_bottleneck_p: 482
+m_num_non_bottleneck_p: 262
+m_num_rotated: 745
+--- FlowBottleneckDetector ---
+m_num_gettopflows: 482
+m_num_slot_pow2: 11
+m_num_slot: 2048
+m_hash2mysourceid.size(): 2048
+m_hash2bytecount.size(): 2048
+m_sourceidtag2toptimes:
+2: 1
+4: 1
+1: 1
+3: 2
+21: 144
+20: 179
+18: 158
+19: 247
+sourceids_wo_slots (during some round(s) due to 5-tuple hash collision):
+------
+
+=== Completion time [s]: 100.474===
