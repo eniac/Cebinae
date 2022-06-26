@@ -485,6 +485,133 @@ plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT=20.4ms)" wit
   subprocess.call(cmd.split())
 
 @timeit
+def plot_fig1_region(data_dir):
+  cwd = os.getcwd()
+  if not os.path.isabs(data_dir):
+    data_dir = (cwd+"/"+data_dir)
+  print("data_dir: {}".format(data_dir))
+  if not os.path.isdir(data_dir):
+    print("ERR: not dir!")
+    exit()
+
+  batch_config = None
+  with open(data_dir+"/fifo/config.json", "r") as f:  
+    batch_config=json.loads(f.read())
+
+  re_num_unit = re.compile("([0-9\.]+)([a-zA-Z]+)")
+  m = re_num_unit.match(batch_config["dt"])
+  unit = m.group(2)
+
+  dt = float(m.group(1))  
+  p = float(batch_config['p'])
+  if unit == "ms":
+    dt = dt*1000000
+  elif unit == "us":
+    dt = dt*1000
+  period = dt*p
+  print("dT: {0}, P: {1}, period: {2}".format(dt, p, period))
+
+  regions = ""
+  with open(data_dir+"/cebinae/cebinae_debug", "r") as f:
+    lines = f.readlines()
+    num_saturated = 0
+    num_non_saturated = 0
+    for line in lines:
+      if ",saturated" in line:
+        num_saturated += 1
+        # [95160369153,saturated]
+        re_ts_state = re.compile("\[([0-9\.]+),saturated.*")
+        m = re_ts_state.match(line)
+        # Converted to s
+        ts_ns = float(m.group(1))/1000000000
+        ts_end_ns = ts_ns+period/1000000000
+        # print(ts_ns)
+        # top_set:{}
+        re_top_set = re.compile(".*top_set:{([0-9]+).*")
+        m = re_top_set.match(line)
+        flow_index = int(m.group(1))
+        # print(flow_index)
+                    # set style rect fc lt -1 fs solid 0.15 noborder
+        if flow_index == 0:
+          regions += "set obj rect from {0}, graph 0 to {1}, graph 1 fc rgb {2} lw 5 fillstyle solid 1.0 noborder\n".format(
+            str(ts_ns),
+            str(ts_end_ns),
+            "small_rtt_region"
+          )
+        elif flow_index == 1:
+          regions += "set obj rect from {0}, graph 0 to {1}, graph 1 fc rgb {2} lw 5 fs solid 1.0 noborder\n".format(
+            str(ts_ns),
+            str(ts_end_ns),
+            "large_rtt_region"
+          )          
+      elif ",non-saturated" in line:
+        num_non_saturated += 1
+        re_ts_state = re.compile("\[([0-9\.]+),non-saturated.*")
+        m = re_ts_state.match(line)
+        # Converted to s
+        ts_ns = float(m.group(1))/1000000000
+        ts_end_ns = ts_ns+period/1000000000        
+        regions += "set obj rect from {0}, graph 0 to {1}, graph 1 fc rgb {2} lw 5 fs solid 1.0 noborder\n".format(
+          str(ts_ns),
+          str(ts_end_ns),
+          "unsaturated_region"
+        ) 
+
+  print("num_saturated: {0}, num_non_saturated: {1}".format(num_saturated, num_non_saturated))
+
+  gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "graph.eps"
+
+set size 1,0.618 
+set border 3
+set tics nomirror
+
+set nologscale x
+
+set key reverse Left
+set key at graph 1.0,1.0
+set key font ",14"
+set key maxrows 2
+set key samplen 1
+# set key width -4
+set key opaque
+
+set xlabel "Time [s]"
+set ylabel 'Goodput [MBps]'
+
+set xrange [1:51]
+set xtics 0,5,101
+
+myred = '#A90533'
+myblue = '#004785'
+mygrey = '#808080'
+# https://mdigi.tools/color-shades/#fdb5c9
+#unsaturated_region = '#d9d9d9'
+small_rtt_region = '#fdb5c9' # red
+large_rtt_region = '#b3dbff' # blue
+unsaturated_region = '#f2f2f2'
+#small_rtt_region = '#fee6ed'
+#large_rtt_region = '#e5f3ff'
+
+{}
+
+plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT=20.4ms)" with lines lw 5 dt 3 lc rgb myred, \\
+	 "fifo/app_tpt_1000000.dat" using ($2/1000000) title "FIFO (RTT=40ms)" with lines lw 5 dt 3 lc rgb myblue, \\
+	 "cebinae/app_tpt_1000000.dat" using ($1/1000000) title "Cebinae (RTT=20.4ms)" with lines lw 5 dt 1 lc rgb myred, \\
+	 "cebinae/app_tpt_1000000.dat" using ($2/1000000) title "Cebinae (RTT=40ms)" with lines lw 5 dt 1 lc rgb myblue,
+'''.format(regions)
+
+  with open(data_dir+"/plot.gp", "w") as gp_file:
+    gp_file.write(gp_str)
+
+  os.chdir(data_dir)
+  cmd = "gnuplot plot.gp"
+  print_cmd(cmd)
+  subprocess.call(cmd.split())
+
+@timeit
 def plot_fig7(data_dir):
   cwd = os.getcwd()
   if not os.path.isabs(data_dir):
@@ -1873,7 +2000,7 @@ if __name__ == '__main__':
   parse_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of data file or directory")  
 
   plot_subprsr = subprsr.add_parser("plot")
-  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig7", "fig8", "time_tpt", "gpt_cdf", "rtts", "top_detection", "pl2", "pl3"], help="Plot target")
+  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig1_region", "fig7", "fig8", "time_tpt", "gpt_cdf", "rtts", "top_detection", "pl2", "pl3"], help="Plot target")
   plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of plotting data file or directory")
   plot_subprsr.add_argument("--w_total", action="store_true", help="Whether to plot total line used by time_tpt target")
   plot_subprsr.add_argument("--w_fq", action="store_true", help="Whether to plot fq line used by gpt_cdf target")  
@@ -1910,6 +2037,8 @@ if __name__ == '__main__':
   elif args.cmd == "plot":
     if args.plot_target == "fig1":
       plot_fig1(args.data_path)
+    if args.plot_target == "fig1_region":
+      plot_fig1_region(args.data_path)      
     if args.plot_target == "fig7":
       plot_fig7(args.data_path)  
     if args.plot_target == "fig8":
