@@ -1015,9 +1015,10 @@ set xlabel "Flow index"
 set ylabel "Goodput [Mbps]" offset 1
 # set logscale y 10
 
-set key at graph 0.9,0.95
+set key at graph 0.925,0.95
 set key maxrows 1
 set key samplen 3
+set key font ",16"
 
 set tics out nomirror
 set grid ytics
