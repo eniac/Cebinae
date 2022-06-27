@@ -1314,6 +1314,149 @@ plot "jfi.dat" using ($1*100):($2) with linespoints lw 5 lc rgb myred
     subprocess.call(cmd.split())
 
 @timeit
+def plot_thresh(data_dir):
+  cwd = os.getcwd()
+  if not os.path.isabs(data_dir):
+    data_dir = (cwd+"/"+data_dir)
+  print("data_dir: {}".format(data_dir))
+  if not os.path.isdir(data_dir):
+    print("ERR: not dir!")
+    exit()
+
+  gpt_str = ""
+  jfi_str = ""
+
+  fifo_gpt = ""
+  fifo_jfi = ""
+  fq_gpt = ""
+  fq_jfi = ""
+  with open(data_dir+"/fifo/digest", "r") as f:
+    lines = f.readlines()
+    for line in lines:
+      if "Avg. Goodput [bps]" in line:
+        fifo_gpt = line.split(":")[1].strip()
+      if "avg_jfi_app [computed]" in line:
+        fifo_jfi = line.split(":")[1].strip()
+  with open(data_dir+"/fq/digest", "r") as f:
+    lines = f.readlines()
+    for line in lines:
+      if "Avg. Goodput [bps]" in line:
+        fq_gpt = line.split(":")[1].strip()
+      if "avg_jfi_app [computed]" in line:
+        fq_jfi = line.split(":")[1].strip()
+
+  thresholds = [0.01, 0.1, 0.2, 0.4, 0.8, 1.0]
+  suffix = ["001", "010", "020", "040", "080", "100"]
+  for i in range(len(thresholds)):
+    with open(data_dir+"/cebinae-"+suffix[i]+"/digest", "r") as f:
+      lines = f.readlines()
+      for line in lines:
+        if "Avg. Goodput [bps]" in line:
+          gpt_str += ("{0} {1}\n".format(thresholds[i], line.split(":")[1].strip()))
+        if "avg_jfi_app [computed]" in line:
+          jfi_str += ("{0} {1}\n".format(thresholds[i], line.split(":")[1].strip()))
+
+  with open(data_dir+"/gpt.dat", "w") as f:
+    f.write(gpt_str)
+  with open(data_dir+"/jfi.dat", "w") as f:
+    f.write(jfi_str)    
+
+  gpt_gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "gpt.eps"
+
+set logscale x
+set size 0.5,0.5
+
+set tics nomirror
+#set key top right reverse Left
+#set key font ",16"
+unset key
+set border 3
+
+set xlabel "Thresholds [%]"
+set ylabel 'Goodput [MBps]'
+
+set logscale x
+set xrange [1:100]
+set ytics 0,20,101
+set yrange [0:101]
+
+myred = '#A90533'
+myblue = '#004785'
+mygrey = 'grey70'
+
+set grid
+
+gpt_fq = {0}/1000000
+gpt_fifo = {1}/1000000
+
+set arrow from 1,gpt_fifo to 100,gpt_fifo lc rgb mygrey lw 5 dt 3 nohead
+set label at graph 0.97,0.87 "FIFO" front right textcolor rgb mygrey font "Helvetica,16"
+
+set arrow from 1,gpt_fq to 100,gpt_fq lc rgb mygrey lw 5 dt 3 nohead
+set label at graph 0.91,0.77 "FQ" front right textcolor rgb mygrey font "Helvetica,16"
+
+plot "gpt.dat" using ($1*100):($2/1000000) with linespoints lw 5 lc rgb myred
+'''.format(fq_gpt, fifo_gpt)
+
+  jfi_gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "jfi.eps"
+
+set logscale x
+set size 0.5,0.5
+
+set tics nomirror
+#set key top right reverse Left
+#set key font ",16"
+unset key
+set border 3
+
+set grid
+
+set xlabel "Thresholds [%]"
+set ylabel 'JFI'
+
+set logscale x
+set xrange [1:100]
+set ytics 0,0.2,1.0
+set yrange [0:1]
+
+myred = '#A90533'
+myblue = '#004785'
+mygrey = 'grey70'
+
+#set format y '%.1f'
+
+jfi_fq = {0}
+jfi_fifo = {1}
+
+set arrow from 1,jfi_fifo to 100,jfi_fifo lc rgb mygrey lw 5 dt 3 nohead
+set label at graph 0.2,0.60 "FIFO" front right textcolor rgb mygrey font "Helvetica,16"
+
+set arrow from 1,jfi_fq to 100,jfi_fq lc rgb mygrey lw 5 dt 3 nohead
+set label at graph 0.2,0.92 "FQ" front right textcolor rgb mygrey font "Helvetica,16"
+
+plot "jfi.dat" using ($1*100):($2) with linespoints lw 5 lc rgb myred
+'''.format(fq_jfi, fifo_jfi)
+
+  with open(data_dir+"/plot_gpt.gp", "w") as gp_file:
+    gp_file.write(gpt_gp_str)
+  with open(data_dir+"/plot_jfi.gp", "w") as gp_file:
+    gp_file.write(jfi_gp_str)
+
+  os.chdir(data_dir)
+  cmds = [
+    "gnuplot plot_gpt.gp",
+    "gnuplot plot_jfi.gp"
+  ]
+  for cmd in cmds:
+    subprocess.call(cmd.split())
+
+@timeit
 def plot_time_tpt(data_path, w_total):
   cwd = os.getcwd()
   if not os.path.isabs(data_path):
@@ -2000,7 +2143,7 @@ if __name__ == '__main__':
   parse_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of data file or directory")  
 
   plot_subprsr = subprsr.add_parser("plot")
-  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig1_region", "fig7", "fig8", "time_tpt", "gpt_cdf", "rtts", "top_detection", "pl2", "pl3"], help="Plot target")
+  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig1_region", "fig7", "fig8", "thresh", "time_tpt", "gpt_cdf", "rtts", "top_detection", "pl2", "pl3"], help="Plot target")
   plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of plotting data file or directory")
   plot_subprsr.add_argument("--w_total", action="store_true", help="Whether to plot total line used by time_tpt target")
   plot_subprsr.add_argument("--w_fq", action="store_true", help="Whether to plot fq line used by gpt_cdf target")  
@@ -2042,7 +2185,9 @@ if __name__ == '__main__':
     if args.plot_target == "fig7":
       plot_fig7(args.data_path)  
     if args.plot_target == "fig8":
-      plot_fig8(args.data_path)            
+      plot_fig8(args.data_path)  
+    if args.plot_target == "thresh":
+      plot_thresh(args.data_path)                  
     if args.plot_target == "time_tpt":
       plot_time_tpt(args.data_path, args.w_total)
     if args.plot_target == "gpt_cdf":
