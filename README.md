@@ -28,7 +28,7 @@ For the ease of running the evaluation process, `cebinae.py` is created as the m
 * For the reproduction of the majority of results, only a canonical Linux machine (e.g., Ubuntu 16.04 or 18.04 LTS) is required. Other Linux distributions and OS are also expected to work, preferably Ubuntu 18.04 LTS or Ubuntu 16.04 LTS.
 
 * Validate environment set up.
-    * `which python` points to `python3` or change the commands below to python3. Python version >= 3.8 required.
+    * `which python` points to `python3` or change the commands below to python3. Python version >= 3.8 required for packages like `scipy`.
     * `python cebinae.py ns validate -p optimized` to validate if the environment is well set up, which typically takes around 15 min. Upon failure of compilation or tests, check if the [prerequisite packages](https://www.nsnam.org/wiki/Installation#Ubuntu.2FDebian.2FMint) are installed for the corresponding platform, for instance, gcc >= 7.0.0. For Ubuntu 18.04, `python cebinae.py ns prerequisite` auto-installs the set of packages needed.
     * Confirm that [gnuplot](http://www.gnuplot.info/) is installed by typing `gnuplot` in the linux prompt and type `q` to quit its terminal.
 
