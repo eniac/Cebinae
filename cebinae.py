@@ -612,6 +612,59 @@ plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT=20.4ms)" wit
   subprocess.call(cmd.split())
 
 @timeit
+def plot_jfi(data_dir):
+  cwd = os.getcwd()
+  if not os.path.isabs(data_dir):
+    data_dir = (cwd+"/"+data_dir)
+  print("data_dir: {}".format(data_dir))
+  if not os.path.isdir(data_dir):
+    print("ERR: not dir!")
+    exit()
+
+  gp_str = '''
+reset
+set term post eps enhanced dashed color font 'Helvetica,22'
+set output "graph.eps"
+
+set size 1,0.618 
+set border 3
+set tics nomirror
+
+set nologscale x
+
+set key reverse Left
+set key at graph 1.0,1.0
+set key font ",16"
+set key maxrows 1
+set key samplen 2
+# set key width -1
+
+set xlabel "Time [s]"
+set ylabel 'JFI'
+
+set xrange [1:51]
+set xtics 0,5,101
+
+set grid
+
+myred = '#A90533'
+myblue = '#004785'
+mygrey = 'grey70'
+
+plot "fifo/jfi_1000000.dat" using 2 title "FIFO" with lines lw 6 dt 3 lc rgb myblue, \\
+   "fq/jfi_1000000.dat" using 2 title "FQ" with lines lw 6 dt 1 lc rgb mygrey,\\
+	 "cebinae/jfi_1000000.dat" using 2 title "Cebinae" with lines lw 6 dt 1 lc rgb myred,
+'''
+
+  with open(data_dir+"/plot.gp", "w") as gp_file:
+    gp_file.write(gp_str)
+
+  os.chdir(data_dir)
+  cmd = "gnuplot plot.gp"
+  print_cmd(cmd)
+  subprocess.call(cmd.split())
+
+@timeit
 def plot_fig7(data_dir):
   cwd = os.getcwd()
   if not os.path.isabs(data_dir):
@@ -2143,7 +2196,7 @@ if __name__ == '__main__':
   parse_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of data file or directory")  
 
   plot_subprsr = subprsr.add_parser("plot")
-  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig1_region", "fig7", "fig8", "thresh", "time_tpt", "gpt_cdf", "rtts", "top_detection", "pl2", "pl3"], help="Plot target")
+  plot_subprsr.add_argument("--plot_target", type=str, required=True, choices=["fig1", "fig1_region", "fig7", "fig8", "thresh", "time_tpt", "gpt_cdf", "rtts", "top_detection", "pl2", "pl3", "jfi"], help="Plot target")
   plot_subprsr.add_argument("--data_path", type=str, required=True, help="Absolute or relative path (w.r.t. pwd) of plotting data file or directory")
   plot_subprsr.add_argument("--w_total", action="store_true", help="Whether to plot total line used by time_tpt target")
   plot_subprsr.add_argument("--w_fq", action="store_true", help="Whether to plot fq line used by gpt_cdf target")  
@@ -2199,7 +2252,9 @@ if __name__ == '__main__':
     if args.plot_target == "pl2":
       plot_pl2(args.data_path)   
     if args.plot_target == "pl3":
-      plot_pl3(args.data_path)                  
+      plot_pl3(args.data_path)    
+    if args.plot_target == "jfi":
+      plot_jfi(args.data_path)                        
   elif args.cmd == "tofino":
     pass
 
