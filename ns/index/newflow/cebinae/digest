@@ -1,0 +1,520 @@
+=== CMD varas ===
+enable_debug: true
+enable_stdout: true
+printprogress: true
+skip_run: false
+config_path: /home/leoyu/Cebinae/ns/configs/newflow.json
+result_dir: tmp_index/newflow/cebinae/
+sack: true
+recovery: ns3::TcpClassicRecovery
+app_packet_size: 1440
+delackcount: 2
+seed: 2022
+run: 1205
+tracing_period_us: 1000000
+progress_interval_ms: 1000
+sim_seconds: 100
+app_seconds_start0: 1
+app_seconds_start1: 5
+app_seconds_start2: 25
+app_seconds_start3: 0.1
+app_seconds_start4: 0.1
+app_seconds_start5: 0.1
+app_seconds_start6: 0.1
+app_seconds_start7: 0.1
+app_seconds_start8: 0.1
+app_seconds_end: 100
+transport_prot0: ns3::TcpVegas
+transport_prot1: ns3::TcpNewReno
+transport_prot2: ns3::TcpCubic
+transport_prot3: ns3::TcpCubic
+transport_prot4: ns3::TcpCubic
+transport_prot5: ns3::TcpCubic
+transport_prot6: ns3::TcpCubic
+transport_prot7: ns3::TcpCubic
+transport_prot8: ns3::TcpCubic
+bottleneck_bw: 100Mbps
+bottleneck_delay: 40ms
+leaf_bw0: 10000Mbps
+leaf_bw1: 10000Mbps
+leaf_bw2: 10000Mbps
+leaf_bw3: 0Mbps
+leaf_bw4: 0Mbps
+leaf_bw5: 0Mbps
+leaf_bw6: 0Mbps
+leaf_bw7: 0Mbps
+leaf_bw8: 0Mbps
+leaf_delay0: 5ms
+leaf_delay1: 5ms
+leaf_delay2: 5ms
+leaf_delay3: 1ms
+leaf_delay4: 1ms
+leaf_delay5: 1ms
+leaf_delay6: 1ms
+leaf_delay7: 1ms
+leaf_delay8: 1ms
+app_bw0: 100Mbps
+app_bw1: 100Mbps
+app_bw2: 100Mbps
+app_bw3: 0Mbps
+app_bw4: 0Mbps
+app_bw5: 0Mbps
+app_bw6: 0Mbps
+app_bw7: 0Mbps
+app_bw8: 0Mbps
+switch_total_bufsize: 850p
+switch_netdev_size: 10p
+server_netdev_size: 100p
+queuedisc_type: CebinaeQueueDisc
+num_cca0: 32
+num_cca1: 1
+num_cca2: 1
+num_cca3: 0
+num_cca4: 0
+num_cca5: 0
+num_cca6: 0
+num_cca7: 0
+num_cca8: 0
+num_leaf: 34
+======
+--- Configured CebinaeQueueDisc ---
+dt: +1.34218e+08ns
+vdt: +1ns
+l: +100000ns
+p: 1
+tau: 0.01
+delta_port: 0.01
+delta_flow: 0.01
+------
+num_tracing_periods: 100
+=== Ipv4 addresses ===
+--- leftleaf_ifc ---
+0 1.1.1.1
+1 1.1.2.1
+2 1.1.3.1
+3 1.1.4.1
+4 1.1.5.1
+5 1.1.6.1
+6 1.1.7.1
+7 1.1.8.1
+8 1.1.9.1
+9 1.1.10.1
+10 1.1.11.1
+11 1.1.12.1
+12 1.1.13.1
+13 1.1.14.1
+14 1.1.15.1
+15 1.1.16.1
+16 1.1.17.1
+17 1.1.18.1
+18 1.1.19.1
+19 1.1.20.1
+20 1.1.21.1
+21 1.1.22.1
+22 1.1.23.1
+23 1.1.24.1
+24 1.1.25.1
+25 1.1.26.1
+26 1.1.27.1
+27 1.1.28.1
+28 1.1.29.1
+29 1.1.30.1
+30 1.1.31.1
+31 1.1.32.1
+32 1.1.33.1
+33 1.1.34.1
+--- leftrouter_ifc ---
+0 1.1.1.2
+1 1.1.2.2
+2 1.1.3.2
+3 1.1.4.2
+4 1.1.5.2
+5 1.1.6.2
+6 1.1.7.2
+7 1.1.8.2
+8 1.1.9.2
+9 1.1.10.2
+10 1.1.11.2
+11 1.1.12.2
+12 1.1.13.2
+13 1.1.14.2
+14 1.1.15.2
+15 1.1.16.2
+16 1.1.17.2
+17 1.1.18.2
+18 1.1.19.2
+19 1.1.20.2
+20 1.1.21.2
+21 1.1.22.2
+22 1.1.23.2
+23 1.1.24.2
+24 1.1.25.2
+25 1.1.26.2
+26 1.1.27.2
+27 1.1.28.2
+28 1.1.29.2
+29 1.1.30.2
+30 1.1.31.2
+31 1.1.32.2
+32 1.1.33.2
+33 1.1.34.2
+--- rightleaf_ifc ---
+0 100.1.1.1
+1 100.1.2.1
+2 100.1.3.1
+3 100.1.4.1
+4 100.1.5.1
+5 100.1.6.1
+6 100.1.7.1
+7 100.1.8.1
+8 100.1.9.1
+9 100.1.10.1
+10 100.1.11.1
+11 100.1.12.1
+12 100.1.13.1
+13 100.1.14.1
+14 100.1.15.1
+15 100.1.16.1
+16 100.1.17.1
+17 100.1.18.1
+18 100.1.19.1
+19 100.1.20.1
+20 100.1.21.1
+21 100.1.22.1
+22 100.1.23.1
+23 100.1.24.1
+24 100.1.25.1
+25 100.1.26.1
+26 100.1.27.1
+27 100.1.28.1
+28 100.1.29.1
+29 100.1.30.1
+30 100.1.31.1
+31 100.1.32.1
+32 100.1.33.1
+33 100.1.34.1
+--- rightrouter_ifc ---
+0 100.1.1.2
+1 100.1.2.2
+2 100.1.3.2
+3 100.1.4.2
+4 100.1.5.2
+5 100.1.6.2
+6 100.1.7.2
+7 100.1.8.2
+8 100.1.9.2
+9 100.1.10.2
+10 100.1.11.2
+11 100.1.12.2
+12 100.1.13.2
+13 100.1.14.2
+14 100.1.15.2
+15 100.1.16.2
+16 100.1.17.2
+17 100.1.18.2
+18 100.1.19.2
+19 100.1.20.2
+20 100.1.21.2
+21 100.1.22.2
+22 100.1.23.2
+23 100.1.24.2
+24 100.1.25.2
+25 100.1.26.2
+26 100.1.27.2
+27 100.1.28.2
+28 100.1.29.2
+29 100.1.30.2
+30 100.1.31.2
+31 100.1.32.2
+32 100.1.33.2
+33 100.1.34.2
+--- router_ifc ---
+0 200.1.1.1
+1 200.1.1.2
+=== avg_tpt_bottleneck[*] ===
+0 1544584.727
+1 2762964.364
+2 2390762.182
+3 1645995.636
+4 1633077.818
+5 3957802.182
+6 2621713.455
+7 1624264.727
+8 2947677.091
+9 1499674.182
+10 3289456.000
+11 2793025.455
+12 3799166.545
+13 4331694.545
+14 3810514.909
+15 3763672.727
+16 2842765.091
+17 4046778.182
+18 2819344.000
+19 2383277.091
+20 2597809.455
+21 2331968.000
+22 4308273.455
+23 2347421.091
+24 2155585.455
+25 2980997.818
+26 2166330.182
+27 3214122.182
+28 3357787.636
+29 2284160.000
+30 2961077.818
+31 2691614.545
+32 1314478.545
+33 3652120.727
+Avg. Throughput [bps]: 94871957.818
+avg_jfi_bottleneck [computed]: 0.919
+=== avg_tpt_app[*] ===
+0 1487709.091
+1 2660770.909
+2 2301789.091
+3 1585803.636
+4 1573818.182
+5 3814516.364
+6 2521600.000
+7 1564858.182
+8 2840552.727
+9 1443840.000
+10 3170560.000
+11 2687418.182
+12 3655563.636
+13 4174894.545
+14 3672320.000
+15 3627403.636
+16 2739781.818
+17 3899927.273
+18 2714530.909
+19 2294923.636
+20 2503330.909
+21 2243258.182
+22 4151621.818
+23 2260712.727
+24 2077207.273
+25 2872785.455
+26 2083723.636
+27 3097483.636
+28 3229905.455
+29 2201134.545
+30 2853585.455
+31 2592465.455
+32 1266967.273
+33 3445876.364
+Avg. Goodput [bps]: 91312640.000
+avg_jfi_app [computed]: 0.919
+# of RTT samples for source 0: 6086
+Avg. RTT for source 0: 112039281.264ns
+# of RTT samples for source 1: 10833
+Avg. RTT for source 1: 108301395.487ns
+# of RTT samples for source 2: 9424
+Avg. RTT for source 2: 108928930.384ns
+# of RTT samples for source 3: 6682
+Avg. RTT for source 3: 111767813.462ns
+# of RTT samples for source 4: 6568
+Avg. RTT for source 4: 112430276.077ns
+# of RTT samples for source 5: 15447
+Avg. RTT for source 5: 106442911.829ns
+# of RTT samples for source 6: 10420
+Avg. RTT for source 6: 108135604.521ns
+# of RTT samples for source 7: 6636
+Avg. RTT for source 7: 112349462.338ns
+# of RTT samples for source 8: 11650
+Avg. RTT for source 8: 107891135.839ns
+# of RTT samples for source 9: 5756
+Avg. RTT for source 9: 111524493.852ns
+# of RTT samples for source 10: 12752
+Avg. RTT for source 10: 107051167.374ns
+# of RTT samples for source 11: 11059
+Avg. RTT for source 11: 107581289.179ns
+# of RTT samples for source 12: 14998
+Avg. RTT for source 12: 106751088.777ns
+# of RTT samples for source 13: 16837
+Avg. RTT for source 13: 106162038.212ns
+# of RTT samples for source 14: 14817
+Avg. RTT for source 14: 106846399.696ns
+# of RTT samples for source 15: 14726
+Avg. RTT for source 15: 106815129.237ns
+# of RTT samples for source 16: 11283
+Avg. RTT for source 16: 108954704.337ns
+# of RTT samples for source 17: 15557
+Avg. RTT for source 17: 106256973.860ns
+# of RTT samples for source 18: 10807
+Avg. RTT for source 18: 107526322.613ns
+# of RTT samples for source 19: 9575
+Avg. RTT for source 19: 109282316.844ns
+# of RTT samples for source 20: 10346
+Avg. RTT for source 20: 107599275.112ns
+# of RTT samples for source 21: 9366
+Avg. RTT for source 21: 108780236.699ns
+# of RTT samples for source 22: 16266
+Avg. RTT for source 22: 106065736.006ns
+# of RTT samples for source 23: 9296
+Avg. RTT for source 23: 109342692.779ns
+# of RTT samples for source 24: 8360
+Avg. RTT for source 24: 109822885.830ns
+# of RTT samples for source 25: 11524
+Avg. RTT for source 25: 106606833.295ns
+# of RTT samples for source 26: 8569
+Avg. RTT for source 26: 109983295.973ns
+# of RTT samples for source 27: 12654
+Avg. RTT for source 27: 107258345.570ns
+# of RTT samples for source 28: 13229
+Avg. RTT for source 28: 106607893.603ns
+# of RTT samples for source 29: 9128
+Avg. RTT for source 29: 107931148.772ns
+# of RTT samples for source 30: 11823
+Avg. RTT for source 30: 107679950.793ns
+# of RTT samples for source 31: 10507
+Avg. RTT for source 31: 108062300.095ns
+# of RTT samples for source 32: 5032
+Avg. RTT for source 32: 111337924.862ns
+# of RTT samples for source 33: 13519
+Avg. RTT for source 33: 105542599.029ns
+====== Number of packets sent ======
+MySource 0:859375
+MySource 1:859375
+MySource 2:859375
+MySource 3:859375
+MySource 4:859375
+MySource 5:859375
+MySource 6:859375
+MySource 7:859375
+MySource 8:859375
+MySource 9:859375
+MySource 10:859375
+MySource 11:859375
+MySource 12:859375
+MySource 13:859375
+MySource 14:859375
+MySource 15:859375
+MySource 16:859375
+MySource 17:859375
+MySource 18:859375
+MySource 19:859375
+MySource 20:859375
+MySource 21:859375
+MySource 22:859375
+MySource 23:859375
+MySource 24:859375
+MySource 25:859375
+MySource 26:859375
+MySource 27:859375
+MySource 28:859375
+MySource 29:859375
+MySource 30:859375
+MySource 31:859375
+MySource 32:824653
+MySource 33:651042
+====== Number of packets at bottleneck link ======
+Source 33: 30611
+Source 32: 10964
+Source 31: 22403
+Source 30: 24949
+Source 29: 19391
+Source 12: 31938
+Source 11: 23486
+Source 10: 27348
+Source 9: 12494
+Source 8: 24524
+Source 7: 13925
+Source 6: 22076
+Source 5: 33196
+Source 4: 13653
+Source 3: 13997
+Source 2: 19947
+Source 1: 23012
+Source 0: 12866
+Source 13: 35940
+Source 14: 31600
+Source 15: 31435
+Source 16: 23707
+Source 17: 33584
+Source 18: 23591
+Source 19: 20262
+Source 20: 22030
+Source 21: 19845
+Source 22: 35758
+Source 23: 19498
+Source 24: 17935
+Source 25: 24751
+Source 26: 18214
+Source 27: 26799
+Source 28: 28309
+====== CebinaeQueueDisc digest ======
+--- Validate the effective CebinaeQueueDisc params ---
+m_debug: true
+m_maxSize: 850p
+GetInternalQueue(0)->GetMaxSize(): 850p
+GetInternalQueue(1)->GetMaxSize(): 850p
+dT: +1.34218e+08ns
+vdT: +1ns
+L: +100000ns
+P: 1
+tau: 0.01
+delta_port: 0.01
+delta_top: 0.01
+m_pool: true
+m_bps: 100000000bps
+--- Validate CebinaeQueueDisc initial states ---
+m_headq: 0
+m_neg_headq: 1
+m_vb: 134217728
+------
+m_arrived_pkts: 814566
+m_lbf_past_head_pkts: 69082
+m_lbf_past_tail_pkts: 725027
+m_lbf_drop_pkts: 20457
+m_enqueue_drop_pkts[0]: 0
+m_enqueue_drop_pkts[1]: 0
+m_cebinae_dequeued_succeeded: 794109
+m_num_p: 744
+m_num_bottleneck_p: 260
+m_num_non_bottleneck_p: 484
+m_num_rotated: 745
+--- FlowBottleneckDetector ---
+m_num_gettopflows: 260
+m_num_slot_pow2: 11
+m_num_slot: 2048
+m_hash2mysourceid.size(): 2048
+m_hash2bytecount.size(): 2048
+m_sourceidtag2toptimes:
+11: 2
+21: 8
+5: 13
+33: 21
+24: 6
+25: 10
+26: 2
+23: 5
+28: 14
+15: 13
+31: 11
+2: 4
+18: 9
+19: 6
+17: 9
+20: 8
+16: 6
+14: 19
+29: 6
+30: 8
+1: 7
+27: 8
+3: 1
+32: 4
+9: 2
+6: 12
+7: 4
+8: 11
+13: 25
+22: 19
+4: 1
+10: 11
+12: 14
+sourceids_wo_slots (during some round(s) due to 5-tuple hash collision):
+------
+
+=== Completion time [s]: 43.930===
