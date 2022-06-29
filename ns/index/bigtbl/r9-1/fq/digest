@@ -1,0 +1,491 @@
+=== CMD varas ===
+enable_debug: true
+enable_stdout: false
+printprogress: true
+skip_run: true
+config_path: /users/leoyu/Cebinae/ns/configs/cloudlab/r9-1.json
+result_dir: tmp_index/bigtbl/r9-1/fq/
+sack: true
+recovery: ns3::TcpClassicRecovery
+app_packet_size: 1440
+delackcount: 1
+seed: 2022
+run: 1205
+tracing_period_us: 1000000
+progress_interval_ms: 1000
+sim_seconds: 100
+app_seconds_start: 1
+app_seconds_end: 100
+transport_prot0: ns3::TcpNewReno
+transport_prot1: ns3::TcpCubic
+transport_prot2: ns3::TcpCubic
+transport_prot3: ns3::TcpCubic
+transport_prot4: ns3::TcpCubic
+transport_prot5: ns3::TcpCubic
+transport_prot6: ns3::TcpCubic
+transport_prot7: ns3::TcpCubic
+transport_prot8: ns3::TcpCubic
+bottleneck_bw: 1000Mbps
+bottleneck_delay: 2ms
+leaf_bw0: 100000Mbps
+leaf_bw1: 100000Mbps
+leaf_bw2: 0Mbps
+leaf_bw3: 0Mbps
+leaf_bw4: 0Mbps
+leaf_bw5: 0Mbps
+leaf_bw6: 0Mbps
+leaf_bw7: 0Mbps
+leaf_bw8: 0Mbps
+leaf_delay0: 0.25ms
+leaf_delay1: 0.25ms
+leaf_delay2: 1ms
+leaf_delay3: 1ms
+leaf_delay4: 1ms
+leaf_delay5: 1ms
+leaf_delay6: 1ms
+leaf_delay7: 1ms
+leaf_delay8: 1ms
+app_bw0: 1000Mbps
+app_bw1: 1000Mbps
+app_bw2: 0Mbps
+app_bw3: 0Mbps
+app_bw4: 0Mbps
+app_bw5: 0Mbps
+app_bw6: 0Mbps
+app_bw7: 0Mbps
+app_bw8: 0Mbps
+switch_total_bufsize: 420p
+switch_netdev_size: 1p
+server_netdev_size: 100p
+queuedisc_type: FqCodelQueueDisc
+num_cca0: 32
+num_cca1: 8
+num_cca2: 0
+num_cca3: 0
+num_cca4: 0
+num_cca5: 0
+num_cca6: 0
+num_cca7: 0
+num_cca8: 0
+num_leaf: 40
+======
+Configured NULL QueueDisc (which is the default FqCoDelQueueDisc and buffer size)
+num_tracing_periods: 100
+=== Ipv4 addresses ===
+--- leftleaf_ifc ---
+0 1.1.1.1
+1 1.1.2.1
+2 1.1.3.1
+3 1.1.4.1
+4 1.1.5.1
+5 1.1.6.1
+6 1.1.7.1
+7 1.1.8.1
+8 1.1.9.1
+9 1.1.10.1
+10 1.1.11.1
+11 1.1.12.1
+12 1.1.13.1
+13 1.1.14.1
+14 1.1.15.1
+15 1.1.16.1
+16 1.1.17.1
+17 1.1.18.1
+18 1.1.19.1
+19 1.1.20.1
+20 1.1.21.1
+21 1.1.22.1
+22 1.1.23.1
+23 1.1.24.1
+24 1.1.25.1
+25 1.1.26.1
+26 1.1.27.1
+27 1.1.28.1
+28 1.1.29.1
+29 1.1.30.1
+30 1.1.31.1
+31 1.1.32.1
+32 1.1.33.1
+33 1.1.34.1
+34 1.1.35.1
+35 1.1.36.1
+36 1.1.37.1
+37 1.1.38.1
+38 1.1.39.1
+39 1.1.40.1
+--- leftrouter_ifc ---
+0 1.1.1.2
+1 1.1.2.2
+2 1.1.3.2
+3 1.1.4.2
+4 1.1.5.2
+5 1.1.6.2
+6 1.1.7.2
+7 1.1.8.2
+8 1.1.9.2
+9 1.1.10.2
+10 1.1.11.2
+11 1.1.12.2
+12 1.1.13.2
+13 1.1.14.2
+14 1.1.15.2
+15 1.1.16.2
+16 1.1.17.2
+17 1.1.18.2
+18 1.1.19.2
+19 1.1.20.2
+20 1.1.21.2
+21 1.1.22.2
+22 1.1.23.2
+23 1.1.24.2
+24 1.1.25.2
+25 1.1.26.2
+26 1.1.27.2
+27 1.1.28.2
+28 1.1.29.2
+29 1.1.30.2
+30 1.1.31.2
+31 1.1.32.2
+32 1.1.33.2
+33 1.1.34.2
+34 1.1.35.2
+35 1.1.36.2
+36 1.1.37.2
+37 1.1.38.2
+38 1.1.39.2
+39 1.1.40.2
+--- rightleaf_ifc ---
+0 100.1.1.1
+1 100.1.2.1
+2 100.1.3.1
+3 100.1.4.1
+4 100.1.5.1
+5 100.1.6.1
+6 100.1.7.1
+7 100.1.8.1
+8 100.1.9.1
+9 100.1.10.1
+10 100.1.11.1
+11 100.1.12.1
+12 100.1.13.1
+13 100.1.14.1
+14 100.1.15.1
+15 100.1.16.1
+16 100.1.17.1
+17 100.1.18.1
+18 100.1.19.1
+19 100.1.20.1
+20 100.1.21.1
+21 100.1.22.1
+22 100.1.23.1
+23 100.1.24.1
+24 100.1.25.1
+25 100.1.26.1
+26 100.1.27.1
+27 100.1.28.1
+28 100.1.29.1
+29 100.1.30.1
+30 100.1.31.1
+31 100.1.32.1
+32 100.1.33.1
+33 100.1.34.1
+34 100.1.35.1
+35 100.1.36.1
+36 100.1.37.1
+37 100.1.38.1
+38 100.1.39.1
+39 100.1.40.1
+--- rightrouter_ifc ---
+0 100.1.1.2
+1 100.1.2.2
+2 100.1.3.2
+3 100.1.4.2
+4 100.1.5.2
+5 100.1.6.2
+6 100.1.7.2
+7 100.1.8.2
+8 100.1.9.2
+9 100.1.10.2
+10 100.1.11.2
+11 100.1.12.2
+12 100.1.13.2
+13 100.1.14.2
+14 100.1.15.2
+15 100.1.16.2
+16 100.1.17.2
+17 100.1.18.2
+18 100.1.19.2
+19 100.1.20.2
+20 100.1.21.2
+21 100.1.22.2
+22 100.1.23.2
+23 100.1.24.2
+24 100.1.25.2
+25 100.1.26.2
+26 100.1.27.2
+27 100.1.28.2
+28 100.1.29.2
+29 100.1.30.2
+30 100.1.31.2
+31 100.1.32.2
+32 100.1.33.2
+33 100.1.34.2
+34 100.1.35.2
+35 100.1.36.2
+36 100.1.37.2
+37 100.1.38.2
+38 100.1.39.2
+39 100.1.40.2
+--- router_ifc ---
+0 200.1.1.1
+1 200.1.1.2
+=== avg_tpt_bottleneck[*] ===
+0 25380736.000
+1 25380615.273
+2 25380615.273
+3 25380615.273
+4 25380615.273
+5 25380615.273
+6 25380615.273
+7 25380615.273
+8 25380615.273
+9 25380615.273
+10 25380615.273
+11 25380615.273
+12 25380615.273
+13 25380615.273
+14 25380615.273
+15 25380615.273
+16 25380615.273
+17 25380615.273
+18 25380615.273
+19 25380615.273
+20 25380615.273
+21 25380615.273
+22 25380615.273
+23 25380615.273
+24 25380494.545
+25 25380494.545
+26 25380494.545
+27 25380494.545
+28 25380494.545
+29 25380494.545
+30 25380494.545
+31 25380494.545
+32 25380494.545
+33 25380494.545
+34 13768462.545
+35 25380494.545
+36 11613239.273
+37 25380494.545
+38 25380494.545
+39 25380494.545
+Avg. Throughput [bps]: 989843512.727
+avg_jfi_bottleneck [computed]: 0.988
+=== avg_tpt_app[*] ===
+0 24462778.182
+1 24462661.818
+2 24462661.818
+3 24462661.818
+4 24462661.818
+5 24462661.818
+6 24462661.818
+7 24462661.818
+8 24462661.818
+9 24462661.818
+10 24462661.818
+11 24462661.818
+12 24462661.818
+13 24462661.818
+14 24462661.818
+15 24462661.818
+16 24462661.818
+17 24462661.818
+18 24462661.818
+19 24462661.818
+20 24462661.818
+21 24462661.818
+22 24462661.818
+23 24462661.818
+24 24462661.818
+25 24462661.818
+26 24462661.818
+27 24462661.818
+28 24462661.818
+29 24462661.818
+30 24462661.818
+31 24462545.455
+32 24462545.455
+33 24462545.455
+34 13270225.455
+35 24462545.455
+36 11193483.636
+37 24462545.455
+38 24462545.455
+39 24462545.455
+Avg. Goodput [bps]: 954044160.000
+avg_jfi_app [computed]: 0.988
+# of RTT samples for source 0: 195270
+Avg. RTT for source 0: 10442865.339ns
+# of RTT samples for source 1: 195271
+Avg. RTT for source 1: 10442747.866ns
+# of RTT samples for source 2: 195271
+Avg. RTT for source 2: 10442691.538ns
+# of RTT samples for source 3: 195272
+Avg. RTT for source 3: 10442740.501ns
+# of RTT samples for source 4: 195272
+Avg. RTT for source 4: 10442781.464ns
+# of RTT samples for source 5: 195272
+Avg. RTT for source 5: 10442766.181ns
+# of RTT samples for source 6: 195272
+Avg. RTT for source 6: 10442705.170ns
+# of RTT samples for source 7: 195272
+Avg. RTT for source 7: 10442713.899ns
+# of RTT samples for source 8: 195272
+Avg. RTT for source 8: 10442857.277ns
+# of RTT samples for source 9: 195272
+Avg. RTT for source 9: 10442626.836ns
+# of RTT samples for source 10: 195272
+Avg. RTT for source 10: 10442795.821ns
+# of RTT samples for source 11: 195272
+Avg. RTT for source 11: 10442740.467ns
+# of RTT samples for source 12: 195272
+Avg. RTT for source 12: 10442857.995ns
+# of RTT samples for source 13: 195272
+Avg. RTT for source 13: 10442753.570ns
+# of RTT samples for source 14: 195272
+Avg. RTT for source 14: 10442891.822ns
+# of RTT samples for source 15: 195272
+Avg. RTT for source 15: 10442707.458ns
+# of RTT samples for source 16: 195272
+Avg. RTT for source 16: 10442861.258ns
+# of RTT samples for source 17: 195272
+Avg. RTT for source 17: 10442831.652ns
+# of RTT samples for source 18: 195271
+Avg. RTT for source 18: 10443056.284ns
+# of RTT samples for source 19: 195342
+Avg. RTT for source 19: 10410737.602ns
+# of RTT samples for source 20: 195374
+Avg. RTT for source 20: 10414561.666ns
+# of RTT samples for source 21: 195374
+Avg. RTT for source 21: 10414705.002ns
+# of RTT samples for source 22: 195374
+Avg. RTT for source 22: 10414618.175ns
+# of RTT samples for source 23: 195374
+Avg. RTT for source 23: 10414655.248ns
+# of RTT samples for source 24: 195374
+Avg. RTT for source 24: 10414631.336ns
+# of RTT samples for source 25: 195374
+Avg. RTT for source 25: 10414651.827ns
+# of RTT samples for source 26: 195374
+Avg. RTT for source 26: 10414697.878ns
+# of RTT samples for source 27: 195374
+Avg. RTT for source 27: 10414672.337ns
+# of RTT samples for source 28: 195374
+Avg. RTT for source 28: 10414766.933ns
+# of RTT samples for source 29: 195374
+Avg. RTT for source 29: 10414643.508ns
+# of RTT samples for source 30: 195373
+Avg. RTT for source 30: 10414816.896ns
+# of RTT samples for source 31: 195373
+Avg. RTT for source 31: 10414647.989ns
+# of RTT samples for source 32: 210035
+Avg. RTT for source 32: 9254702.584ns
+# of RTT samples for source 33: 210035
+Avg. RTT for source 33: 9254740.827ns
+# of RTT samples for source 34: 113811
+Avg. RTT for source 34: 10010539.166ns
+# of RTT samples for source 35: 210035
+Avg. RTT for source 35: 9254759.996ns
+# of RTT samples for source 36: 96385
+Avg. RTT for source 36: 10031541.014ns
+# of RTT samples for source 37: 210035
+Avg. RTT for source 37: 9254736.209ns
+# of RTT samples for source 38: 210035
+Avg. RTT for source 38: 9254779.061ns
+# of RTT samples for source 39: 210035
+Avg. RTT for source 39: 9254817.180ns
+====== Number of packets sent ======
+MySource 0:8593750
+MySource 1:8593750
+MySource 2:8593750
+MySource 3:8593750
+MySource 4:8593750
+MySource 5:8593750
+MySource 6:8593750
+MySource 7:8593750
+MySource 8:8593750
+MySource 9:8593750
+MySource 10:8593750
+MySource 11:8593750
+MySource 12:8593750
+MySource 13:8593750
+MySource 14:8593750
+MySource 15:8593750
+MySource 16:8593750
+MySource 17:8593750
+MySource 18:8593750
+MySource 19:8593750
+MySource 20:8593750
+MySource 21:8593750
+MySource 22:8593750
+MySource 23:8593750
+MySource 24:8593750
+MySource 25:8593750
+MySource 26:8593750
+MySource 27:8593750
+MySource 28:8593750
+MySource 29:8593750
+MySource 30:8593750
+MySource 31:8593750
+MySource 32:8593750
+MySource 33:8593750
+MySource 34:8593750
+MySource 35:8593750
+MySource 36:8593750
+MySource 37:8593750
+MySource 38:8593750
+MySource 39:8593750
+====== Number of packets at bottleneck link ======
+Source 36: 97450
+Source 39: 212375
+Source 38: 212375
+Source 37: 212376
+Source 35: 212376
+Source 34: 114936
+Source 33: 212376
+Source 32: 212376
+Source 31: 212376
+Source 30: 212376
+Source 29: 212376
+Source 12: 212376
+Source 11: 212376
+Source 10: 212376
+Source 9: 212376
+Source 8: 212376
+Source 7: 212376
+Source 6: 212376
+Source 5: 212376
+Source 4: 212376
+Source 3: 212376
+Source 2: 212376
+Source 1: 212376
+Source 0: 212377
+Source 13: 212376
+Source 14: 212376
+Source 15: 212376
+Source 16: 212376
+Source 17: 212376
+Source 18: 212376
+Source 19: 212376
+Source 20: 212376
+Source 21: 212376
+Source 22: 212376
+Source 23: 212376
+Source 24: 212376
+Source 25: 212376
+Source 26: 212376
+Source 27: 212376
+Source 28: 212376
+
+=== Completion time [s]: 1338.124===
