@@ -26,6 +26,7 @@ set xtics 0,5,101
 myred = '#A90533'
 myblue = '#004785'
 mygrey = '#808080'
+# https://mdigi.tools/color-shades/#fdb5c9
 #unsaturated_region = '#d9d9d9'
 small_rtt_region = '#fdb5c9' # red
 large_rtt_region = '#b3dbff' # blue
@@ -780,7 +781,7 @@ set obj rect from 99.857989633, graph 0 to 99.992207361, graph 1 fc rgb unsatura
 set obj rect from 99.992207361, graph 0 to 100.126425089, graph 1 fc rgb unsaturated_region lw 5 fs solid 1.0 noborder
 
 
-plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT=20.4ms)" with lines lw 5 dt 3 lc rgb myred, \
-	 "fifo/app_tpt_1000000.dat" using ($2/1000000) title "FIFO (RTT=40ms)" with lines lw 5 dt 3 lc rgb myblue, \
-	 "cebinae/app_tpt_1000000.dat" using ($1/1000000) title "Cebinae (RTT=20.4ms)" with lines lw 5 dt 1 lc rgb myred, \
-	 "cebinae/app_tpt_1000000.dat" using ($2/1000000) title "Cebinae (RTT=40ms)" with lines lw 5 dt 1 lc rgb myblue,
+plot "fifo/app_tpt_1000000.dat" using ($1/1000000) title "FIFO (RTT = 20.4 ms)" with lines lw 5 dt 3 lc rgb myred, \
+	 "fifo/app_tpt_1000000.dat" using ($2/1000000) title "FIFO (RTT = 40 ms)" with lines lw 5 dt 3 lc rgb myblue, \
+	 "cebinae/app_tpt_1000000.dat" using ($1/1000000) title "Cebinae (RTT = 20.4 ms)" with lines lw 5 dt 1 lc rgb myred, \
+	 "cebinae/app_tpt_1000000.dat" using ($2/1000000) title "Cebinae (RTT = 40 ms)" with lines lw 5 dt 1 lc rgb myblue,
