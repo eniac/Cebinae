@@ -18,7 +18,6 @@ Cebinae is a switch infrastructure that mitigates unfairness using distributed l
 
 ### Artifact Evaluation README
 
-Below are the instructions to reproduce the major results in the paper manuscript.
 For the ease of running the evaluation process, `cebinae.py` is created as the main entry point to experiement launches and analysis/plotting scripts to reproduce the results/graphs in the paper.
 
 **Environment Setup**
@@ -38,8 +37,6 @@ For the ease of running the evaluation process, `cebinae.py` is created as the m
     * **TLDR**: We understand that setting up the env (e.g., installing the exact version `bf-sde-9.5.0`, downloading CAIDA traces) may be time consuming, hence, we've provided a prebuilt VM instance for the ease of the evaluation process (see next bullet point).
 
 * We provided a pre-built VM instance with `bf-sde-9.5.0` for artifact evaluation process to validate the HW results in the accepted paper manuscript without the need of physical testbed set up. See [detailed instructions](https://github.com/eniac/Cebinae/blob/main/vm_experiments.md).
-
-Feel free to reach out if any question arises!
 
 **Reproduce Figure 1 Illustrative Example**
 
@@ -87,5 +84,25 @@ Major pointer to files related to the instantiation of the data plane & control 
 
 ### Further Questions
 
-Feel free to post issues or contact `leoyu@seas.upenn.edu` if any question arises!
+For for details, please refer to our SIGCOMM 2022 paper: [Cebinae: Scalable In-network Fairness Augmentation](). Feel free to post issues or contact `leoyu@seas.upenn.edu` if any question arises.
+
+```
+@inproceedings{cebinae,
+  author = {Yu, Liangcheng and Sonchack, John and Liu, Vincent},
+  title = {Cebinae: Scalable In-network Fairness Augmentation},
+  year = {2022},
+  publisher = {Association for Computing Machinery},
+  address = {Amsterdam, Netherlands},
+  doi = {10.1145/3544216.3544240},
+  booktitle = {Proceedings of the Annual Conference of the ACM Special Interest Group on Data Communication on the Applications, Technologies, Architectures, and Protocols for Computer Communication},
+  location = {Amsterdam, Netherlands},
+  series = {SIGCOMM '22}
+}
+```
+
+
+
+
+
+
 
